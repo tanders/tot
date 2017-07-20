@@ -15,33 +15,37 @@
   (omn-to-time-signature music-to-rebar
                          (get-time-signature music-with-time-signature)))
 
-;; More info: https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-%E2%80%93-defining-them-more-easily/
+
+
 (defun edit-omn (type notation fun &key (flat T))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise functions your functions to support omn notation as input.
 
-  Args
-  type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
-  fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
-  notation: a omn sequence or a plain parameter list (can be nested).
-  flat (default T): whether or not `fun' expects a flat input list.
+  Args:
+  - type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
+  - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
+  - notation: a omn sequence or a plain parameter list (can be nested).
+  - flat (default T): whether or not `fun' expects a flat input list.
 
   Example: roll your own transposition supporting omn input
-  ; first aux def supporting only pitches
-  (defun my-transposition-aux (interval pitches)
-    (midi-to-pitch (loop for p in (pitch-to-midi pitches)
-                      collect (+ p interval))))
-  ; test
-  (my-transposition-aux 7 '(c4 e4 g4)) 
-  ; => (g4 b4 d5)
+  first aux def supporting only pitches
+  ;;; (defun my-transposition-aux (interval pitches)
+  ;;;   (midi-to-pitch (loop for p in (pitch-to-midi pitches)
+  ;;;                        collect (+ p interval))))
+  
+  test
+  ;;; (my-transposition-aux 7 '(c4 e4 g4)) 
+  ;;;  => (g4 b4 d5)
 
-  ; variant supporting also omn expressions
-  (defun my-transposition (interval omn)
-    (edit-omn :pitch omn
-              #'(lambda (ps) (my-transposition-aux interval ps))))
-  ; test with nested OMN including a rest
-  (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2)))
-  ; => ((q g4 mp - b4 c5) (h d5 mp tr2))
-  "
+  variant supporting also omn expressions
+  ;;; (defun my-transposition (interval omn)
+  ;;;   (edit-omn :pitch omn
+  ;;;             #'(lambda (ps) (my-transposition-aux interval ps))))
+
+  test with nested OMN including a rest
+  ;;; (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2)))
+  ;;;  => ((q g4 mp - b4 c5) (h d5 mp tr2))
+
+  More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}."
   (if (omn-formp notation)
     (let ((params (omn nil notation)))
       (apply #'make-omn 
@@ -91,7 +95,7 @@
   "Returns the number of notes between rests in the given lengths.
   
   Args:
-  length: lengths or OMN (list or list of list)."
+  - length: lengths or OMN (list or list of list)."
   (let ((flat-lengths (length-rest-merge (flatten (omn :length lengths)))))
     (mapcar #'1-
             (tu:x->dx (length-rest-position
@@ -164,10 +168,10 @@
   "Pretty prints a part one bar a time, adding a bar line comment before each bar.
 
   Args: 
-  part: nested OMN list.
+  - part: nested OMN list.
 
   Example:
-  (pprint-part '((q c4 d4 e4) (h f4 q e4) (h. d2)))"
+  ;;; (pprint-part '((q c4 d4 e4) (h f4 q e4) (h. d2)))"
   (pprint-logical-block 
       (stream nil :prefix "(" :suffix ")") 
     (pprint-logical-block (stream part) 

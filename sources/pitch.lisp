@@ -39,18 +39,21 @@
   "Transposes pitches in sequence by their corresponding fenv value. 
   
   Args:
-  sequence: (possibly nested) list of pitches or OMN expression
-  fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value by position in sequence (not temporal position); intervals are specified in semitones; intervals are rounded to their closes integer
-
+  - sequence: (possibly nested) list of pitches or OMN expression
+  - fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value by position in sequence (not temporal position); intervals are specified in semitones; intervals are rounded to their closes integer
   All arguments of pitch-transpose-n are supported as well.
 
+
   Examples:
-  (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)))
-  => (c4 cs4 gs4 a4)
-  (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)) :ambitus '(d4 a4))
-  => (d4 eb4 gs4 a4)
-  (fenv-transpose-pitch '((q c4 e c4 g4) (h g4)) (linear-fenv (0 0) (1 2)))
-  => ((q c4 e cs4 gs4) (h a4))"
+  ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)))
+  ;;; => (c4 cs4 gs4 a4)
+
+  ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)) :ambitus '(d4 a4))
+  ;;; => (d4 eb4 gs4 a4)
+
+  ;;; (fenv-transpose-pitch '((q c4 e c4 g4) (h g4)) (linear-fenv (0 0) (1 2)))
+  ;;; => ((q c4 e cs4 gs4) (h a4))
+"
   (let* ((omn? (omn-formp sequence))
          (pitches (if omn?
                     (omn :pitch sequence)

@@ -12,24 +12,23 @@
 ;;; TODO: try to (slightly) generalise further, so that it would be useful for various projects
 (defun developing-substitute (map sequence otherwise)
   "Returns a transformation of `sequence', where elements that match entries given in `map' are replaced with given new items, and -- if not contained in map --  with an `otherwise' element. However, this function allows for replacements that develop over time and where the sequence of the developments could be generated algorithmically by other functions: When multiple new and otherwise replacements are given, these are used by and by in their given order (circulating, if the end of the given sequence is reached). 
+  
+  Replacements in the mapping can also be specified by functions returning the necessary replacement.  
 
-Replacements in the mapping can also be specified by functions returning the necessary replacement.  
+  Note that sequence elements to replace can be arbitrary values, including subsequences.
+  
 
-Note that sequence elements to replace can be arbitrary values, including subsequences.
+  Args:
+  - map:        old-new pairs (list of two-element lists)
+  - sequence:   sequence (list) to transform
+  - otherwise:  flat list of alternative replacements. Per sublist, only a single replacement value is chosen.
 
-* Arguments
-
-map        old-new pairs (list of two-element lists)
-sequence   sequence (list) to transform
-otherwise  flat list of alternative replacements. Per sublist, only a single replacement value is chosen.
-
-* Examples
-
-(developing-substitute '((1 (a b c))
-			 (2 (h i j)))
-                        '(1 1 2 1 3 2 1)
-                        '(x y z))
--> (a b h c x i a)"
+  Examples:
+;;; (developing-substitute '((1 (a b c))
+;;;   			     (2 (h i j)))
+;;;                        '(1 1 2 1 3 2 1)
+;;;                        '(x y z))
+;;; => (a b h c x i a)"
   (let ((n (length sequence))     ; max number of replacement elements needed
         (mappings (make-hash-table :test #'equal)))
     ;; fill hash table

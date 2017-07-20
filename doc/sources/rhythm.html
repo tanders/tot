@@ -1,0 +1,693 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="../cludg.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>
+rhythm</title>
+</head>
+<body>
+<div id="navbar">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<colgroup span="3">
+<col width="0*"/>
+<col width="0*"/>
+<col width="1*"/>
+</colgroup>
+<tr>
+<td align="left" valign="baseline">
+<a href="OMN-utils.html">
+Prev:&nbsp;OMN-utils</a>
+<br/>
+<a href="pitch.html">
+Next:&nbsp;pitch</a>
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left" valign="baseline">
+<span class="upchain">
+<b>
+rhythm</b>
+<br/>
+<a href="../index.html">
+Index</a>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class="cludg-doc-body">
+<h2>
+rhythm
+</h2>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Function summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252524">
+durational-accent</a>
+</td>
+<td class="summary">
+lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) <em>&amp;allow-other-keys</em></td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252526">
+isolate-time-signatures</a>
+</td>
+<td class="summary">
+ts-forms</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252525">
+length-divide-ext</a>
+</td>
+<td class="summary">
+count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252527">
+lengths-with-merged-ties</a>
+</td>
+<td class="summary">
+sequence</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252528">
+total-duration</a>
+</td>
+<td class="summary">
+sequence</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252520">
+tuplet-rhythm</a>
+</td>
+<td class="summary">
+lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 1/2) (count-offset 0) (position 'e) (type '?) <em>&amp;allow-other-keys</em></td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252521">
+tuplet-walk-rhythm</a>
+</td>
+<td class="summary">
+bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-distances '(7 8 9)) (last-bar nil) (seed nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252522">
+_durational-accent-divide</a>
+</td>
+<td class="summary">
+lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (set nil) (ignore nil) (seed nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g252523">
+_durational-accent-merge</a>
+</td>
+<td class="summary">
+lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
+</tr>
+</table>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252520">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+tuplet-rhythm&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 1/2) (count-offset 0) (position 'e) (type '?) <em>&amp;allow-other-keys</em></td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Subdivides given note `lengths'. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+lengths: list of length values, can be nested. 
+ </p>
+</li>
+<li>
+<p>
+subdivisions: (circling list of ints) specifies tuplet sequence. 
+ </p>
+</li>
+<li>
+<p>
+length-dividend (default 1/2): duration ratio divided by subdivisions. Default case are half note subdivisions, ie. a subdivision of 3 results 3h notes (triplets splitting a half note). 
+ </p>
+</li>
+<li>
+<p>
+count-offset (default -1): `subdivisions' also specifies number of equally spaced notes per tuplet plus amount of `count-offset' . I.e., if `count-offset' = 0 then each note is split into subdivision notes. 
+ 
+ All keyword args from `length-divide2' are inherited, but some with different default. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<pre>
+    (tuplet-rhythm '(1/2 1/2 1/2) '(3 4 5)) 
+     =&gt; (1/6 1/6 1/6 1/8 1/8 1/8 1/8 1/10 1/10 1/10 1/10 1/10) </pre>
+<p>
+</p>
+<pre>
+    (tuplet-rhythm (gen-repeat 8 '((1/2))) '(3 4 5 6 5 4 3 2)) </pre>
+<p>
+With irregular meter 
+ </p>
+<pre>
+    (tuplet-rhythm (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) 'h)) '(3 4 5 6 5 4 3 2) :seed 1234) </pre>
+<p>
+BUG: seed argument not working as expected. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252521">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+tuplet-walk-rhythm&nbsp;&nbsp;</td>
+<td class="lambda-list">
+bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-distances '(7 8 9)) (last-bar nil) (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Some custom algorithm to create rhythmic phrases that randomly walk across tuplet subdivisions and includes some rests. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+bar-no: number of bars to generate 
+ </p>
+</li>
+<li>
+<p>
+bar-length: regular duration of resulting bars 
+ </p>
+</li>
+<li>
+<p>
+lengths: list of lists of length values forming the underlying rhythm that is subdivided by this function 
+ </p>
+</li>
+<li>
+<p>
+subdivisions-ambitus: range of tuplet subdivisions 
+ </p>
+</li>
+<li>
+<p>
+rest-distances: distances between rests (order will be randomise 
+ </p>
+</li>
+<li>
+<p>
+last-bar: bar added at end after bar-no bars. If nil, no bar is added. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<pre>
+    (tuplet-walk-rhythm 7 :seed 569 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4)) </pre>
+<p>
+
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252522">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_durational-accent-divide&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (set nil) (ignore nil) (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen. 
+ </p>
+</li>
+<li>
+<p>
+n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
+ </p>
+</li>
+<li>
+<p>
+divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely. 
+ </p>
+</li>
+<li>
+<p>
+grace-n (integer): number of grace notes potentially inserted before first notes of bars. 
+ </p>
+</li>
+<li>
+<p>
+grace-length (length value, default 1/8): note value of inserted grace notes. 
+ </p>
+</li>
+<li>
+<p>
+grace-prob (default 0.5): probability value controlling whether grace notes are inserted. 
+ </p>
+</li>
+<li>
+<p>
+set (length or list of lengths): only specified lengths are subdivided. 
+ </p>
+</li>
+<li>
+<p>
+ignore (length or list of lengths): specified lengths are *not* subdivided. 
+ </p>
+</li>
+<li>
+<p>
+seed (integer): random seed. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<pre>
+    (_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252523">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_durational-accent-merge&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Adds durational accents on first notes of bars by merging notes at the beginning of a bar. `lengths' must be a list of length lists (multiple bars). 
+ </p>
+<p>
+If a bar starts with a rest, then it cannot carry a durational accent, and hence notes are not merged. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+n (integer): number of notes at beginning of bars that are potentially subdivided. 
+ </p>
+</li>
+<li>
+<p>
+prob (default 0.5): probability value between 0.0 and 1.0, controlling whether notes that could be merged for creating a durational accent actually will be. Higher values make durational accents more likely. 
+ </p>
+</li>
+<li>
+<p>
+seed (integer): random seed. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<pre>
+    (_durational-accent-merge (gen-repeat 4 '((q q q))) :n 3 :seed 3333) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252524">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+durational-accent&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) <em>&amp;allow-other-keys</em></td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Adds durational accents on first notes of bars by subdividing the last note of the preceding bar or merging notes at the beginning of a bar. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+lengths: a list of length lists (multiple bars). 
+ </p>
+</li>
+<li>
+<p>
+divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen. 
+ </p>
+</li>
+<li>
+<p>
+divide-n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
+ </p>
+</li>
+<li>
+<p>
+divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely. 
+ </p>
+</li>
+<li>
+<p>
+merge-n (integer): number of notes at beginning of bars that are potentially subdivided. 
+ </p>
+</li>
+<li>
+<p>
+merge-prob (default 0.5): probability value controlling whether grace notes are inserted. 
+ </p>
+</li>
+<li>
+<p>
+grace-n (integer): number of grace notes potentially inserted before first notes of bars. 
+ </p>
+</li>
+<li>
+<p>
+grace-length (length value, default 1/8): note value of inserted grace notes. 
+ </p>
+</li>
+<li>
+<p>
+grace-prob (default 0.5): probability value controlling whether grace notes are inserted. 
+ </p>
+</li>
+<li>
+<p>
+set (length or list of lengths): only specified lengths are subdivided. 
+ </p>
+</li>
+<li>
+<p>
+ignore (length or list of lengths): specified lengths are *not* subdivided. 
+ </p>
+</li>
+<li>
+<p>
+seed (integer): random seed. 
+ </p>
+</li>
+</ul>
+<p>
+Examples (evaluate multiple times to see range of solutions): 
+ </p>
+<pre>
+    (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3) 
+     (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3) </pre>
+<p>
+
+ shorter tuplet groups to create accents 
+ </p>
+<pre>
+    (durational-accent (gen-repeat 4 '((q q q))) :divide '(5 6 7) :divide-n 1 :divide-prob 0.7 :merge-n 3) </pre>
+<p>
+inserting grace notes, but without subdividing notes at end of bar 
+ </p>
+<pre>
+    (durational-accent (gen-repeat 4 '((q q q))) :divide-n 0 :merge-n 3 :grace-n 2) </pre>
+<p>
+metric structure can be irregular, but accents are still created on first beat 
+ </p>
+<pre>
+    (durational-accent  
+      (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) (rnd-pick '(h q)))) 
+      :divide '(2 3) :divide-n 3 :merge-n 3) </pre>
+<p>
+Note that you can create potential accents on each bear, on syncopations or other accent patterns beyond emphasising the first note of bars by using this function with sublists (temporary bars) according to where you want to have your accents, and then in a next step re-barring your results, e.g., with the function omn-to-time-signature. 
+ </p>
+<p>
+If you want your final rhythm to contain rests you best add these to your rhythmic material before processing it with this function, because turning notes into rests afterwards can contradict your durational accents. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252525">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+length-divide-ext&nbsp;&nbsp;</td>
+<td class="lambda-list">
+count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Same as length-divide, but arg divide is list of ints (elements circled through). 
+ </p>
+<p>
+Note: implemented by calling length-divide internally for each sublist in length, and therefore arguments like section and exclude are not supported. 
+ </p>
+<p>
+Examples: 
+ </p>
+<pre>
+    (length-divide-ext 1 '(2 3) '((q q) (q q)) :seed 1) 
+     =&gt; ((1/8 1/8 1/4) (1/4 1/12 1/12 1/12)) </pre>
+<p>
+</p>
+<pre>
+    (length-divide-ext 1 '(2 3) '(q q) :seed 1) 
+     =&gt; ((1/8 1/8) (1/12 1/12 1/12)) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252526">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+isolate-time-signatures&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ts-forms</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Transforms time signatures `ts-forms' so that each resulting time signature denotes only a single bar. 
+ </p>
+<p>
+Example: 
+ </p>
+<pre>
+    (isolate-time-signatures '((3 4 2) (2 4 1))) 
+     =&gt; ((3 4 1) (3 4 1) (2 4 1)) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252527">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+lengths-with-merged-ties&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns a flat list of lengths that preserves the lengths in `sequence' including their tied notes. 
+ 
+ Examples: 
+ </p>
+<pre>
+    (lengths-with-merged-ties '((h c4 pizz q arco+tie) (q h tie) (h.))) 
+     =&gt; (1/2 1/2 5/4) </pre>
+<p>
+Contrast: 
+ </p>
+<pre>
+    (omn :length '((h c4 pizz q arco+tie) (q h tie) (h.))) 
+     =&gt; ((1/2 1/4) (1/4 1/2) (3/4)) </pre>
+<p>
+See also: 
+ </p>
+<pre>
+    (omn-merge-ties (flatten-omn '((h c4 pizz q arco+tie) (q h tie) (h.)))) 
+     =&gt; (h c4 pizz c4 arco wq) </pre>
+<p>
+
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252528">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+total-duration&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests. 
+ </p>
+<p>
+Example: 
+ </p>
+<pre>
+    (total-duration '((h c4 q) (q h tie) (h.))) 
+     =&gt; 9/4 </pre>
+</div>
+</div>
+</div>
+<div class="cludg-footer">
+Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
+CLDOC</a>
+- 2017-07-20 01:25:58</div>
+</body>
+</html>

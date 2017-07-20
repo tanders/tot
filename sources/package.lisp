@@ -11,6 +11,7 @@
 (use-package :fenv)
 
 #|
+; (ql:quickload :fn)
 (require :fn)
 (unintern 'fn*)
 (use-package :fn)

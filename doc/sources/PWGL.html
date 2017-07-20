@@ -1,0 +1,228 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="../cludg.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>
+PWGL</title>
+</head>
+<body>
+<div id="navbar">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<colgroup span="3">
+<col width="0*"/>
+<col width="0*"/>
+<col width="1*"/>
+</colgroup>
+<tr>
+<td align="left" valign="baseline">
+<a href="articulations.html">
+Prev:&nbsp;articulations</a>
+<br/>
+<a href="form.html">
+Next:&nbsp;form</a>
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left" valign="baseline">
+<span class="upchain">
+<b>
+PWGL</b>
+<br/>
+<a href="../index.html">
+Index</a>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class="cludg-doc-body">
+<h2>
+PWGL
+</h2>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Function summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="PWGL.html#_g252551">
+export-melody-to-pwgl</a>
+</td>
+<td class="summary">
+omn-mel <em>&amp;key</em> (dir &quot;/Users/torsten/Compositions/0-Flute-solo/z-Opusmodus-PWGL-communication/&quot;) (file &quot;melody-raw1.lisp&quot;) (harmonies '((60 64 67))) (harm-rhythm '(2)) (scales '((60 62 64 65 67 69 71))) (scale-rhythm '(2)) (meter '((4 4))) (bar-range nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="PWGL.html#_g252552">
+import-transformed-melody-from-pwgl</a>
+</td>
+<td class="summary">
+omn-mel <em>&amp;key</em> (dir &quot;/Users/torsten/Compositions/0-Flute-solo/z-Opusmodus-PWGL-communication/&quot;) (file &quot;melody-transformed1.lisp&quot;) (bar-range nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="PWGL.html#_g252553">
+import-underlying-harmony-from-pwgl</a>
+</td>
+<td class="summary">
+<em>&amp;key</em> (velocity '(ppppp)) (dir &quot;/Users/torsten/Compositions/0-Flute-solo/z-Opusmodus-PWGL-communication/&quot;) (file &quot;melody-transformed1.lisp&quot;)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="PWGL.html#_g252554">
+pwgl-time-signatures</a>
+</td>
+<td class="summary">
+ts-forms</td>
+</tr>
+</table>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252551">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+export-melody-to-pwgl&nbsp;&nbsp;</td>
+<td class="lambda-list">
+omn-mel <em>&amp;key</em> (dir &quot;/Users/torsten/Compositions/0-Flute-solo/z-Opusmodus-PWGL-communication/&quot;) (file &quot;melody-raw1.lisp&quot;) (harmonies '((60 64 67))) (harm-rhythm '(2)) (scales '((60 62 64 65 67 69 71))) (scale-rhythm '(2)) (meter '((4 4))) (bar-range nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Export a melody `omn-mel' alongside harmonic information for further processing by a PWGL patch. 
+ For documentation of further arguments see PWGL patch FitInHarmony. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+bar-range (default nil): if non-nil, must be pair (&lt;start-bar-index&gt; &lt;end-bar-index&gt;), that specifies a range of bars from `omn-mel' to export. `omn-mel' must be nested in that case. Indices are 0-based, and start-bar-index/end-bar-index specify the index of the first/last bar to include. 
+ </p>
+</li>
+</ul>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252552">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+import-transformed-melody-from-pwgl&nbsp;&nbsp;</td>
+<td class="lambda-list">
+omn-mel <em>&amp;key</em> (dir &quot;/Users/torsten/Compositions/0-Flute-solo/z-Opusmodus-PWGL-communication/&quot;) (file &quot;melody-transformed1.lisp&quot;) (bar-range nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Complements export-melody-to-PWGL to import result from PWGL patch. `omn-mel' should be the same as given to export-melody-to-PWGL (its articulations and dynamics are merged into the result). 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+bar-range: should be the same value as the `bar-range' of the corresponding call to `export-melody-to-PWGL'. 
+ </p>
+</li>
+</ul>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252553">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+import-underlying-harmony-from-pwgl&nbsp;&nbsp;</td>
+<td class="lambda-list">
+<em>&amp;key</em> (velocity '(ppppp)) (dir &quot;/Users/torsten/Compositions/0-Flute-solo/z-Opusmodus-PWGL-communication/&quot;) (file &quot;melody-transformed1.lisp&quot;)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Complements import-transformed-melody-from-PWGL to import harmonic result from PWGL patch. `harm-durations' is the 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g252554">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+pwgl-time-signatures&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ts-forms</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Translates OMN format of time signatures into very similar but slighly simpler PWGL format. 
+ </p>
+<p>
+Example: 
+ </p>
+<pre>
+    (PWGL-time-signatures '((3 4 2) (2 4 1))) 
+     =&gt; ((3 4) (3 4) (2 4)) </pre>
+</div>
+</div>
+</div>
+<div class="cludg-footer">
+Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
+CLDOC</a>
+- 2017-07-20 01:25:58</div>
+</body>
+</html>

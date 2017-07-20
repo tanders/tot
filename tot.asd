@@ -23,3 +23,17 @@
 	       "ta-utilities"
 	       "fenv"
 	       ))
+
+
+#|
+
+;; doc generation (after loading system) 
+
+(require :cldoc)
+
+(cldoc:extract-documentation 'cludg:html "/Users/torsten/common-lisp/tot/doc/" 
+    (asdf:find-system :tot)
+    :table-of-contents-title 
+    "Torsten's Opusmodus Tools (TOT)")
+
+|#

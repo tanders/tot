@@ -17,11 +17,23 @@
   "Subdivides given note `lengths'.  
 
   Args:
-  subdivisions: (circling list of ints) specifies tuplet sequence.
-  length-dividend (default 1/2): duration ratio divided by subdivisions. Default case are half note subdivisions, ie. a subdivision of 3 results 3h notes (triplets splitting a half note). 
-  count-offset (default -1): `subdivisions' also specifies number of equally spaced notes per tuplet plus amount of `count-offset' . I.e., if `count-offset' = 0 then each note is split into subdivision notes.
+  - lengths: list of length values, can be nested.
+  - subdivisions: (circling list of ints) specifies tuplet sequence.
+  - length-dividend (default 1/2): duration ratio divided by subdivisions. Default case are half note subdivisions, ie. a subdivision of 3 results 3h notes (triplets splitting a half note). 
+  - count-offset (default -1): `subdivisions' also specifies number of equally spaced notes per tuplet plus amount of `count-offset' . I.e., if `count-offset' = 0 then each note is split into subdivision notes.
   
-  All keyword args from length-divide2 are inherited, but some with different default."
+  All keyword args from `length-divide2' are inherited, but some with different default.
+
+  Examples:
+  ;;; (tuplet-rhythm '(1/2 1/2 1/2) '(3 4 5))
+  ;;; => (1/6 1/6 1/6 1/8 1/8 1/8 1/8 1/10 1/10 1/10 1/10 1/10)
+
+  ;;; (tuplet-rhythm (gen-repeat 8 '((1/2))) '(3 4 5 6 5 4 3 2))
+
+  With irregular meter
+  ;;; (tuplet-rhythm (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) 'h)) '(3 4 5 6 5 4 3 2) :seed 1234)
+
+  BUG: seed argument not working as expected."
   (apply #'length-divide2 (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
          (mapcar #'(lambda (x) (/ length-dividend x)) subdivisions)
          lengths
@@ -31,6 +43,8 @@
          args))
 
 #|
+(tuplet-rhythm (gen-repeat 8 '(1/2)) '(3 4 5 6 5 4 3 2))
+
 (tuplet-rhythm (gen-repeat 8 '((1/2))) '(3 4 5 6 5 4 3 2) :seed 1234)
 
 (tuplet-rhythm (gen-repeat 8 '((1/2))) '(3 4 5 6 5 4 3 2))
@@ -47,15 +61,15 @@
   "Some custom algorithm to create rhythmic phrases that randomly walk across tuplet subdivisions and includes some rests.
 
   Args:
-  bar-no: number of bars to generate
-  bar-length: regular duration of resulting bars
-  lengths: list of lists of length values forming the underlying rhythm that is subdivided by this function
-  subdivisions-ambitus: range of tuplet subdivisions
-  rest-distances: distances between rests (order will be randomise
-  last-bar: bar added at end after bar-no bars. If nil, no bar is added. 
+  - bar-no: number of bars to generate
+  - bar-length: regular duration of resulting bars
+  - lengths: list of lists of length values forming the underlying rhythm that is subdivided by this function
+  - subdivisions-ambitus: range of tuplet subdivisions
+  - rest-distances: distances between rests (order will be randomise
+  - last-bar: bar added at end after bar-no bars. If nil, no bar is added. 
 
   Example: 
-  (tuplet-walk-rhythm 7 :seed 569 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4))
+  ;;; (tuplet-walk-rhythm 7 :seed 569 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4))
   "
   (do-verbose ("")
     (rnd-seed seed)
@@ -74,24 +88,24 @@
 
 
 ;   For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
-(defun durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
+(defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
                                          (grace-n 0) (grace-length 1/8) (grace-prob 0.5) 
                                          (set nil) (ignore nil) (seed nil))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
 
   Args:
-  divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
-  n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
-  divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
-  grace-n (integer): number of grace notes potentially inserted before first notes of bars.
-  grace-length (length value, default 1/8): note value of inserted grace notes.
-  grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
-  set (length or list of lengths): only specified lengths are subdivided. 
-  ignore (length or list of lengths): specified lengths are *not* subdivided. 
-  seed (integer): random seed.
+  - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
+  - n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
+  - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
+  - grace-n (integer): number of grace notes potentially inserted before first notes of bars.
+  - grace-length (length value, default 1/8): note value of inserted grace notes.
+  - grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
+  - set (length or list of lengths): only specified lengths are subdivided. 
+  - ignore (length or list of lengths): specified lengths are *not* subdivided. 
+  - seed (integer): random seed.
 
   Example:
-  (durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)"
+  ;;; (_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)"
   (do-verbose ("")
     (assert (and (listp lengths) (every #'listp lengths)) 
             (lengths)
@@ -134,7 +148,7 @@
 
 #|
 
-(defun durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
+(defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
                                          (grace-n 0) (grace-length 1/8) (grace-prob 0.5) 
                                          (set nil) (ignore nil) (seed nil))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
@@ -151,7 +165,7 @@
   seed (integer): random seed.
 
   Example:
-  (durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)"
+  (_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)"
   (do-verbose ("")
     (assert (and (listp lengths) (every #'listp lengths)) 
             (lengths)
@@ -196,36 +210,36 @@
 
 #|
 
-(durational-accent-divide '((1/4 1/4 1/4) (1/4 1/4 -1/4) (1/4 1/4 1/4) (1/2 -1/4)) :n 2)
+(_durational-accent-divide '((1/4 1/4 1/4) (1/4 1/4 -1/4) (1/4 1/4 1/4) (1/2 -1/4)) :n 2)
 
-(durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2)
+(_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2)
 
-(durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)
+(_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)
 
-(durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :seed 120)
+(_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :seed 120)
 
-(durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))))
+(_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))))
 
-(durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :n 0 :grace-n 2)
+(_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :n 0 :grace-n 2)
 
-(durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :n 2 :grace-n 2)
+(_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :n 2 :grace-n 2)
 
 |#
 
 
 ; For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
-(defun durational-accent-merge (lengths &key (n 2) (prob 0.5) (seed nil))
+(defun _durational-accent-merge (lengths &key (n 2) (prob 0.5) (seed nil))
   "Adds durational accents on first notes of bars by merging notes at the beginning of a bar. `lengths' must be a list of length lists (multiple bars). 
 
   If a bar starts with a rest, then it cannot carry a durational accent, and hence notes are not merged. 
 
   Args:
-  n (integer): number of notes at beginning of bars that are potentially subdivided.
-  prob (default 0.5): probability value between 0.0 and 1.0, controlling whether notes that could be merged for creating a durational accent actually will be. Higher values make durational accents more likely.
-  seed (integer): random seed.
+  - n (integer): number of notes at beginning of bars that are potentially subdivided.
+  - prob (default 0.5): probability value between 0.0 and 1.0, controlling whether notes that could be merged for creating a durational accent actually will be. Higher values make durational accents more likely.
+  - seed (integer): random seed.
 
   Example:
-  (durational-accent-merge (gen-repeat 4 '((q q q))) :n 3 :seed 3333)"
+  ;;; (_durational-accent-merge (gen-repeat 4 '((q q q))) :n 3 :seed 3333)"
   (do-verbose ("")
     (assert (and (listp lengths) (every #'listp lengths)) 
             (lengths)
@@ -248,12 +262,12 @@
 
 
 #|
-(durational-accent-divide 
- (durational-accent-merge (gen-repeat 4 '((q q q))) :n 2)
+(_durational-accent-divide 
+ (_durational-accent-merge (gen-repeat 4 '((q q q))) :n 2)
  :divide '(2 3) :n 2)
 
-(durational-accent-merge
- (durational-accent-divide  (gen-repeat 4 '((q q q))) :divide '(2 3) :n 2)
+(_durational-accent-merge
+ (_durational-accent-divide  (gen-repeat 4 '((q q q))) :divide '(2 3) :n 2)
  :n 2)
 |#
 
@@ -272,42 +286,45 @@
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar or merging notes at the beginning of a bar. 
 
   Args:
-  lengths: a list of length lists (multiple bars).
-  divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
-  divide-n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
-  divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
-  merge-n (integer): number of notes at beginning of bars that are potentially subdivided.
-  merge-prob (default 0.5): probability value controlling whether grace notes are inserted.
-  grace-n (integer): number of grace notes potentially inserted before first notes of bars.
-  grace-length (length value, default 1/8): note value of inserted grace notes.
-  grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
-  set (length or list of lengths): only specified lengths are subdivided. 
-  ignore (length or list of lengths): specified lengths are *not* subdivided. 
-  seed (integer): random seed.
+  - lengths: a list of length lists (multiple bars).
+  - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
+  - divide-n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
+  - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
+  - merge-n (integer): number of notes at beginning of bars that are potentially subdivided.
+  - merge-prob (default 0.5): probability value controlling whether grace notes are inserted.
+  - grace-n (integer): number of grace notes potentially inserted before first notes of bars.
+  - grace-length (length value, default 1/8): note value of inserted grace notes.
+  - grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
+  - set (length or list of lengths): only specified lengths are subdivided. 
+  - ignore (length or list of lengths): specified lengths are *not* subdivided. 
+  - seed (integer): random seed.
 
   Examples (evaluate multiple times to see range of solutions):
-  (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
-  (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3)
-  ; shorter tuplet groups to create accents
-  (durational-accent (gen-repeat 4 '((q q q))) :divide '(5 6 7) :divide-n 1 :divide-prob 0.7 :merge-n 3)
-  ; inserting grace notes, but without subdividing notes at end of bar
-  (durational-accent (gen-repeat 4 '((q q q))) :divide-n 0 :merge-n 3 :grace-n 2)
-  ; metric structure can be irregular, but accents are still created on first beat
-  (durational-accent 
-   (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) (rnd-pick '(h q))))
-   :divide '(2 3) :divide-n 3 :merge-n 3)
+  ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
+  ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3)
+  
+  shorter tuplet groups to create accents
+  ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide '(5 6 7) :divide-n 1 :divide-prob 0.7 :merge-n 3)
+
+  inserting grace notes, but without subdividing notes at end of bar
+  ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide-n 0 :merge-n 3 :grace-n 2)
+
+  metric structure can be irregular, but accents are still created on first beat
+  ;;; (durational-accent 
+  ;;;  (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) (rnd-pick '(h q))))
+  ;;;  :divide '(2 3) :divide-n 3 :merge-n 3)
 
   Note that you can create potential accents on each bear, on syncopations or other accent patterns beyond emphasising the first note of bars by using this function with sublists (temporary bars) according to where you want to have your accents, and then in a next step re-barring your results, e.g., with the function omn-to-time-signature.
 
   If you want your final rhythm to contain rests you best add these to your rhythmic material before processing it with this function, because turning notes into rests afterwards can contradict your durational accents."
   (do-verbose ("")
     (rnd-seed seed)
-    (durational-accent-merge 
-     (apply #'durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
+    (_durational-accent-merge 
+     (apply #'_durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
      :n merge-n :prob merge-prob :seed (seed))
     #|
-    (durational-accent-merge 
-     (apply #'durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
+    (_durational-accent-merge 
+     (apply #'_durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
      :n merge-n :prob merge-prob :seed (seed))
     |#)
   )
@@ -349,12 +366,12 @@
 
   Note: implemented by calling length-divide internally for each sublist in length, and therefore arguments like section and exclude are not supported.
 
-  Example:
-  (length-divide-ext 1 '(2 3) '((q q) (q q)) :seed 1)
-  => ((1/8 1/8 1/4) (1/4 1/12 1/12 1/12))
+  Examples:
+  ;;; (length-divide-ext 1 '(2 3) '((q q) (q q)) :seed 1)
+  ;;; => ((1/8 1/8 1/4) (1/4 1/12 1/12 1/12))
 
-  (length-divide-ext 1 '(2 3) '(q q) :seed 1)
-  => ((1/8 1/8) (1/12 1/12 1/12))"
+  ;;; (length-divide-ext 1 '(2 3) '(q q) :seed 1)
+  ;;; => ((1/8 1/8) (1/12 1/12 1/12))"
   (rnd-seed seed)
   (mapcar #'(lambda (div l)
               (apply #'length-divide count div l (append (list :seed (seed)) args)))
@@ -363,11 +380,11 @@
 
 
 (defun isolate-time-signatures (ts-forms)
-  "Transforms time signatures `ts-forms' so that each resulting time signatures denotes only a single bar.  
+  "Transforms time signatures `ts-forms' so that each resulting time signature denotes only a single bar.  
 
   Example:
-  (isolate-time-signatures '((3 4 2) (2 4 1)))
-  => ((3 4 1) (3 4 1) (2 4 1))"
+  ;;; (isolate-time-signatures '((3 4 2) (2 4 1)))
+  ;;; => ((3 4 1) (3 4 1) (2 4 1))"
   (mappend #'(lambda (ts-form) 
                (destructuring-bind (num denom no)
                                    ts-form
@@ -383,17 +400,17 @@
 (defun lengths-with-merged-ties (sequence)
   "Returns a flat list of lengths that preserves the lengths in `sequence' including their tied notes.
   
-  Example:
-  (lengths-with-merged-ties '((h c4 pizz q arco+tie) (q h tie) (h.)))
-  => (1/2 1/2 5/4)
+  Examples:
+  ;;; (lengths-with-merged-ties '((h c4 pizz q arco+tie) (q h tie) (h.)))
+  ;;; => (1/2 1/2 5/4)
 
   Contrast:
-  (omn :length '((h c4 pizz q arco+tie) (q h tie) (h.)))
-  => ((1/2 1/4) (1/4 1/2) (3/4))
+  ;;; (omn :length '((h c4 pizz q arco+tie) (q h tie) (h.)))
+  ;;; => ((1/2 1/4) (1/4 1/2) (3/4))
 
   See also:
-  (omn-merge-ties (flatten-omn '((h c4 pizz q arco+tie) (q h tie) (h.))))
-  => (h c4 pizz c4 arco wq)
+  ;;; (omn-merge-ties (flatten-omn '((h c4 pizz q arco+tie) (q h tie) (h.))))
+  ;;; => (h c4 pizz c4 arco wq)
   "
   (butlast
    (reduce #'(lambda (&optional accum pair2)
@@ -417,7 +434,7 @@
   "Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests.
 
   Example:
-  (total-duration '((h c4 q) (q h tie) (h.)))
-  => 9/4"
+  ;;; (total-duration '((h c4 q) (q h tie) (h.)))
+  ;;; => 9/4"
   (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence)))))
 
