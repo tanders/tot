@@ -47,7 +47,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252563">
+<a href="orchestration.html#_g243787">
 corresponding-rest</a>
 </td>
 <td class="summary">
@@ -55,7 +55,7 @@ event</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252566">
+<a href="orchestration.html#_g243790">
 insert-articulation</a>
 </td>
 <td class="summary">
@@ -63,23 +63,23 @@ flat-omn-list <em>&amp;rest</em> articulations</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252562">
+<a href="orchestration.html#_g243786">
 map-parts</a>
 </td>
 <td class="summary">
-score fn args <em>&amp;key</em> (parameter nil) (ignore nil)</td>
+score fn all-args <em>&amp;key</em> (parameter nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252561">
+<a href="orchestration.html#_g243785">
 preview-score</a>
 </td>
 <td class="summary">
-score <em>&amp;rest</em> args <em>&amp;key</em> (play? t) (display? t) (name 'test-score) <em>&amp;allow-other-keys</em></td>
+score <em>&amp;key</em> (name 'test-score) (instruments *default-preview-score-instruments*) (header *default-preview-score-header*)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252567">
+<a href="orchestration.html#_g243791">
 remove-unless-parameters</a>
 </td>
 <td class="summary">
@@ -87,7 +87,7 @@ flat-omn-list parameter <em>&amp;key</em> (remove-non-matching? nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252565">
+<a href="orchestration.html#_g243789">
 separate-parts</a>
 </td>
 <td class="summary">
@@ -95,40 +95,16 @@ sequence articulation-sets</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g252560">
-_part-args</a>
-</td>
-<td class="summary">
-part</td>
-</tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="orchestration.html#_g252559">
-_part-omn</a>
-</td>
-<td class="summary">
-part</td>
-</tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="orchestration.html#_g252558">
-_part-symbol</a>
-</td>
-<td class="summary">
-part</td>
-</tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="orchestration.html#_g252564">
+<a href="orchestration.html#_g243788">
 _push-event-and-rests</a>
 </td>
 <td class="summary">
 event matching-position result-omns articulation-sets-length</td>
 </tr>
 </table>
-<div class="defun">
+<div class="defparam">
 <div class="defunsignatures">
-<a id="_g252558">
+<a id="_g243783">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -139,19 +115,30 @@ event matching-position result-omns articulation-sets-length</td>
 <tbody>
 <tr>
 <td class="symbol-name">
-_part-symbol&nbsp;&nbsp;</td>
+*default-preview-score-instruments*&nbsp;&nbsp;</td>
 <td class="lambda-list">
-part</td>
+</td>
 <td class="symbol-type">
-&nbsp;[Function]</td>
+&nbsp;[Variable]</td>
 </tr>
 </tbody>
 </table>
 </div>
+<div class="doc-body">
+<p>
+Settings for each instrument used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. For format of these settings are the same as instrument settings for `def-score' with keywords like <span class="keyword">
+:sound, </span>
+<span class="keyword">
+:channel </span>
+etc. -- except for they key <span class="keyword">
+:omn. </span>
+
+ </p>
 </div>
-<div class="defun">
+</div>
+<div class="defparam">
 <div class="defunsignatures">
-<a id="_g252559">
+<a id="_g243784">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -162,42 +149,28 @@ part</td>
 <tbody>
 <tr>
 <td class="symbol-name">
-_part-omn&nbsp;&nbsp;</td>
+*default-preview-score-header*&nbsp;&nbsp;</td>
 <td class="lambda-list">
-part</td>
+</td>
 <td class="symbol-type">
-&nbsp;[Function]</td>
+&nbsp;[Variable]</td>
 </tr>
 </tbody>
 </table>
 </div>
-</div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g252560">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-_part-args&nbsp;&nbsp;</td>
-<td class="lambda-list">
-part</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
+<div class="doc-body">
+<p>
+Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like <span class="keyword">
+:title, </span>
+<span class="keyword">
+:key-signature </span>
+etc. 
+ </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252561">
+<a id="_g243785">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -210,7 +183,7 @@ part</td>
 <td class="symbol-name">
 preview-score&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score <em>&amp;rest</em> args <em>&amp;key</em> (play? t) (display? t) (name 'test-score) <em>&amp;allow-other-keys</em></td>
+score <em>&amp;key</em> (name 'test-score) (instruments *default-preview-score-instruments*) (header *default-preview-score-header*)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -226,23 +199,34 @@ Notates and plays a score in a format slightly simpler than expected by def-scor
 <ul>
 <li>
 <p>
-score: a headerless score. See below for its format. 
+score (plist): a headerless score. See below for its format. 
  </p>
 </li>
 <li>
 <p>
-name: The score name. 
+name (symbol): The score name. 
  </p>
 </li>
 <li>
 <p>
-play?: A Boolean, whether or not to play the score immediately. 
+instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like <span class="keyword">
+:sound, </span>
+<span class="keyword">
+:channel </span>
+etc. -- except for they key <span class="keyword">
+:omn. </span>
+
  </p>
 </li>
 <li>
 <p>
-display?: A Boolean, whether or not to display the notation of the score immediately. 
- Additional arguments (keyword-value pairs): all arguments that are part of the header in def-score (e.g., title, composer, key-signature...). 
+header (plist): The format is the same as the header settings for `def-score' with keywords like <span class="keyword">
+:title, </span>
+<span class="keyword">
+:composer, </span>
+<span class="keyword">
+:key-signature </span>
+etc. 
  
  </p>
 </li>
@@ -251,27 +235,23 @@ display?: A Boolean, whether or not to display the notation of the score immedia
 Score format: 
  </p>
 <pre>
-    ((&lt;part1-name-keyword&gt; &lt;part1-OMN&gt; &amp;rest score-args) 
-      (&lt;part2-name-keyword&gt; &lt;part2-OMN&gt; &amp;rest score-args) 
+    (&lt;part1-name-keyword&gt; &lt;part1-OMN&gt; 
+      &lt;part2-name-keyword&gt; &lt;part2-OMN&gt; 
       ...)  </pre>
 <p>
 
- Examples: 
+ Example: 
  </p>
 <p>
 </p>
 <pre>
     (preview-score 
-      '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) :program 'violin) 
-        (:violoncello ((q g3) (q c4 b3 a3 g3) (h. c3)) :program 'cello)) 
-      :title &quot;Opus magnum&quot; 
-      :tempo 80) </pre>
-<p>
-</p>
-<pre>
-    (preview-score 
-      '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) :program 'violin :sound 'gm) 
-        (:violoncello ((q g3) (q c4 b3 a3 g3) (h. c3)) :program 'cello :sound 'gm))) </pre>
+      '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
+        :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))) 
+      :instruments '(:vln (:program 'violin :sound 'gm) 
+     	            :vlc (:program 'cello :sound 'gm)) 
+      :header '(:title &quot;Opus magnum&quot; 
+     	       :tempo 80)) </pre>
 <p>
 
  </p>
@@ -279,7 +259,7 @@ Score format:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252562">
+<a id="_g243786">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -292,7 +272,7 @@ Score format:
 <td class="symbol-name">
 map-parts&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score fn args <em>&amp;key</em> (parameter nil) (ignore nil)</td>
+score fn all-args <em>&amp;key</em> (parameter nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -321,7 +301,9 @@ Args:
 <ul>
 <li>
 <p>
-score (a headerless score): See preview-score doc for format description. 
+score (headerless score): See <a href="orchestration.html#_g243785">
+preview-score</a>
+for format description. 
  </p>
 </li>
 <li>
@@ -335,24 +317,19 @@ parameter (omn parameter, e.g., <span class="keyword">
 :length </span>
 or <span class="keyword">
 :pitch, </span>
-default is nil for processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
+default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
  </p>
 </li>
 <li>
 <p>
-args: For each part in `score', the arguments for `fn' are set here in the order of the parts. 
+args (plist): For each part in `score', the arguments for `fn' are set here in the order of the parts. 
  </p>
 </li>
 <li>
 <p>
 ??? shared-args (a list): As `fn' is applied to every part in score, these arguments are used for every part. 
- </p>
-</li>
-<li>
-<p>
-ignore (list of integers): positions of parts in `score' that should not be processed. 
  
- Further examples: 
+ Examples: 
  </p>
 </li>
 </ul>
@@ -369,7 +346,7 @@ ignore (list of integers): positions of parts in `score' that should not be proc
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252563">
+<a id="_g243787">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -402,7 +379,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252564">
+<a id="_g243788">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -425,7 +402,7 @@ event matching-position result-omns articulation-sets-length</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252565">
+<a id="_g243789">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -537,7 +514,7 @@ Full score example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252566">
+<a id="_g243790">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -576,7 +553,7 @@ BUG: does not skip rests. Wait for omn-replace supports composite articulations 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g252567">
+<a id="_g243791">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -650,6 +627,6 @@ Examples:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-07-20 01:25:58</div>
+- 2017-07-20 21:44:23</div>
 </body>
 </html>

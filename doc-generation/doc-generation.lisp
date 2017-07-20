@@ -1,7 +1,9 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
-;;; cldoc -- documentation using 
-;;; works well :)  Minor doc string formatting supported. Perhaps only downside: internal and exported symbols are not distinguished
+;;; cldoc (https://gitlab.common-lisp.net/cldoc/cldoc/) -- documentation using 
+;;; Just works.  Minor doc string formatting supported.
+;;; Perhaps only downside: internal and exported symbols are not distinguished. Workaround: mark auxiliary function names etc. with a leading underscore (e.g., _aux-function). 
+;;; BUG: Nested functions (e.g.g, global functions within flet) not documented. Could this be fixed with cldoc::define-descriptor-handler?
 
 (require :cldoc)
 
