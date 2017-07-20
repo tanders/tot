@@ -71,7 +71,7 @@ Note: doing the same with loop
   (<function-symbol> <doc-string>)
 
   Examples:
-  (apropos-function-documentation \"omn\")"
+  ;;; (apropos-function-documentation \"omn\")"
   (mapcar #'(lambda (x) (list x (documentation x 'function)))
           (remove-if-not #'fboundp (apropos-list my-string package))))
 

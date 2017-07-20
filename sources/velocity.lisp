@@ -12,7 +12,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun velocity-fenvs (lengths &rest dynamics-fenvs)
-  "Generates dynamics markers (velocities) for OMN `lengths'. Dynamics for each phrase (notes between rests) is defined by its own fenv (if fewer fenvs are defined, they are circled through). Returns a sublist for each phrase.
+  "Generates dynamics markers (velocities) for OMN `lengths'. Dynamics for each phrase (notes between rests) are defined by their own fenv (if fewer fenvs are defined, they are circled through). Returns a sublist for each phrase.
 
   Args:
   - lengths: OMN `lengths' (list or list of list)
@@ -145,7 +145,7 @@
 
 |#
 
-(defun simplify-dynamics-aux (dynamics &key (flat T))
+(defun _simplify-dynamics (dynamics &key (flat T))
   (if (or flat 
           (not (some #'listp dynamics)))
     (let ((flat-dynamics (flatten dynamics))) 
@@ -181,7 +181,7 @@
                                (t d2)))
                     (get-velocity (last flat-dynamics) :type :symbol)
                     )))
-    (mapcar #'simplify-dynamics-aux dynamics)))
+    (mapcar #'_simplify-dynamics dynamics)))
 
 
 (defun simplify-dynamics (notation &key (flat T))
@@ -217,7 +217,7 @@
   ;;; => ((pppp < < <) (< f > pp))
   "
   (edit-omn :velocity notation
-            #'(lambda (vs) (simplify-dynamics-aux vs :flat flat))
+            #'(lambda (vs) (_simplify-dynamics vs :flat flat))
             :flat nil))
 
 
@@ -332,14 +332,14 @@ BUG: returns (ppppp pppp ppp < < < mf > > p f ff fff ffff fffff)
       result)))
 
 
-(defun velocity-add-aux (offset velocities &key (simplify T))
+(defun _velocity-add (offset velocities &key (simplify T))
   (velocity-transform #'vector-add 
                       (list (get-velocity velocities)
                             (if (listp offset)
                               (mapcar #'get-velocity offset)
                               (list (get-velocity offset))))
                       :simplify simplify))
-; (velocity-add-aux 0.1 '(mf> > > > > pp))
+; (_velocity-add 0.1 '(mf> > > > > pp))
 ; => (f> > > > > p)
 
 ;;; BUG: not quite working yet
@@ -369,10 +369,10 @@ BUG: returns (ppppp pppp ppp < < < mf > > p f ff fff ffff fffff)
   ;;; => ((e c4 mf< d4 < e4 < f4 < g4 fff))
   "
   (edit-omn :velocity velocities
-            #'(lambda (vs) (velocity-add-aux offset vs :simplify simplify))))
+            #'(lambda (vs) (_velocity-add offset vs :simplify simplify))))
 
 
-(defun velocity-smooth-aux (alfa velocities &key (simplify T))
+(defun _velocity-smooth (alfa velocities &key (simplify T))
   (velocity-transform #'vector-smooth 
                       (list alfa (get-velocity velocities))
                       :simplify simplify))
@@ -394,7 +394,7 @@ BUG: returns (ppppp pppp ppp < < < mf > > p f ff fff ffff fffff)
   ;;; => ((ppp< < < < < < <) (< mf mf mf mf mf mf))
   "
   (edit-omn :velocity velocities
-            #'(lambda (vs) (velocity-smooth-aux alfa vs :simplify simplify))))
+            #'(lambda (vs) (_velocity-smooth alfa vs :simplify simplify))))
 
 
 
