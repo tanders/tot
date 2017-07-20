@@ -6,3 +6,4 @@
 
 # System files
 .DS_Store
+doc-generation/info/cldoc doc
