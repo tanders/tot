@@ -11,97 +11,105 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-;;; !!! BUG: cldoc skips functions like preview-score and map-parts that are not at the top-level (nested in flet). Sigh.
+;;; NOTE: just some dummy settings for now
+(defparameter *default-preview-score-instruments*
+  '(:vln (:program 'violin :sound 'gm)
+    :vlc (:program 'cello :sound 'gm))
+  "Settings for each instrument used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. For format of these settings are the same as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn.")
 
-;; access data in individual part of headerless score
-(defun _part-symbol (part) (first part))
-(defun _part-omn (part) (second part))
-(defun _part-args (part) (cddr part))
-(defun preview-score (score 
-		      &rest
-		      args
-		      &key 
-		      (play? T)
-		      (display? T)
-		      (name 'test-score)      
-		      &allow-other-keys
-		      )
+;;; NOTE: just some dummy settings for now
+(defparameter *default-preview-score-header*
+  '(:title "Opus magnum"
+    :tempo 80)
+  "Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like :title, :key-signature etc.")
+
+(defun preview-score (score &key (name 'test-score)    
+			    (instruments *default-preview-score-instruments*)
+			    (header *default-preview-score-header*))
   "Notates and plays a score in a format slightly simpler than expected by def-score, i.e., without its header. 
     
     Args: 
-    - score: a headerless score. See below for its format.
-    - name: The score name.
-    - play?: A Boolean, whether or not to play the score immediately.
-    - display?: A Boolean, whether or not to display the notation of the score immediately.
-    Additional arguments (keyword-value pairs): all arguments that are part of the header in def-score (e.g., title, composer, key-signature...).
+    - score (plist): a headerless score. See below for its format.
+    - name (symbol): The score name.
+    - instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn.
+    - header (plist): The format is the same as the header settings for `def-score' with keywords like :title, :composer, :key-signature etc. 
     
 
     Score format: 
-    ;;; ((<part1-name-keyword> <part1-OMN> &rest score-args)
-    ;;;  (<part2-name-keyword> <part2-OMN> &rest score-args)
+    ;;; (<part1-name-keyword> <part1-OMN>
+    ;;;  <part2-name-keyword> <part2-OMN>
     ;;;  ...) 
 
     
-Examples:
+Example:
 
 ;;; (preview-score
-;;;  '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) :program 'violin)
-;;;    (:violoncello ((q g3) (q c4 b3 a3 g3) (h. c3)) :program 'cello))
-;;;  :title \"Opus magnum\"
-;;;  :tempo 80)
-
-;;; (preview-score
-;;;  '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) :program 'violin :sound 'gm)
-;;;    (:violoncello ((q g3) (q c4 b3 a3 g3) (h. c3)) :program 'cello :sound 'gm)))
+;;;  '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+;;;  :instruments '(:vln (:program 'violin :sound 'gm)
+;;; 	            :vlc (:program 'cello :sound 'gm))
+;;;  :header '(:title \"Opus magnum\"
+;;; 	       :tempo 80))
   "
   ;; Using eval is problematic (https://stackoverflow.com/questions/2571401/why-exactly-is-eval-evil/),
   ;; but hard to avoid for a dynamically created def-score expression that requires splicing with ,@.
   ;; Possible alternative would be to define preview-score as macro, but then arguments are not evaluated. 
-  (eval 
+ (eval 
    `(def-score ,name 
-					; quote all header args, because symbol values must be quoted...
-      ,(mapcar #'(lambda (x) `',x)
-					; remove args that don't belong into score header
-	       (append (tu:remove-properties '(:play? :display? :name)  
-					     args)
-					; add default vals of required header args at end -- they are overwritten by args given
+      ;; quote all header args, because symbol values must be quoted...
+      ,(mapcar #'(lambda (x) `',x)					
+	       (append header
+		       ;; add default vals of required header args at end -- they are overwritten by args given
 		       (list :key-signature 'atonal
-                                        ; By default, use implicit time signature of 1st part
-			     :time-signature (om:get-time-signature (second (first score)))
+			     ;; By default, use implicit time signature of 1st part
+			     :time-signature (om:get-time-signature (second score))
 			     :tempo 70)))
-      ,@(mapcar #'(lambda (part) 
-		    (list* (_part-symbol part) 
-			   :omn (list 'quote (list (_part-omn part)))
-			   (_part-args part)))
-		score)))
-  (when display? (om:display-musicxml name))
-  (when play? (om:display-midi name)))
+      ,@(mapcar #'(lambda (part)
+		    (let ((part-symbol (first part))
+			  (part-omn (second part)))
+		       (list* part-symbol 
+			      :omn `(quote ,part-omn)
+			      (getf instruments part-symbol))))
+		(tu:plist->pairs score)))
+   )
+  (audition-musicxml-last-score)
+  *last-score*)
+
+
+#|
+(preview-score
+ '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+ :instruments '(:vln (:program 'violin :sound 'gm)
+	        :vlc (:program 'cello :sound 'gm))
+ :header '(:title "Opus magnum"
+	   :tempo 80))
+|#
   
 
 ;; unfinished def
 
-  ;;; TODO: finish implementation
-  ;;; - arg shared-args -- only for keyargs -- or add some extra notation complementing the underscore (_)
-  ;;; - add some meaningful demos
-  ;;; - score can be symbol naming score to process 
-  ;;; - args for functions can be allocated by preceeding part name (keyword) instead of positionally (useful for larger scores to read)
-  ;;;   -> If I only use such a format, then I can remove ignore argument (and don't need a corresponding select arg)
-  ;;; - OK finish doc.
-  ;;; - allow for some global settings of part args for preview-score
-  ;;; - OK finish arg parameter -- finish testing
-  ;;; - OK arg ignore
-(defun map-parts (score fn args
-			&key 
+;;; TODO: finish implementation
+;;; - add some meaningful demos
+;;; - ? score can be symbol naming score to process 
+;;; - OK arg shared-args -- only for keyargs -- or add some extra notation complementing the underscore (_)
+;;; - OK args for functions can be allocated by preceeding part name (keyword) instead of positionally (useful for larger scores to read)
+;;;   -> If I only use such a format, then I can remove ignore argument (and don't need a corresponding select arg)
+;;; - OK allow for some global settings of part args for preview-score
+;;; - OK finish doc.
+;;; - OK finish arg parameter -- finish testing
+;;; - OK arg ignore
+(defun map-parts (score fn all-args &key 
 			(parameter nil) 
-                          ;;; TODO: Only keyword arguments are supported.
-					; (shared-args nil)
-                          ;;; TODO
-			(ignore nil)
-			)
-  "Applies function `fn' to parts in `score': this function is a variant of the standard Lisp function `mapcar', but specialised for scores. A score is represented in the format discussed in the documentation of the function `preview-score'.     
+                        (shared-args nil))
+  "This function can be used for creating or transforming musical textures, i.e., relations between polyphonic parts.
+
+  Applies function `fn' to parts in `score': this function is a variant of the standard Lisp function `mapcar', but specialised for scores. A score is represented in the format discussed in the documentation of the function `preview-score'.     
     
     Additional arguments for `fn' can be specified in `args', and these argument lists can be different for each part. However, one argument is the part of the score. This argument is marked by an underscore (_) in the argument lists. In the following example, the function `length-augmentation' is applied to a score with two parts. The function `length-augmentation' has two required arguments, a transposition interval (measured in semitones), and the pitch sequence or OMN to transpose. The transposition interval for the first part is 4 (major third upwards), and the underscore marks the position of the violin part to transpose, etc. 
  
+
+TODO: revise example
 ;;; (preview-score
 ;;; (map-parts '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
 ;;;              (:violoncello ((q g3) (q c4 b3 a3 g3) (h. c3))))
@@ -112,14 +120,16 @@ Examples:
 ;;;     (:violoncello ((q g4) (q c5 b4 a4 g4) (h. c4))))
 
     Args:
-    - score (a headerless score): See preview-score doc for format description. 
+    - score (headerless score): See {defun preview-score} for format description. 
     - fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
-    - parameter (omn parameter, e.g., :length or :pitch, default is nil for processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
-    - args: For each part in `score', the arguments for `fn' are set here in the order of the parts.  
-    - ??? shared-args (a list): As `fn' is applied to every part in score, these arguments are used for every part. 
-    - ignore (list of integers): positions of parts in `score' that should not be processed.
+    - all-args (plist): alternating instrument keywords (same as in `score') followed by arguments list for `fn' for that instrument/part. If arguments is :skip, then that part is returned unchanged. 
+    - parameter (omn parameter, e.g., :length or :pitch, default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
+    - shared-args (list): For all instruments/parts, these arguments are appended at end end of its part-specific arguments. They are therefore primarily useful for keyword arguments. 
+
+
+TODO: revise example
     
-Further examples:
+Examples:
 
 ;;; (map-parts '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) :program 'violin :sound 'gm)
 ;;;              (:violoncello ((q g3) (q c4 b3 a3 g3) (h. c3)) :program 'cello :sound 'gm))
@@ -127,30 +137,150 @@ Further examples:
 ;;;            '((1 _) 
 ;;;              (3/2 _)))    
     "
-    ;;; TODO: for implementing ignore define a function remove-position 
-  (mapcar #'(lambda (part-n-args) 
-	      (destructuring-bind (i part args) part-n-args                  
-		(if (member i ignore)
-                    ;; no processing
-                    part
-		  ;; processing
-		  (list* (_part-symbol part)
-			 (let ((result (apply fn (substitute 
-						  (if parameter
-						      (omn parameter (_part-omn part))
-						    (_part-omn part))
-						  '_ args))))
-			   (if parameter
-			       (omn-replace parameter result (_part-omn part))
-			     result)         
-			   )
-			 (_part-args part)))))
-	  (om:matrix-transpose (list (om:gen-integer (1- (length score))) ; indices
-				     score args))))
+  (let ((parts (make-hash-table :test #'equal)))
+    ;; fill hash table, using leading keywords as keys
+    (loop for part in (tu:plist->pairs score)
+      do (setf (gethash (first part) parts) part))
+    (tu:one-level-flat
+     (loop 
+       for instrument-arg-pair in (tu:plist->pairs all-args) 
+       for instrument = (first instrument-arg-pair)
+       for part = (gethash instrument parts)
+       for part-omn = (second part)
+       for fn-args = (second instrument-arg-pair) 
+       collect (if (equal fn-args :skip)
+                 part ; no processing
+                 (cons instrument
+                       (let ((result (apply fn (append (substitute 
+                                                        (if parameter
+                                                          (omn parameter part-omn)
+                                                          part-omn)
+                                                        '_ fn-args)
+                                                       shared-args))))
+                         (list 
+                          (if parameter
+                            (omn-replace parameter result part-omn)
+                            result)))))
+       ))))
 
-;;;; NOTE: I do not know at which position in args the value list pops up -- need to mark that position in args list (e.g., with _)
 
 #|
+;;; testing / generating examples
+
+;; simple test
+(preview-score
+ (map-parts '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+              :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+            #'length-augmentation 
+            '(:vln (1 _)
+              :vlc (2/3 _))
+            ))
+
+;; setting sounds (General MIDI string quartet :)
+(setf *default-preview-score-instruments*
+      '(:vl1 (:program 'violin :sound 'gm)
+        :vl2 (:program 'violin :sound 'gm)
+        :vla (:program 'viola :sound 'gm)
+        :vlc (:program 'cello :sound 'gm)))
+
+(setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -) (-5h - g4 pp leg eb4 < leg d4 < leg) (q bb4 < e4 <) (5h g4 mp> leg b4 > leg a4 > leg bb4 > leg d4 > leg) (q gs4 pp -)))
+
+;; create strict canon from given material (without any counterpoint rules :)
+;; metrically shift and transpose the given material
+(preview-score
+ (map-parts 
+  (map-parts `(:vl1 ,material
+               :vl2 ,material  
+               :vla ,material
+               :vlc ,material)
+             #'metric-append 
+             '(:vl1 :skip ;; leave unchanged
+               :vl2 (-q _)  
+               :vla (-h _)
+               :vlc (-h. _)))
+  #'pitch-transpose
+  '(:vl1 (6 _) 
+    :vl2 (4 _)  
+    :vla (2 _)
+    :vlc :skip)      
+  ))
+
+;; Simple homophonic texture created by randomised transpositions 
+;; Each part shares similar overall pitch profile
+(preview-score
+ (map-parts 
+  (map-parts `(:vl1 ,material
+               :vl2 ,material  
+               :vla ,material
+               :vlc ,material)
+             #'pitch-transpose-n 
+             `(:vl1 (,(rnd 10 :low -2 :high 2) _) 
+               :vl2 (,(rnd 10 :low -2 :high 2) _)  
+               :vla (,(rnd 10 :low -2 :high 2) _)
+               :vlc (,(rnd 10 :low -2 :high 2) _)))
+  ;; static transposition moving parts into different registers
+  #'pitch-transpose 
+  '(:vl1 (+7 _) 
+    :vl2 (0 _)  
+    :vla (-10 _)
+    :vlc (-20 _))      
+  ))
+
+
+;; Homophonic texture created by random pitch variants (retrograde, inversion etc.)
+;; Overall pitch profiles of parts differ 
+(preview-score
+ (map-parts 
+  `(:vl1 ,material
+    :vl2 ,material  
+    :vla ,material
+    :vlc ,material)
+  #'pitch-variant 
+  `(:vl1 (_ :transpose 7 :seed 10) 
+    :vl2 (_ :transpose 0 :seed 20)  
+    :vla (_ :transpose -10 :seed 30)
+    :vlc (_ :transpose -20 :seed 40))
+   :shared-args '(:variant ?)))
+
+
+
+------------------
+
+length-expansion-variant
+
+; (setf material '(h q q h))
+; (setf material (tuplet-rhythm '(1/2 1/2 1/2) '(3 4 5)))
+(setf material (tuplet-walk-rhythm 7 :seed 1 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4)))
+;; randomise some given material
+(preview-score
+ (map-parts 
+  `(:vl1 ,material
+    :vl2 ,material  
+    :vla ,material
+    :vlc ,material)
+  #'length-expansion-variant
+  '(:vl1 (_ :variant p) 
+    :vl2 (_ :variant r)  
+    :vla (_ :variant i)
+    :vlc (_ :variant ri))      
+  :shared-args '(:percent 100)
+  ))
+
+(length-expansion-variant '(h q e s) :percent 100 :variant '? :seed 1) 
+
+|#
+
+#|
+
+(preview-score
+(map-parts '((:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
+             (:vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+           #'length-augmentation 
+           '((:vln (2 _))
+             (:vlc (2 _)))
+           ))
+
+;;; old examples, revise
 
 (preview-score
 (map-parts '((:violin ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) :program 'violin :sound 'gm)
