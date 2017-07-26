@@ -1,0 +1,5 @@
+* Torsten's Opusmodus Tools (TOT)
+
+This [[https://common-lisp.net/project/asdf/][ASDF]] system provides a collection of definitions that extend the algorithmic composition system Opusmodus (http://opusmodus.com/). 
+
+Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations :)
