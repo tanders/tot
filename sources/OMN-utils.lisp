@@ -12,8 +12,11 @@
 
 (defun copy-time-signature (music-with-time-signature music-to-rebar)
   "Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'."
-  (omn-to-time-signature music-to-rebar
-                         (get-time-signature music-with-time-signature)))
+  ;; only rebar if music-with-time-signature is nested 
+  (if (every #'listp music-with-time-signature)
+    (omn-to-time-signature music-to-rebar
+                           (get-time-signature music-with-time-signature))
+    music-to-rebar))
 
 
 
