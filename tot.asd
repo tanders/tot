@@ -1,9 +1,12 @@
 ;;;; -*- Mode: Lisp; Syntax: ANSI-Common-Lisp; Base: 10 -*-
 
+(in-package :asdf-user)
+
 (asdf:defsystem tot
   :description "Torsten's Opusmodus Tools (TOT) is a collection of definitions that extend the algorithmic composition system Opusmodus (http://opusmodus.com/). Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicabiliy) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations." 
-  :author "Torsten Anders"
-  :version "0.1"
+  :author "Torsten Anders <torsten.anders@beds.ac.uk>"
+  :licence "GNU General Public License, Version 3"
+  :version "0.2"
   :serial t ;; the dependencies are linear.
   :components ((:file "sources/package")
 	       ;; (:file "sources/macros")
@@ -24,16 +27,3 @@
 	       "fenv"
 	       ))
 
-
-#|
-
-;; doc generation (after loading system) 
-
-(require :cldoc)
-
-(cldoc:extract-documentation 'cludg:html "/Users/torsten/common-lisp/tot/doc/" 
-    (asdf:find-system :tot)
-    :table-of-contents-title 
-    "Torsten's Opusmodus Tools (TOT)")
-
-|#
