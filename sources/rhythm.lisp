@@ -397,6 +397,42 @@
 ;;; Rhythm utilities
 ;;;
 
+(defun merge-rests-with-preceeding-note (sequence)
+  "Remove all rests in sequence without changing the actual rhythm: extends the length of each note followed by that rest value, so that the overall duration remains as before.
+
+  Args:
+  - sequence: OMN expression, can be nested.
+
+  Examples:
+  ;;; (merge-rests-with-preceeding-note '(e g6 f stacc -e e ab5 mp ten e c4 mf ten))
+  ;;; => (1/4 g6 f stacc e ab5 mp ten e c4 mf ten)"
+  (do-verbose ("")
+    (let* ((nested? (every #'listp sequence))
+           (events (single-events (omn-merge-rests (if nested? 
+                                                     (flatten sequence)
+                                                     sequence))))
+           (result 
+            (append 
+             (tu:mappend ;; mappend consecutive pairs
+              #'(lambda (n1 n2)
+                  (cond ((length-restp (first n1)) 
+                         nil)
+                        ((length-restp (first n2)) 
+                         ;; add dur of n2 to n1
+                         (cons (+ (omn-encode (first n1)) (abs (omn-encode (first n2))))
+                               (rest n1)))
+                        (T n1)))
+              (butlast events)
+              (last events (1- (length events))))
+             (let ((last-event (first (last events))))
+               (if (length-restp (first last-event))
+                 nil
+                 last-event)))))
+      (if nested?
+        (copy-time-signature sequence result)
+        result))))
+
+
 (defun lengths-with-merged-ties (sequence)
   "Returns a flat list of lengths that preserves the lengths in `sequence' including their tied notes.
   
