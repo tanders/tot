@@ -756,6 +756,53 @@ Split divisi strings into parts
 |#
 
 
+(defun cluster-engine-score (cluster-engine-score &key (instruments nil))
+  "Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format.
+
+  Args:
+  - cluster-engine-score: The score data in the format returned by ClusterEngine.
+  - instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score.
+
+  Example:
+
+(preview-score
+ (cluster-engine-score
+  ;; simple polyphonic constraint problem
+  (ce::ClusterEngine 10 t nil 
+                     ;; single rule: all rhythmic values are equal
+                     (ce::R-rhythms-one-voice 
+                      #'(lambda (x y) (= x y)) '(0 1) :durations)
+                     '((3 4)) 
+                     '(((1/4) (1/8))
+                       ((60) (61))
+                       ((1/4) (1/8))
+                       ((60) (61))))
+  :instruments '(:vln :vla)))
+  "
+  (let* ((length-lists (butlast (tu:at-even-position cluster-engine-score)))
+         (pitch-lists (tu:at-odd-position cluster-engine-score))
+         (time-sigs (first (last cluster-engine-score))))
+    (tu:one-level-flat 
+    (loop 
+      for lengths in length-lists
+      for pitches in pitch-lists
+      for instrument in (or instruments
+                            (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
+                                    (gen-integer 1 (length length-lists))))
+      for time-sig in time-sigs
+      collect (list instrument
+                    (omn-to-time-signature 
+                     (make-omn  
+                      :length lengths
+                      :pitch (midi-to-pitch pitches))
+                     time-sig))))))
+
+
+(defun preview-cluster-engine-score (score)
+  "Just shorthand for (preview-score (cluster-engine-score score))"
+  (preview-score (cluster-engine-score score)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Orchestration etc.
