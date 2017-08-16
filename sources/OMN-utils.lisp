@@ -50,21 +50,27 @@
 
   More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}."
   (if (omn-formp notation)
-    (let ((params (omn nil notation)))
-      (apply #'make-omn 
-             (append  
-              (list type 
-                    (span notation
-                          (funcall fun (if flat
-                                         (flatten (getf params type))
-                                         (getf params type)))))
-              (tu:remove-property type params))))
+    (copy-time-signature 
+     notation
+     (let ((params (omn nil notation))
+           (type-is-length? (equal type :length)))
+       (apply #'make-omn 
+              (append  
+               (list type 
+                     (funcall fun (if flat
+                                    (flatten (getf params type))
+                                    (getf params type))))
+               (tu:remove-properties (if type-is-length?
+                                       '(:length :duration)
+                                       type)
+                                     params)
+               ))))
     ;; notation is plain parameter list
     (span notation 
           (funcall fun (if flat
                          (flatten notation)
                          notation)))))
-  
+
 ;;; TODO: define add-omn when I have variant of disassemble-omn that works with incomplete CMN forms
 #|
 (defun add-omn (type parameter notation)
