@@ -17,6 +17,7 @@
 	       (:file "sources/velocity")
 	       (:file "sources/articulations")	       
 	       (:file "sources/PWGL")
+	       (:file "sources/constraints")
 	       (:file "sources/form")
 	       (:file "sources/orchestration")
 	       ;; (:file "sources/export")
@@ -25,5 +26,6 @@
   :depends-on ("string-tools"
 	       "ta-utilities"
 	       "fenv"
+	       "cluster-rules"
 	       ))
 
