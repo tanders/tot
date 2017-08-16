@@ -20,6 +20,7 @@
 
 
 
+
 (defun edit-omn (type notation fun &key (flat T))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise functions your functions to support omn notation as input.
 
@@ -157,6 +158,27 @@
 (omn-formp '((-3h) (3h c4 mf) (3h c4 mf) (q c4 mf) (q c4 mf) (3h c4 mf) (3h c4 mf) (3h c4 mf) (q c4 mf) (-q) (-5h) (-5h) (5h c4 mf) (5h c4 mf) (5h c4 mf) (q c4 mf) (q c4 mf) (5h c4 mf) (5h c4 mf) (5h c4 mf) (5h c4 mf) (5h c4 mf) (q c4 mf) (-q)))
 
 |#
+
+
+
+(defun length-subtract (&rest length-values)
+  "Subtraction for OMN length values. 
+
+  Example:
+;;; (length-subtract 'w 'q)
+;;; => h.
+  "
+  (first (omn-decode (list (apply #'- (omn-encode length-values))))))
+
+
+(defun length-add (&rest length-values)
+  "Subtraction for OMN length values.
+
+  Example:
+;;; (length-add 'w 'q)
+;;; => wq"
+  (first (omn-decode (list (apply #'+ (omn-encode length-values))))))
+ 
 
 
 ;;; not needed anymore, as CTR-1 does conveniently plot lists/vectors of numbers now
