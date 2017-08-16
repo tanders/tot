@@ -23,6 +23,15 @@
     :tempo 80)
   "Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like :title, :key-signature etc.")
 
+(defparameter *preview-score-return-value*
+  :score 
+  "Controls the return value of function preview-score. 
+
+  Possible values are
+  - :headerless-score - the input score to preview-score
+  - :full-score - the full def-score expression generated
+  - :score - the resulting score object")
+
 (defun preview-score (score &key (name 'test-score)    
 			    (instruments *default-preview-score-instruments*)
 			    (header *default-preview-score-header*))
@@ -50,30 +59,39 @@ Example:
 ;;; 	            :vlc (:program 'cello :sound 'gm))
 ;;;  :header '(:title \"Opus magnum\"
 ;;; 	       :tempo 80))
+
+  The return value is controlled by {defparameter *preview-score-return-value*}.
+
+  BUG: cannot specify score layout as header argument.
   "
   ;; Using eval is problematic (https://stackoverflow.com/questions/2571401/why-exactly-is-eval-evil/),
   ;; but hard to avoid for a dynamically created def-score expression that requires splicing with ,@.
   ;; Possible alternative would be to define preview-score as macro, but then arguments are not evaluated. 
- (eval 
-   `(def-score ,name 
-      ;; quote all header args, because symbol values must be quoted...
-      ,(mapcar #'(lambda (x) `',x)					
-	       (append header
-		       ;; add default vals of required header args at end -- they are overwritten by args given
-		       (list :key-signature 'atonal
-			     ;; By default, use implicit time signature of 1st part
-			     :time-signature (om:get-time-signature (second score))
-			     :tempo 70)))
-      ,@(mapcar #'(lambda (part)
-		    (let ((part-symbol (first part))
-			  (part-omn (second part)))
-		       (list* part-symbol 
-			      :omn `(quote ,part-omn)
-			      (getf instruments part-symbol))))
-		(tu:plist->pairs score)))
-   )
-  (audition-musicxml-last-score)
-  *last-score*)
+  (let ((full-score 
+         `(def-score ,name 
+                     ;; quote all header args, because symbol values must be quoted...
+                     ,(mapcar #'(lambda (x) `',x)					
+                              (append header
+                                      ;; add default vals of required header args at end -- they are overwritten by args given
+                                      (tu:remove-properties
+                                       (tu:properties header)
+                                       (list :key-signature 'atonal
+                                             ;; By default, use implicit time signature of 1st part
+                                             :time-signature (om:get-time-signature (second score))
+                                             :tempo 70))))
+            ,@(mapcar #'(lambda (part)
+                          (let ((part-symbol (first part))
+                                (part-omn (second part)))
+                            (list* part-symbol 
+                                   :omn `(quote ,part-omn)
+                                   (getf instruments part-symbol))))
+                      (tu:plist->pairs score)))))
+    (eval full-score)
+    (audition-musicxml-last-score)
+    (case *preview-score-return-value*
+      (:headerless-score score)
+      (:full-score full-score)
+      (:score *last-score*))))
 
 
 #|
@@ -193,6 +211,7 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
     (assert (not missing-instruments)
             (part-args)
             "map-parts: Some instruments in `part-args' don't have a matching instrument in `score'. ~A.~%" missing-instruments))  
+  ;;; TODO: not sure whether using a hash-table adds efficiency -- after all, I only need to access each element in plist score only once
   (let ((parts (make-hash-table :test #'equal)))
     ;; fill hash table, using leading keywords as keys
     (loop for part in (tu:plist->pairs score)
@@ -215,7 +234,9 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
                                                        shared-args))))
                          (list 
                           (if parameter
-                            (omn-replace parameter result part-omn)
+                            ; (omn-replace parameter result part-omn)
+                            (copy-time-signature part-omn
+                             (omn-replace parameter (flatten result) (flatten part-omn)))
                             result)))))
        ))))
 
@@ -603,6 +624,15 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
 |#
 
+(defun get-parts-omn (score)
+  "Returns a list of all OMN parts of `score', a headerless score (see {defun preview-score} for its format)."
+  (tu:at-odd-position score))
+
+#|
+(get-parts-omn '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+                 :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+|#
+
 
 (defun replace-instruments (new old score)
   "Replaces old instruments by new instruments in a score.
@@ -755,52 +785,28 @@ Split divisi strings into parts
   :vlc (h c3)))
 |#
 
-
-(defun cluster-engine-score (cluster-engine-score &key (instruments nil))
-  "Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format.
-
-  Args:
-  - cluster-engine-score: The score data in the format returned by ClusterEngine.
-  - instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score.
+(defun extract-parts (instruments score)
+ "Extracts all `instruments' and their OMN expressions from `score'. 
 
   Example:
 
-(preview-score
- (cluster-engine-score
-  ;; simple polyphonic constraint problem
-  (ce::ClusterEngine 10 t nil 
-                     ;; single rule: all rhythmic values are equal
-                     (ce::R-rhythms-one-voice 
-                      #'(lambda (x y) (= x y)) '(0 1) :durations)
-                     '((3 4)) 
-                     '(((1/4) (1/8))
-                       ((60) (61))
-                       ((1/4) (1/8))
-                       ((60) (61))))
-  :instruments '(:vln :vla)))
-  "
-  (let* ((length-lists (butlast (tu:at-even-position cluster-engine-score)))
-         (pitch-lists (tu:at-odd-position cluster-engine-score))
-         (time-sigs (first (last cluster-engine-score))))
-    (tu:one-level-flat 
-    (loop 
-      for lengths in length-lists
-      for pitches in pitch-lists
-      for instrument in (or instruments
-                            (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
-                                    (gen-integer 1 (length length-lists))))
-      for time-sig in time-sigs
-      collect (list instrument
-                    (omn-to-time-signature 
-                     (make-omn  
-                      :length lengths
-                      :pitch (midi-to-pitch pitches))
-                     time-sig))))))
+;;; (extract-parts '(:vl1 :vla)
+;;; '(:vl1 (h g4)
+;;;   :vl2 (h e4)
+;;;   :vla (h c4)
+;;;   :vlc (h c3)))
+"
+  (apply #'append
+         (mapcar #'(lambda (instrument) (list instrument (getf score instrument)))
+                 instruments)))
 
-
-(defun preview-cluster-engine-score (score)
-  "Just shorthand for (preview-score (cluster-engine-score score))"
-  (preview-score (cluster-engine-score score)))
+#|
+(extract-parts '(:vl1 :vla)
+'(:vl1 (h g4)
+  :vl2 (h e4)
+  :vla (h c4)
+  :vlc (h c3)))
+|#
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -844,6 +850,18 @@ This also works with nested lists and you can process only selected bars (other 
 ;;;                  :section 1)
 
 For musical application examples see also {https://opusmodus.com/forums/topic/867-opusmodus-1222292/}.
+
+NOTE: This function could also be useful for Beethoven like motif condensation, where notes are first turned into rests with this function, and then their preceding notes are extended with length-legato, as demonstrated in the following example. 
+
+;;; (setf my-motif '((q. c4 e d4 q. e4 e f4) (h g4 -h)))
+;;; (length-legato
+;;;  (filter-notes-if #'(lambda (dur pitch &rest other-args)  
+;;;                       (> (omn-encode dur) 1/4)) 
+;;;                   my-motif))
+;;; => ((h c4 e4) (w g4))
+
+See also {https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-note/?tab=comments#comment-2713}.
+
 "
   (if section
     (maybe-section #'(lambda (seq) (filter-notes-if test seq :remain remain)) 
