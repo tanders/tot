@@ -75,3 +75,20 @@
 
 
 
+(defun condense (sequence test &key (section nil))
+  "Beethoven-like condensation of music. All notes for which a given test function returns true are removed, and their preceeding note is extended by their duration.
+
+  Args:
+  - test: Boolean function expecting individual parameters of each note in `OMN'
+  - sequence: An OMN sequence
+
+  Example:
+
+;;; (setf my-motif '((q. c4 e d4 q. e4 e f4) (h g4 -h)))
+;;; (condense my-motif
+;;;           #'(lambda (dur pitch &rest other-args)  
+;;;               (> (omn-encode dur) 1/4)))
+"
+  (length-legato
+   (filter-notes-if test sequence :section section)))
+
