@@ -86,6 +86,58 @@
          `(,last-bar))))))
 
 
+(defun even-length-rhythm (length &key total-duration prefix suffix (time-sig '(4 4)))
+  "Some custom algorithm to create rhythmic phrases consisten of even note durations over a certain time. 
+
+  Args:
+  - length (length value): rhythmic value to repeat
+  - total-duration (length value): duration of the generated phrase including the prefix and suffix length.
+  - prefix (length value or length sequence): preceeding phrase
+  - suffix (length value or length sequence): succeeding phrase
+  - time-sig: time signature
+
+  Example:
+  ;;; (even-length-rhythm '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q)"  
+  (let* ((pre-and-suffix-dur (apply #'length-add 
+                                    (length-rest-invert (append (tu:ensure-list prefix)
+                                                                (tu:ensure-list suffix)))))
+         (repetition-dur (length-subtract total-duration pre-and-suffix-dur)))
+    (assert (> (omn-encode repetition-dur) 0)
+            (total-duration prefix suffix)
+            "The total duration ~A is less than the sum of the prefix ~A and suffix ~A.~%"
+            total-duration prefix suffix)
+    (omn-to-time-signature
+     (append 
+      (when prefix (tu:ensure-list prefix))
+      (length-span (list repetition-dur) (list length))
+      (when suffix (tu:ensure-list suffix))
+      ) 
+     time-sig)))
+
+
+#|
+(defun even-length-rhythm2 (length duration 
+                                    &key prefix suffix (time-sig '(4 4)))
+  "Some custom algorithm to create rhythmic phrases consisten of even note durations over a certain time. Variant of even-length-rhythm, where the total-duration is the sum of duration, prefix and suffix length.
+
+  Args:
+  - length (length value): rhythmic value to repeat
+  - duration (length value): duration over which to repeat the rhythmic value
+  - prefix (length value or length sequence): preceeding phrase
+  - suffix (length value or length sequence): succeeding phrase
+  - time-sig: time signature
+
+  Example:
+  ;;; (even-length-rhythm2 '5q 'w_w_h :prefix '-w_5h :suffix '-5q_5h_q)"  
+  (omn-to-time-signature
+   (append 
+    (when prefix (tu:ensure-list prefix))
+    (length-span (list duration) (list length))
+    (when suffix (tu:ensure-list suffix))
+    ) 
+   time-sig))
+|#
+
 
 ;   For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
 (defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
@@ -397,6 +449,20 @@
 ;;; Rhythm utilities
 ;;;
 
+(defun _remove-rest-articulations (sequence)
+  "Strips all articulations from rests. 
+
+  Args:
+  - sequence: OMN expression that _cannot_ be nested.
+ 
+  TMP function -- only necessary until length-rest-merge or omn-merge-rests support merging rests with articulations."
+  (tu:mappend #'(lambda (event)
+                  (if (length-restp (first event))
+                    (list (first event))
+                    event))
+              (single-events sequence)))
+
+#|
 (defun merge-rests-with-preceeding-note (sequence)
   "Remove all rests in sequence without changing the actual rhythm: extends the length of each note followed by that rest value, so that the overall duration remains as before.
 
@@ -405,32 +471,49 @@
 
   Examples:
   ;;; (merge-rests-with-preceeding-note '(e g6 f stacc -e e ab5 mp ten e c4 mf ten))
-  ;;; => (1/4 g6 f stacc e ab5 mp ten e c4 mf ten)"
+  ;;; => (1/4 g6 f stacc e ab5 mp ten e c4 mf ten)
+
+  BUG:
+  Articulations attached to rests (e.g., fermatas) are removed.
+
+  TODO: 
+  Function can be used for Beethoven-like motivic [condensation] -- turn less important tones into rest, and then call this function.
+  TODO: example for that.
+
+  Pretty much the same as length-legato function.
+  "
   (do-verbose ("")
     (let* ((nested? (every #'listp sequence))
-           (events (single-events (omn-merge-rests (if nested? 
-                                                     (flatten sequence)
-                                                     sequence))))
-           (result 
-            (append 
-             (tu:mappend ;; mappend consecutive pairs
-              #'(lambda (n1 n2)
-                  (cond ((length-restp (first n1)) 
-                         nil)
-                        ((length-restp (first n2)) 
-                         ;; add dur of n2 to n1
-                         (cons (+ (omn-encode (first n1)) (abs (omn-encode (first n2))))
-                               (rest n1)))
-                        (T n1)))
-              (butlast events)
-              (last events (1- (length events))))
-             (let ((last-event (first (last events))))
-               (if (length-restp (first last-event))
-                 nil
-                 last-event)))))
+           (events (single-events (omn-merge-rests 
+                                   ;;; TODO: avoid removing rests -- currently necessary, as omn-merge-rests will not merge rests with articulations
+                                   (_remove-rest-articulations (if nested? 
+                                                                 (flatten sequence)
+                                                                 sequence)))))
+           (result (append 
+                    (tu:mappend ;; mappend consecutive pairs
+                     #'(lambda (n1 n2)
+                         (cond ((length-restp (first n1)) 
+                                nil)
+                               ((length-restp (first n2)) 
+                                ;; add dur of n2 to n1
+                                ;;; TODO: preserve articulations of rests
+                                (cons (+ (omn-encode (first n1)) (abs (omn-encode (first n2))))
+                                      (rest n1)))
+                               (T n1)))
+                     (butlast events)
+                     (last events (1- (length events))))
+                    (let ((last-event (first (last events))))
+                      (if (length-restp (first last-event))
+                        nil
+                        last-event)))))
       (if nested?
         (copy-time-signature sequence result)
         result))))
+
+; (merge-rests-with-preceeding-note '(e g6 f stacc -e e ab5 mp ten e c4 mf ten))
+; (length-legato '(e g6 f stacc -e e ab5 mp ten e c4 mf ten))
+|#
+
 
 
 (defun lengths-with-merged-ties (sequence)
