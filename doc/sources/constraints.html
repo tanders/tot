@@ -1,0 +1,357 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="../cludg.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>
+constraints</title>
+</head>
+<body>
+<div id="navbar">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<colgroup span="3">
+<col width="0*"/>
+<col width="0*"/>
+<col width="1*"/>
+</colgroup>
+<tr>
+<td align="left" valign="baseline">
+<a href="PWGL.html">
+Prev:&nbsp;PWGL</a>
+<br/>
+<a href="form.html">
+Next:&nbsp;form</a>
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left" valign="baseline">
+<span class="upchain">
+<b>
+constraints</b>
+<br/>
+<a href="../index.html">
+Index</a>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class="cludg-doc-body">
+<h2>
+constraints
+</h2>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Function summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="constraints.html#_g181306">
+cluster-engine-score</a>
+</td>
+<td class="summary">
+cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="constraints.html#_g181307">
+copy-cluster-engine-pitches-to-score</a>
+</td>
+<td class="summary">
+score cluster-engine-score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="constraints.html#_g181308">
+preview-cluster-engine-score</a>
+</td>
+<td class="summary">
+score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="constraints.html#_g181305">
+revise-score-harmonically</a>
+</td>
+<td class="summary">
+score harmonies scales</td>
+</tr>
+</table>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g181305">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+revise-score-harmonically&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score harmonies scales</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+CSP transforming the input `score' such that it follows the underlying harmony specified. 
+ The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied. 
+ 
+ Args: 
+ </p>
+<ul>
+<li>
+<p>
+score (headerless score): See <a href="orchestration.html#_g181316">
+preview-score</a>
+for its format. 
+ </p>
+</li>
+<li>
+<p>
+harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord changes of the underlying harmony 
+ </p>
+</li>
+<li>
+<p>
+scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony 
+ TODO: - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+Input score defined by turning a melody into some polyphonic texture. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf galliard-mel  
+           '(:|1|  
+              ((q e5 f slap+stacc -h q eb5 slap+stacc -h)  
+               (q cs5 f slap+stacc eb5 mp ord f5) (q. g5 e gs5 q c6) (h bb5 q a5) (q fs5 - e d5 cs5) (h a5 q b5) (q. cs5 e bb5 q d6) (q cs6 d6 g5) (h e5 q cs6) (q g5 f slap+stacc a5 mp ord bb5) (q. c6 e cs6 q c6) (e b5 a5 q f5 e5) (h b5 q c6) (q eb5 f slap+stacc -e b5 mp ord d6 cs6) (q. eb6 e b5 q e5) (q gs5 d6 b5) (h gs5 q fs5)))) </pre>
+<p>
+</p>
+<pre>
+    (setf polyphonic-score 
+           `(:v1 ,(second galliard-mel) 
+             :v2 ,(append '((-h.)) (butlast (second galliard-mel) 3)) 
+             :v3 ,(append '((-h.) (-w.)) (butlast (second galliard-mel) 4)))) </pre>
+<p>
+The underlying harmony -- both chords and scales -- are also predefined headerless scores. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf galliard-harmonies 
+           '((h. c4eb4g4a4) 
+             (w. c4eb4g4a4)         
+             (w. f4g4a4c4) (w. cs4f4g4b4) (w. b4eb4g4a4) (w. f4a4c4eb4) (w. eb4g4b4cs4) (w. a4cs4eb4g4) (w. cs4f4g4c4) (h. g4b4cs4f4))) </pre>
+<p>
+</p>
+<pre>
+    (setf galliard-scales 
+           (append (length-merge (flatten (omn :length galliard-harmonies)))  
+                   (chordize '(c4 cs4 ds4 f4 g4 a4 b4)))) </pre>
+<p>
+Some playback customisation of preview-score silencing the first two parts. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf *default-preview-score-instruments* 
+           '(;; silent harmony -- :volume 0 
+             :scales (:program 'violin :sound 'gm :channel 16 :volume 0) 
+             :chords (:program 'violin :sound 'gm :channel 16 :volume 0) 
+             :v1 (:program 'violin :sound 'gm :channel 1) 
+             :v2 (:program 'violin :sound 'gm :channel 1) 
+             :v3 (:program 'violin :sound 'gm :channel 1)) 
+           ) </pre>
+<p>
+The actual calls to `revise-score-harmonically', first a monophonic and then a polyphonic example. In the second example, the score is also saved to a variable for later inspection, postprocessing etc. 
+ </p>
+<p>
+</p>
+<pre>
+    (preview-score  
+      (revise-score-harmonically galliard-mel galliard-harmonies galliard-scales)) </pre>
+<p>
+;;; 
+ </p>
+<pre>
+    (progn  
+       (setf revised-polyphonic-score 
+             (revise-score-harmonically polyphonic-score galliard-harmonies galliard-scales)) 
+       (preview-score revised-polyphonic-score)) </pre>
+<p>
+
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g181306">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+cluster-engine-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+cluster-engine-score: The score data in the format returned by ClusterEngine. 
+ </p>
+</li>
+<li>
+<p>
+instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+(preview-score 
+ (cluster-engine-score 
+ ;; simple polyphonic constraint problem 
+ (ce::ClusterEngine 10 t nil 
+ ;; single rule: all rhythmic values are equal 
+ (ce::R-rhythms-one-voice 
+ #'(lambda (x y) (= x y)) '(0 1) <span class="keyword">
+:durations) </span>
+
+ '((3 4)) 
+ '(((1/4) (1/8)) 
+ ((60) (61)) 
+ ((1/4) (1/8)) 
+ ((60) (61)))) 
+ <span class="keyword">
+:instruments </span>
+'(:vln <span class="keyword">
+:vla))) </span>
+
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g181307">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+copy-cluster-engine-pitches-to-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score cluster-engine-score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+score (headerless score): see <a href="orchestration.html#_g181316">
+preview-score</a>
+for format description of headerless scores. 
+ </p>
+</li>
+<li>
+<p>
+cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.com/tanders/cluster-engine). 
+ </p>
+</li>
+</ul>
+<p>
+NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts). 
+ </p>
+<p>
+NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g181308">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+preview-cluster-engine-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Just shorthand for (preview-score (cluster-engine-score score)) 
+ </p>
+</div>
+</div>
+</div>
+<div class="cludg-footer">
+Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
+CLDOC</a>
+- 2017-08-15 20:19:36</div>
+</body>
+</html>
