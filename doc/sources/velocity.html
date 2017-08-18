@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181285">
+<a href="velocity.html#_g182406">
 simplify-dynamics</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ notation <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181288">
+<a href="velocity.html#_g182409">
 velocity-add</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181283">
+<a href="velocity.html#_g182403">
 velocity-fenvs</a>
 </td>
 <td class="summary">
@@ -73,7 +73,15 @@ lengths <em>&amp;rest</em> dynamics-fenvs</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181290">
+<a href="velocity.html#_g182404">
+velocity-fenvs2</a>
+</td>
+<td class="summary">
+sequence dynamics-fenvs <em>&amp;key</em> (omn t)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="velocity.html#_g182411">
 velocity-smooth</a>
 </td>
 <td class="summary">
@@ -81,7 +89,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181286">
+<a href="velocity.html#_g182407">
 velocity-transform</a>
 </td>
 <td class="summary">
@@ -89,7 +97,7 @@ fun args <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181284">
+<a href="velocity.html#_g182405">
 _simplify-dynamics</a>
 </td>
 <td class="summary">
@@ -97,7 +105,7 @@ dynamics <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181287">
+<a href="velocity.html#_g182408">
 _velocity-add</a>
 </td>
 <td class="summary">
@@ -105,7 +113,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g181289">
+<a href="velocity.html#_g182410">
 _velocity-smooth</a>
 </td>
 <td class="summary">
@@ -114,7 +122,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181283">
+<a id="_g182403">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -167,7 +175,66 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181284">
+<a id="_g182404">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+velocity-fenvs2&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence dynamics-fenvs <em>&amp;key</em> (omn t)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Generates dynamics markers (velocities) for OMN `lengths'. Dynamics for each phrase (notes between rests) are defined by their own fenv (if fewer fenvs are defined, they are circled through). Returns a sublist for each phrase. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+lengths (list): OMN length values or OMN sequence, can be nested 
+ </p>
+</li>
+<li>
+<p>
+dynamics-fenvs: One dynamics-fenv or list of them. Each dynamics-fenv has the form (&lt;min-vel&gt; &lt;max-vel&gt; &amp;rest points), where `min-vel' and `max-vel' are dynamic indicators like pp or f, and points are pairs of linear fenv points. 
+ </p>
+</li>
+<li>
+<p>
+omn (Boolean): whether to return a plain velocity list or OMN expression 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<pre>
+    (velocity-fenvs  '((1/4 1/8 1/8) (1/4 -1/4) (1/4 1/4) (1/4 -1/4)) 
+                      '(pp mp (0 0) (0.7 1) (1 0))) 
+     =&gt; ((pp&lt; p&lt; &gt; pp) (pp&lt; &gt; pp)) </pre>
+<p>
+BUG: not working yet 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g182405">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -190,7 +257,7 @@ dynamics <em>&amp;key</em> (flat t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181285">
+<a id="_g182406">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -273,7 +340,7 @@ processing floats
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181286">
+<a id="_g182407">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -322,7 +389,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181287">
+<a id="_g182408">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -345,7 +412,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181288">
+<a id="_g182409">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -423,7 +490,7 @@ omn input
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181289">
+<a id="_g182410">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -446,7 +513,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181290">
+<a id="_g182411">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -510,6 +577,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-08-15 20:19:36</div>
+- 2017-08-18 14:43:30</div>
 </body>
 </html>

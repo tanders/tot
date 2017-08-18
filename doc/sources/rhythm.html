@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181272">
+<a href="rhythm.html#_g182392">
 durational-accent</a>
 </td>
 <td class="summary">
@@ -57,23 +57,15 @@ lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merg
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181268">
+<a href="rhythm.html#_g182389">
 even-length-rhythm</a>
-</td>
-<td class="summary">
-length duration <em>&amp;key</em> prefix suffix (time-sig '(4 4))</td>
-</tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="rhythm.html#_g181269">
-even-length-rhythm2</a>
 </td>
 <td class="summary">
 length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181274">
+<a href="rhythm.html#_g182394">
 isolate-time-signatures</a>
 </td>
 <td class="summary">
@@ -81,7 +73,7 @@ ts-forms</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181273">
+<a href="rhythm.html#_g182393">
 length-divide-ext</a>
 </td>
 <td class="summary">
@@ -89,7 +81,7 @@ count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181276">
+<a href="rhythm.html#_g182396">
 lengths-with-merged-ties</a>
 </td>
 <td class="summary">
@@ -97,7 +89,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181277">
+<a href="rhythm.html#_g182397">
 total-duration</a>
 </td>
 <td class="summary">
@@ -105,7 +97,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181266">
+<a href="rhythm.html#_g182387">
 tuplet-rhythm</a>
 </td>
 <td class="summary">
@@ -113,7 +105,7 @@ lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181267">
+<a href="rhythm.html#_g182388">
 tuplet-walk-rhythm</a>
 </td>
 <td class="summary">
@@ -121,7 +113,7 @@ bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-di
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181270">
+<a href="rhythm.html#_g182390">
 _durational-accent-divide</a>
 </td>
 <td class="summary">
@@ -129,7 +121,7 @@ lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181271">
+<a href="rhythm.html#_g182391">
 _durational-accent-merge</a>
 </td>
 <td class="summary">
@@ -137,7 +129,7 @@ lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g181275">
+<a href="rhythm.html#_g182395">
 _remove-rest-articulations</a>
 </td>
 <td class="summary">
@@ -146,7 +138,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181266">
+<a id="_g182387">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -219,7 +211,7 @@ BUG: seed argument not working as expected.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181267">
+<a id="_g182388">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -290,7 +282,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181268">
+<a id="_g182389">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -303,7 +295,7 @@ Example:
 <td class="symbol-name">
 even-length-rhythm&nbsp;&nbsp;</td>
 <td class="lambda-list">
-length duration <em>&amp;key</em> prefix suffix (time-sig '(4 4))</td>
+length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -325,7 +317,7 @@ length (length value): rhythmic value to repeat
 </li>
 <li>
 <p>
-duration (length value): duration over which to repeat the rhythmic value 
+total-duration (length value): duration of the generated phrase including the prefix and suffix length. 
  </p>
 </li>
 <li>
@@ -348,75 +340,12 @@ time-sig: time signature
 Example: 
  </p>
 <pre>
-    (even-length-rhythm '5q 'w_w_h :prefix '-w_5h :suffix '-5q_5h_q) </pre>
+    (even-length-rhythm '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181269">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-even-length-rhythm2&nbsp;&nbsp;</td>
-<td class="lambda-list">
-length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doc-body">
-<p>
-Variant of even-length-rhythm, where total-duration specifies the total duration including the prefix and suffix length. 
- </p>
-<p>
-Args: 
- </p>
-<ul>
-<li>
-<p>
-length (length value): rhythmic value to repeat 
- </p>
-</li>
-<li>
-<p>
-total-duration (length value): duration of the generated phrase 
- </p>
-</li>
-<li>
-<p>
-prefix (length value or length sequence): preceeding phrase 
- </p>
-</li>
-<li>
-<p>
-suffix (length value or length sequence): succeeding phrase 
- </p>
-</li>
-<li>
-<p>
-time-sig: time signature 
- </p>
-</li>
-</ul>
-<p>
-Example: 
- </p>
-<pre>
-    (even-length-rhythm2 '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q) </pre>
-</div>
-</div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g181270">
+<a id="_g182390">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -499,7 +428,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181271">
+<a id="_g182391">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -555,7 +484,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181272">
+<a id="_g182392">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -678,7 +607,7 @@ If you want your final rhythm to contain rests you best add these to your rhythm
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181273">
+<a id="_g182393">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -720,7 +649,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181274">
+<a id="_g182394">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -754,7 +683,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181275">
+<a id="_g182395">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -794,7 +723,7 @@ sequence: OMN expression that _cannot_ be nested.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181276">
+<a id="_g182396">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -842,7 +771,7 @@ See also:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g181277">
+<a id="_g182397">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -878,6 +807,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-08-15 20:19:36</div>
+- 2017-08-18 14:43:30</div>
 </body>
 </html>

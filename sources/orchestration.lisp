@@ -485,12 +485,12 @@ length-expansion-variant
 
   Example:
 
-(map-parts-equally
- '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
-   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
- #'pitch-transpose
- '(2 _)
- :parameter :pitch)
+;;; (map-parts-equally
+;;;  '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+;;;  #'pitch-transpose
+;;;  '(2 _)
+;;;  :parameter :pitch)
 "
   (mappend #'(lambda (instr-part)
                (let* ((instrument (first instr-part))
@@ -522,13 +522,13 @@ length-expansion-variant
   
   Example:
 
-(apply-part
- :vlc
- '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
-   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
- #'pitch-transpose
- '(2 _)
- :parameter :pitch)
+;;; (apply-part
+;;;  :vlc
+;;;  '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+;;;  #'pitch-transpose
+;;;  '(2 _)
+;;;  :parameter :pitch)
 "
   (let* ((part-omn (get-part-omn instrument score))
          (result (apply fn
