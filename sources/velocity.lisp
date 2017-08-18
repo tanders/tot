@@ -30,7 +30,7 @@
                                             dynamics-fenv
                           (velocity-to-dynamic 
                            (vector-to-velocity  min-vel max-vel 
-                                                (v (linear-fenv-fn points) phrase-length)))))
+                                                (fenv:v (fenv:linear-fenv-fn points) phrase-length)))))
                     (circle-repeat dynamics-fenvs (length phrase-lengths))
                     phrase-lengths))))
 
@@ -39,6 +39,53 @@
 (velocity-fenvs  '((-1/6 1/6 1/6) (1/4 1/4) (1/6 1/6 1/6) (1/4 -1/4) (-1/10 -1/10 1/10 1/10 1/10) (1/4 1/4) (1/10 1/10 1/10 1/10 1/10) (1/4 -1/4))
 '(pp mp (0 0) (0.7 1) (1 0))
 '(pp mp (0 0) (0.65 1) (1 0)))
+
+(velocity-fenvs  (flatten '((-1/6 1/6 1/6) (1/4 1/4) (1/6 1/6 1/6) (1/4 -1/4) (-1/10 -1/10 1/10 1/10 1/10) (1/4 1/4) (1/10 1/10 1/10 1/10 1/10) (1/4 -1/4)))
+'(pp mp (0 0) (0.7 1) (1 0))
+'(pp mp (0 0) (0.65 1) (1 0)))
+|#
+
+
+;;; extended variant of velocity-fenvs -- at some stage replace former in all calls with this.
+(defun velocity-fenvs2 (sequence dynamics-fenvs &key (omn T))
+  "Generates dynamics markers (velocities) for OMN `lengths'. Dynamics for each phrase (notes between rests) are defined by their own fenv (if fewer fenvs are defined, they are circled through). Returns a sublist for each phrase.
+
+  Args:
+  - lengths (list): OMN length values or OMN sequence, can be nested
+  - dynamics-fenvs: One dynamics-fenv or list of them. Each dynamics-fenv has the form (<min-vel> <max-vel> &rest points), where `min-vel' and `max-vel' are dynamic indicators like pp or f, and points are pairs of linear fenv points. 
+  - omn (Boolean): whether to return a plain velocity list or OMN expression
+
+  Example:
+  ;;; (velocity-fenvs  '((1/4 1/8 1/8) (1/4 -1/4) (1/4 1/4) (1/4 -1/4))
+  ;;;                  '(pp mp (0 0) (0.7 1) (1 0)))
+  ;;; => ((pp< p< > pp) (pp< > pp))
+
+  BUG: not working yet
+  "
+  (let* ((phrase-lengths (phrase-lengths sequence))
+         (my-dynamics-fenvs (if (velocityp (first dynamics-fenvs)) ; only single dynamics-fenv (crude test)
+                              (list dynamics-fenvs)
+                              dynamics-fenvs))
+         (result (mapcar #'simplify-dynamics
+                         (mapcar #'(lambda (dynamics-fenv phrase-length)
+                                     (destructuring-bind (min-vel max-vel &rest points)
+                                                         dynamics-fenv
+                                       (velocity-to-dynamic 
+                                        (vector-to-velocity  min-vel max-vel 
+                                                             (fenv:v (fenv:linear-fenv-fn points) phrase-length)))))
+                                 (circle-repeat my-dynamics-fenvs (length phrase-lengths))
+                                 phrase-lengths))))
+    (if omn
+      (copy-time-signature 
+       sequence (omn-replace :velocity (flatten result) (flatten sequence)))                           
+      result)))
+
+#|
+;;; BUG:  error
+(velocity-fenvs  
+ '((-1/6 1/6 1/6) (1/4 1/4) (1/6 1/6 1/6) (1/4 -1/4) (-1/10 -1/10 1/10 1/10 1/10) (1/4 1/4) (1/10 1/10 1/10 1/10 1/10) (1/4 -1/4))
+ '((pp mp (0 0) (0.7 1) (1 0))
+   (pp mp (0 0) (0.65 1) (1 0))))
 
 (velocity-fenvs  (flatten '((-1/6 1/6 1/6) (1/4 1/4) (1/6 1/6 1/6) (1/4 -1/4) (-1/10 -1/10 1/10 1/10 1/10) (1/4 1/4) (1/10 1/10 1/10 1/10 1/10) (1/4 -1/4)))
 '(pp mp (0 0) (0.7 1) (1 0))
