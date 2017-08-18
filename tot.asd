@@ -8,7 +8,7 @@
   :licence "GNU General Public License, Version 3"
   :version "0.2"
   :serial t ;; the dependencies are linear.
-  :components ((:file "sources/package")
+  :components (; (:file "sources/package")
 	       ;; (:file "sources/macros")
 	       (:file "sources/utils")
 	       (:file "sources/OMN-utils")

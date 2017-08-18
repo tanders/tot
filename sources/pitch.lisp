@@ -14,14 +14,14 @@
 ;; Idea for another improvement in future: do this process phrase-wise
 (defun pitches->fenv (pitches)
   "Translates a sequence of pitches into a fenv that linearily inerpolates between the pitches. Fenv values encode pitches by their corresponding MIDI note."
-  (linear-fenv-fn 
+  (fenv:linear-fenv-fn 
    (loop 
      for i from 0 to 1 by (/ 1 (1- (length pitches)))
      for pitch in (pitch-to-midi (flatten pitches))
      collect (list i pitch))))
 (defun fenv->pitches (fenv n)
   "Translates a fenv into a sequence of pitches. Fenv values encode pitches by their corresponding MIDI note."
-  (midi-to-pitch (mapcar #'round (fenv->list fenv n))))
+  (midi-to-pitch (mapcar #'round (fenv:fenv->list fenv n))))
 
 #|
 ;; varying the number of pitches in a sequence by an intermediate translation into a fenv
@@ -59,7 +59,7 @@
                     (omn :pitch sequence)
                     sequence))
         (n (count-notes sequence))
-        (result (apply #'pitch-transpose-n (mapcar #'round (vector-to-list (v fenv n)))
+        (result (apply #'pitch-transpose-n (mapcar #'round (vector-to-list (fenv:v fenv n)))
                        pitches args)))
     (if omn?
       (omn-replace :pitch result sequence)

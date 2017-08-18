@@ -6,9 +6,9 @@
 ;; (require :fenv)
 ; (asdf:load-system :fenv)
 ;; no idea why these unintern calls are necessary -- possibly because these functions are called in the actual source code of this project?
-(unintern 'v)
-(unintern 'y)
-(use-package :fenv)
+; (unintern 'v)
+; (unintern 'y)
+; (use-package :fenv)
 
 #|
 ; (ql:quickload :fn)
