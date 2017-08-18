@@ -11,15 +11,16 @@
 
 
 ;;; TODO:
-;;; - Cut superfluous notes/bars at end (and stop search in time)
+;;; - Cut superfluous notes/bars at end (and stop search in time) -- not (always) necessary?
 ;;; OK - insert all velo and articulations in score into result
 ;;; OK - Move this function into a new file constraints.lisp into my library tot
 ;; ... solution can be repeating input score
-(defun revise-score-harmonically (score harmonies scales
+(defun revise-score-harmonically (score harmonies scales &key 
+                                        (constrain-pitch-profiles? T)
+                                        (constrain-pitch-intervals? T)
                                         ;;; TODO: consider allowing to overwrite pitch domain
-                                        ; &key pitch-domains
-                                        ;;; TODO: consider allowing to specify `other rules' as argument 
-                                        )
+                                        ; pitch-domains
+                                        (rules nil))
   "CSP transforming the input `score' such that it follows the underlying harmony specified. 
   The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied.
   
@@ -27,7 +28,11 @@
   - score (headerless score): See {defun preview-score} for its format.
   - harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord changes of the underlying harmony 
   - scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony
+  - constrain-pitch-profiles? (Boolean): Whether to constrain the pitch profile
+  - constrain-pitch-intervals? (Boolean): Whether to constrain the pitch intervals
 TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
+  - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
+    If `rules' is nil, then some default rule set is used. 
 
   Example:
 
@@ -74,7 +79,6 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
 ;;;   (setf revised-polyphonic-score
 ;;;         (revise-score-harmonically polyphonic-score galliard-harmonies galliard-scales))
 ;;;   (preview-score revised-polyphonic-score))
-
   "
    (let* ((parts (get-parts-omn score))
           (first-part (first parts))
@@ -88,24 +92,32 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
        (let (;; position of all voices in score starting from 2 after scales and chords
              (voice-ids (gen-integer 2 (+ (length (get-instruments score)) 1))))
          (ce::rules->cluster 
-          (cr:follow-profile-hr parts 
-                                :voices voice-ids :mode :pitch :constrain :profile)
-          (cr:follow-profile-hr parts 
-                                :voices voice-ids :mode :pitch :constrain :intervals)
-          (ce:r-predefine-meter time-sigs)
-          ;; more rules
-          (cr:only-scale-pcs :voices voice-ids :input-mode :all 
-                             :scale-voice 0)
-          (cr:only-chord-pcs :voices voice-ids :input-mode :beat ; :1st-beat
-                             :chord-voice 1) 
-          (cr:long-notes-chord-pcs :voices voice-ids :max-nonharmonic-dur 1/4)
-          (cr:stepwise-non-chord-tone-resolution
-           :voices voice-ids :input-mode :all :step-size 3)
-          (cr:chord-tone-before/after-rest :voices voice-ids :input-mode :all)
-          (cr:chord-tone-follows-non-chord-tone :voices voice-ids :input-mode :all)
-          (cr:no-repetition :voices voice-ids :window 3)
-          (cr:resolve-skips :voices voice-ids :resolution-size 4)
-          ))
+          (append 
+           (when constrain-pitch-profiles?
+             (cr:follow-profile-hr 
+              parts :voices voice-ids :mode :pitch :constrain :profile))
+           (when constrain-pitch-intervals?
+             (cr:follow-profile-hr 
+              parts :voices voice-ids :mode :pitch :constrain :intervals))
+           (list (ce:r-predefine-meter time-sigs)))
+          (apply
+           #'ce::rules->cluster 
+           (if rules 
+             rules 
+             (list 
+              ;; more rules
+              (cr:only-scale-pcs :voices voice-ids :input-mode :all 
+                                 :scale-voice 0)
+              (cr:only-chord-pcs :voices voice-ids :input-mode :beat ; :1st-beat
+                                 :chord-voice 1) 
+              (cr:long-notes-chord-pcs :voices voice-ids :max-nonharmonic-dur 1/4)
+              (cr:stepwise-non-chord-tone-resolution
+               :voices voice-ids :input-mode :all :step-size 3)
+              (cr:chord-tone-before/after-rest :voices voice-ids :input-mode :all)
+              (cr:chord-tone-follows-non-chord-tone :voices voice-ids :input-mode :all)
+              (cr:no-repetition :voices voice-ids :window 3)
+              (cr:resolve-skips :voices voice-ids :resolution-size 4)
+              )))))
        ;; meter domain
        (remove-duplicates time-sigs :test #'equal) 
        ;; voice domains
@@ -204,15 +216,18 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
    (let* ((pitch-lists (tu:at-odd-position cluster-engine-score)))
      (loop
        for pitches in (cddr pitch-lists) ;; remove pitches of scales and chrods
-       for omn-parts in (get-parts-omn score)
+       for part-omn in (get-parts-omn score)
        for instrument in (get-instruments score)
        append (list instrument
-                    (omn-replace :pitch  (tu:mappend #'(lambda (p) 
-                                                         (if (listp p)
-                                                           (chordize (midi-to-pitch p))
-                                                           (list (midi-to-pitch p))))
-                                                     (remove nil pitches))
-                                 omn-parts))))))
+                    (copy-time-signature
+                     part-omn
+                     (omn-replace :pitch  (flatten 
+                                           (tu:mappend #'(lambda (p) 
+                                                           (if (listp p)
+                                                             (chordize (midi-to-pitch p))
+                                                             (list (midi-to-pitch p))))
+                                                       (remove nil pitches)))
+                                  (flatten part-omn))))))))
 
 
 (defun preview-cluster-engine-score (score)
