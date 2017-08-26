@@ -87,7 +87,7 @@
 
 
 (defun even-length-rhythm (length &key total-duration prefix suffix (time-sig '(4 4)))
-  "Some custom algorithm to create rhythmic phrases consisten of even note durations over a certain time. 
+  "Custom algorithm to create rhythmic phrases consisting of even note durations over a certain time. 
 
   Args:
   - length (length value): rhythmic value to repeat
