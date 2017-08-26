@@ -681,6 +681,156 @@ length-expansion-variant
 |#
 
 
+;; source: https://opusmodus.com/forums/topic/894-merge-voices-on-barbeat/?tab=comments#comment-2727
+(defun merge-voices2 (seq insert bar/beat)
+  "Merges multiple monophonic lines resulting in a polyphonic part. 
+
+  Args:
+  - seq (OMN sequence, must be nested): Voice to which other voices are added. The result retains the time signatures of SEQ. 
+  - insert (list of flat OMN sequences): Voices to merge into SEQ. Their time signatures are overwritten by the meter of SEQ.
+  - bar/beat (list): List of start times of inserted sequences. 
+
+  Each INSERT start time is specified in the following format, where <bar-number> is a 1-based bar number (an int), <beat-number> is a 1-based beat number (an int), and <beat-subdivision> is the divisor for the beat number (also an int). 
+
+;;; (<bar-number> (<beat-number> <beat-subdivision>))
+  
+  For example, (3 (2 4)) indicates the 2nd quarter note in the 3rd bar.  
+
+  Examples:
+
+  Merge two OMN sequences.
+  
+;;; (merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4))
+;;;                 '((q a4 a4 a4))
+;;;                 '((2 (2 8))))  
+
+  Merge three sequences.
+  
+;;; (merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4))
+;;;                '((q b5 b5 b5)
+;;;                  (e a4 a4 a4))
+;;;                '((2 (2 8))
+;;;                  (3 (2 16))))
+
+  See also: 
+  The built-in function MERGE-VOICES is similar, but does not support shifting/offsetting added voices in time. 
+  "
+   (car 
+    (last
+     (let ((bar) (beat) (distance))
+       (progn
+         (setf bar (loop for i in bar/beat collect (car i))
+               beat (loop for j in bar/beat collect (cadr j)))
+         (loop 
+           for ba in bar 
+           for be in beat
+           for ins in insert
+           with time-sign = (get-time-signature seq)
+           with ord-time-sign = (get-time-signature seq)
+           
+          do (setf time-sign (if (listp (car time-sign))
+                               (loop for i in time-sign
+                                 when (> (caddr i) 1)
+                                 append (loop repeat (caddr i)
+                                          collect (list (car i) (cadr i)))
+                                 else collect (list (car i) (cadr i)))
+                               (append time-sign))
+                   
+                   distance (if (listp (car time-sign))
+                              (+ (sum (loop repeat (- ba 1)
+                                        for i in time-sign
+                                        collect (/ (car i) (cadr i))))
+                                 (/ (1- (car be)) (cadr be)))
+                              (+ (* (1- ba) (/ (car time-sign) (cadr time-sign)))
+                                 (/ (1- (car be)) (cadr be)))))
+
+           do (setf ins (append (list (neg! distance)) ins))
+           do (setf seq (omn-to-time-signature 
+                         (length-rest-merge 
+                          (flatten (merge-voices (omn-merge-ties seq) ins)))
+                          ord-time-sign))
+           collect seq
+           do (setf time-sign ord-time-sign)))))))
+
+
+
+#|
+(merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4))
+                '(((q a4 a4 q a4 a4)))
+                '((2 (2 4))))
+
+
+(merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4))
+                '((q a4 a4 a4))
+                '((2 (2 8))))
+
+(merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4))
+               '((q b5 b5 b5)
+                 (e a4 a4 a4))
+               '((2 (2 8))
+                 (3 (2 16))))
+|#
+
+
+
+
+#|
+
+;;; Unfinished
+;; TODO:
+;;; - Consider: support leading rests per subscore? Can I do this with append-parts or metric-shift?
+(defun merge-parts (offset-score1 offset-score2)
+  ;;; TODO: revise for arbitrary nuymber of scores
+  ;; (&rest offset-score-pairs)
+  ;;; TODO: revise doc
+  "Mix multiple scores together to run in parallel. Useful, e.g., for creating melody and polyphonic accompaniment or different textures separately, and then mixing them together. 
+
+  Args
+  - scores: see {defun preview-score} for format description of headerless scores. 
+
+  Example:
+
+;;; (let ((material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -))))
+;;;    (mix-parts `(:vln ,material)
+;;;               `(:vlc ,(metric-shift '-h material))))
+"
+  (Let ((score1 (second offset-score1))
+        (score2 (second offset-score2)))
+    (reduce #'(lambda (myscore instr-omn)
+                (let ((instr (first instr-omn))
+                      (seq (second instr-omn)))                    
+                  (if (find instr myscore)
+                    (tu:update-property myscore instr (merge-voices (getf myscore instr) 
+                                                                    (getf score2 instr)))
+                    (append myscore (list instr seq)))))
+            (tu:plist->pairs score2)
+            :initial-value score1)
+    ))
+; metric-shift
+
+; (metric-shift 0 '((q c4)))
+
+;;; TMP test
+(merge-parts '(0 (:vln (q e4)))
+             '(0 (:vln (q g4) :vlc (q c3))))
+
+|#
+
+#|
+
+(merge-parts 0 '(:vln (q e4)) 0 '(:vln (q g4)) 0 '(:vlc (q c3)))
+(merge-parts 0 '(:vln (q e4)) 0 '(:vln (q g4)) 0 '(:vlc (q c3)))
+
+
+(setf voice1 '(-h w c2)
+      voice2 '(h c4 d4)
+      voice3 '(-q q g5 = = =))
+
+(merge-voices voice1 voice2 voice3)
+
+|#
+
+
 (defun get-instruments (score)
   "Returns all instruments of `score', a headerless score (see {defun preview-score} for its format)."
   (tu:at-even-position score))
