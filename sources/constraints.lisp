@@ -184,13 +184,18 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
        collect (list instrument
                      (omn-to-time-signature 
                       (make-omn  
-                       :length lengths
+                       ;; 0 length are acciaccaturas 
+                       :length (mapcar #'(lambda (l) (if (= l 0) 1/8 l))
+                                       lengths)
+                       :articulation (mapcar #'(lambda (l) (if (= l 0) 'acc '-))
+                                             lengths)
                        :pitch (tu:mappend #'(lambda (p) 
                                               (if (listp p)
                                                 (chordize (midi-to-pitch p))
                                                 (list (midi-to-pitch p))))
-                                          (remove nil pitches))
-                       :swallow nil)
+                                          ;; Hack: replace all nil (pitches of rests, but also at end of score) 
+                                          (substitute 60 nil pitches))
+                       :swallow T)
                       time-sigs))))))
 
 ;;; TODO: 
