@@ -191,10 +191,13 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
 |#
 
 
-
+;;; TODO: have keyargs input-parameter and output-parameter separately, at least as options
 (defun map-parts (score fn part-args &key 
 			(parameter nil) 
-                        (shared-args nil))
+                        (input-parameter nil)
+                        (output-parameter nil)
+                        (shared-args nil)
+                        (flatten nil))
   "Create or transform a polyphonic score. The original purpose is for creating/transforming musical textures, i.e., relations between polyphonic parts.
 
   Applies function `fn' to parts in `score': this function is a variant of the standard Lisp function `mapcar', but specialised for scores. A score is represented in the format discussed in the documentation of the function `preview-score'.     
@@ -207,13 +210,15 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
 ;;; 	   '(:vln (4 _)  
 ;;; 	     :vlc (12 _)))
 
-    Args:
-    - score (headerless score): See {defun preview-score} for format description. 
-    - fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
-    - part-args (plist): Alternating instrument keywords (same as in `score') followed by arguments list for `fn' for that instrument/part. If arguments is :skip, then that part is returned unchanged. 
-    - parameter (omn parameter, e.g., :length or :pitch, default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
-    - shared-args (list): For all instruments/parts, these arguments are appended at end end of its part-specific arguments. They are useful, e.g., for keyword arguments. 
-
+  Args:
+  - score (headerless score): See {defun preview-score} for format description. 
+  - fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
+  - part-args (plist): Alternating instrument keywords (same as in `score') followed by arguments list for `fn' for that instrument/part. If arguments is :skip, then that part is returned unchanged. 
+  - parameter (omn parameter, e.g., :length or :pitch, default nil means processing full OMN expression): If `fn' expects only a single OMN parameter to process, then it can be set here. Otherwise, `fn' expects full OMN sequences. 
+  - input-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' argument -- the parameter returned by `fn' can be set separately. If both `input-parameter' and `parameter' are nil, or `input-parameter' is set to :all, then `fn' expects full OMN sequences.
+  - output-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' results that are then inserted into the resulting score -- the parameter expected by `fn' can be set separately. If both `output-parameter' and `parameter' are nil, or `output-parameter' is set to :all, then `fn' returns full OMN sequences.
+  - shared-args (list): For all instruments/parts, these arguments are appended at end end of its part-specific arguments. They are useful, e.g., for keyword arguments. 
+  - flatten (Boolean): If T, the parameter sequence -- encoded by `_' in the argument lists, is flattened before the `fn' is applied.
     
     Examples:
 
@@ -284,17 +289,23 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
 ;;;     :vla (_ :transpose -10 :seed 30)
 ;;;     :vlc (_ :transpose -20 :seed 40))
 ;;;    :shared-args '(:variant ?))
-
-
     "
   ;; catching hard-to-find user error...
   (let* ((instruments (get-instruments score))
          (missing-instruments (remove-if #'(lambda (arg-instr) (member arg-instr instruments)) (get-instruments part-args))))
     (assert (not missing-instruments)
             (part-args)
-            "map-parts: Some instruments in `part-args' don't have a matching instrument in `score'. ~A.~%" missing-instruments))  
+            "map-parts: Some instruments in `part-args' don't have a matching instrument in `score'. ~S.~%" missing-instruments))
+  (assert (not (find 'quote (flatten part-args)))
+          (part-args)
+          "map-parts: Arg `part-args' contains quoted expression. ~S.~%" part-args)
+  (assert (not (find 'quote (flatten shared-args)))
+          (shared-args)
+          "map-parts: Arg `shared-args' contains quoted expression. ~S.~%" shared-args)
   ;;; TODO: not sure whether using a hash-table adds efficiency -- after all, I only need to access each element in plist score only once
-  (let ((parts (make-hash-table :test #'equal)))
+  (let ((input-parameter (if input-parameter input-parameter parameter))
+        (output-parameter (if output-parameter output-parameter parameter))
+        (parts (make-hash-table :test #'equal)))
     ;; fill hash table, using leading keywords as keys
     (loop for part in (tu:plist->pairs score)
       do (setf (gethash (first part) parts) part))
@@ -308,18 +319,21 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
        collect (if (equal fn-args :skip)
                  part ; no processing
                  (cons instrument
-                       (let ((result (apply fn (append (substitute 
-                                                        (if parameter
-                                                          (omn parameter part-omn)
-                                                          part-omn)
-                                                        '_ fn-args)
-                                                       shared-args))))
+                       (let* ((seq (if (or (not input-parameter)
+                                           (eql :all input-parameter))
+                                     part-omn
+                                     (omn input-parameter part-omn)))
+                              (result (apply fn (append (substitute
+                                                         (if flatten (flatten seq) seq)
+                                                         '_ fn-args)
+                                                        shared-args))))
                          (list 
-                          (if parameter
-                            ; (omn-replace parameter result part-omn)
+                          (if (or (not output-parameter)
+                                  (eql :all output-parameter))
+                            result
                             (copy-time-signature part-omn
-                             (omn-replace parameter (flatten result) (flatten part-omn)))
-                            result)))))
+                                                 (omn-replace output-parameter (flatten result) (flatten part-omn)))
+                            )))))
        ))))
 
 ;; testing / generating examples
