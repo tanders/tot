@@ -1,5 +1,66 @@
 * Torsten's Opusmodus Tools (TOT)
 
-This [[https://common-lisp.net/project/asdf/][ASDF]] system provides a collection of definitions that extend the algorithmic composition system Opusmodus (http://opusmodus.com/). 
+This [[https://common-lisp.net/project/asdf/][ASDF]] system provides a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]]. 
 
 Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations :)
+
+
+* Installation
+  
+  The instructions below use git for the installation. Even though it is a bit more involved at first, it allows for convenient updates later, and you can even contribute to the development. 
+
+  Install [[https://git-scm.com][git]] (if you have not done already). Also, you should register at [[https://github.com][GitHub]].
+    
+  Download the present software with git into a directory where [[https://common-lisp.net/project/asdf/][ASDF]] can find the software, e.g., [[https://common-lisp.net/project/asdf/asdf/Quick-start-summary.html#Quick-start-summary][~/common-lisp/]]. For example, on UNIX incl. OS X you can enter the following commands at the command line (after you created the directory =~/common-lisp/=). Note that =$= is the terminal prompt here, you do not need to enter that :)
+
+#+begin_src bash :tangle yes
+$ cd ~/common-lisp
+$ git clone https://github.com/tanders/tot.git
+#+end_src
+
+  You will be asked for your GitHub username and password.
+  
+  This library depends on several other libraries, which you can install in the same way.
+  
+#+begin_src bash :tangle yes
+$ cd ~/common-lisp
+$ git clone https://github.com/tanders/string-tools.git
+$ git clone https://github.com/tanders/ta-utilities.git
+$ git clone https://github.com/tanders/fenv.git
+$ git clone https://github.com/tanders/cluster-engine.git 
+$ git clone https://github.com/tanders/cluster-rules.git
+#+end_src
+
+
+** Updating your software
+
+   If there are [[https://github.com/tanders/tot/commits/master][changes]], you can update your software later at the terminal in the following way.
+
+#+begin_src bash :tangle yes
+$ cd ~/common-lisp/tot
+$ git pull
+#+end_src
+
+  
+
+* Usage 
+
+  This library is an [[https://common-lisp.net/project/asdf/][ASDF]] system (ASDF is the de facto standard for building Common Lisp software), and you can load it into your Lisp compiler as follows. All dependency libraries are loaded automatically as well. 
+   
+#+begin_src lisp :tangle yes
+(require :tot)
+#+end_src  
+
+  For most convenient use within Opusmodus, you can drag and drop the whole folder of this library in an Opusmodus project that will use this library. Then, visit the HTML documentation of this library from within Opusmodus: open the =tot=, and then its =doc= folder and click on an HTML file, say =index.html=. You can now browse the reference documentation of the library, which explains its individual definitions. Most importantly, you can directly run all example code in the documentation from within Opusmodus (thanks, Janusz Podrazik).
+    
+  This collection of definitions is roughly sorted in the file structure and documentation according to certain musical aspects.  
+
+  The file =score= deserves a special mention, because it defines a little library in his own. It provides a collection of tools to transform polyphonic scores in various ways. 
+
+
+* License
+
+  Distributed under the GNU General Public License.
+  
+  Copyright © 2017 Torsten Anders
+
