@@ -2,16 +2,20 @@
 
 (in-package :asdf-user)
 
+#-opusmodus
+(error "This library depends on the commercial composition system Opusmodus, http://opusmodus.com.")
+
 (asdf:defsystem tot
   :description "Torsten's Opusmodus Tools (TOT) is a collection of definitions that extend the algorithmic composition system Opusmodus (http://opusmodus.com/). Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicabiliy) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations." 
   :author "Torsten Anders <torsten.anders@beds.ac.uk>"
   :licence "GNU General Public License, Version 3"
-  :version "0.2"
+  :version "0.3"
   :serial t ;; the dependencies are linear.
   :components (; (:file "sources/package")
 	       ;; (:file "sources/macros")
 	       (:file "sources/utils")
 	       (:file "sources/OMN-utils")
+	       (:file "sources/score")	       
 	       (:file "sources/rhythm")
 	       (:file "sources/pitch")
 	       (:file "sources/velocity")
