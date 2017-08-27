@@ -1,6 +1,6 @@
 * Torsten's Opusmodus Tools (TOT)
 
-This [[https://common-lisp.net/project/asdf/][ASDF]] system provides a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]]. 
+This library provides a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]]. 
 
 Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations :)
 
@@ -51,7 +51,7 @@ $ git pull
 (require :tot)
 #+end_src  
 
-  For most convenient use within Opusmodus, you can drag and drop the whole folder of this library in an Opusmodus project that will use this library. Then, visit the HTML documentation of this library from within Opusmodus: open the =tot=, and then its =doc= folder and click on an HTML file, say =index.html=. You can now browse the reference documentation of the library, which explains its individual definitions. Most importantly, you can directly run all example code in the documentation from within Opusmodus (thanks, Janusz Podrazik).
+  For most convenient use within Opusmodus, you can drag and drop the whole folder of this library in the browser of an Opusmodus project. Then, visit the HTML documentation of this library from within Opusmodus: open the =tot=, and then its =doc= folder and click on an HTML file, say =index.html=. You can now browse the reference documentation of the library, which explains its individual definitions. Most importantly, you can directly run all example code in the documentation from within Opusmodus (thanks, Janusz Podrazik).
     
   This collection of definitions is roughly sorted in the file structure and documentation according to certain musical aspects.  
 

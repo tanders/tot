@@ -1,0 +1,1435 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="../cludg.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>
+score</title>
+</head>
+<body>
+<div id="navbar">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<colgroup span="3">
+<col width="0*"/>
+<col width="0*"/>
+<col width="1*"/>
+</colgroup>
+<tr>
+<td align="left" valign="baseline">
+<a href="OMN-utils.html">
+Prev:&nbsp;OMN-utils</a>
+<br/>
+<a href="rhythm.html">
+Next:&nbsp;rhythm</a>
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left" valign="baseline">
+<span class="upchain">
+<b>
+score</b>
+<br/>
+<a href="../index.html">
+Index</a>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class="cludg-doc-body">
+<h2>
+score
+</h2>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Function summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180436">
+append-parts</a>
+</td>
+<td class="summary">
+<em>&amp;rest</em> scores</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180434">
+apply-part</a>
+</td>
+<td class="summary">
+instrument score fn args <em>&amp;key</em> (parameter nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180447">
+extract-parts</a>
+</td>
+<td class="summary">
+instruments score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180431">
+generate-parts</a>
+</td>
+<td class="summary">
+fn part-args <em>&amp;key</em> (shared-args nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180439">
+get-instruments</a>
+</td>
+<td class="summary">
+score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180440">
+get-part-omn</a>
+</td>
+<td class="summary">
+instrument score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180441">
+get-parts-omn</a>
+</td>
+<td class="summary">
+score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180432">
+map-parts</a>
+</td>
+<td class="summary">
+score fn part-args <em>&amp;key</em> (parameter nil) (input-parameter nil) (output-parameter nil) (shared-args nil) (flatten nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180433">
+map-parts-equally</a>
+</td>
+<td class="summary">
+score fn args <em>&amp;key</em> (parameter nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180438">
+merge-voices2</a>
+</td>
+<td class="summary">
+seq insert bar/beat</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180437">
+mix-parts</a>
+</td>
+<td class="summary">
+<em>&amp;rest</em> scores</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180430">
+preview-score</a>
+</td>
+<td class="summary">
+score <em>&amp;key</em> (name 'test-score) (instruments *default-preview-score-instruments*) (header *default-preview-score-header*)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180445">
+remove-part</a>
+</td>
+<td class="summary">
+instrument score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180446">
+remove-parts</a>
+</td>
+<td class="summary">
+instruments score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180442">
+replace-instruments</a>
+</td>
+<td class="summary">
+new old score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180443">
+replace-part-omn</a>
+</td>
+<td class="summary">
+instrument new-part score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180444">
+split-part</a>
+</td>
+<td class="summary">
+instrument orig-score score-to-insert</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g180435">
+_append-two-parts</a>
+</td>
+<td class="summary">
+score1 score2</td>
+</tr>
+</table>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g180427">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*default-preview-score-instruments*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Settings for each instrument used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. For format of these settings are the same as instrument settings for `def-score' with keywords like <span class="keyword">
+:sound, </span>
+<span class="keyword">
+:channel </span>
+etc. -- except for they key <span class="keyword">
+:omn. </span>
+
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g180428">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*default-preview-score-header*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like <span class="keyword">
+:title, </span>
+<span class="keyword">
+:key-signature </span>
+etc. 
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g180429">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*preview-score-return-value*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Controls the return value of function preview-score. 
+ </p>
+<p>
+Possible values are 
+ </p>
+<ul>
+<li>
+<p>
+<span class="keyword">
+:headerless-score </span>
+- the input score to preview-score 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:full-score </span>
+- the full def-score expression generated 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:score </span>
+- the resulting score object 
+ </p>
+</li>
+</ul>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180430">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+preview-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score <em>&amp;key</em> (name 'test-score) (instruments *default-preview-score-instruments*) (header *default-preview-score-header*)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Notates and plays a score in a format slightly simpler than expected by def-score, i.e., without its header. 
+ 
+ Args: 
+ </p>
+<ul>
+<li>
+<p>
+score (plist): a headerless score. See below for its format. 
+ </p>
+</li>
+<li>
+<p>
+name (symbol): The score name. 
+ </p>
+</li>
+<li>
+<p>
+instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like <span class="keyword">
+:sound, </span>
+<span class="keyword">
+:channel </span>
+etc. -- except for they key <span class="keyword">
+:omn. </span>
+
+ </p>
+</li>
+<li>
+<p>
+header (plist): The format is the same as the header settings for `def-score' with keywords like <span class="keyword">
+:title, </span>
+<span class="keyword">
+:composer, </span>
+<span class="keyword">
+:key-signature </span>
+etc. 
+ 
+ </p>
+</li>
+</ul>
+<p>
+Score format: 
+ </p>
+<pre>
+    (&lt;part1-name-keyword&gt; &lt;part1-OMN&gt; 
+      &lt;part2-name-keyword&gt; &lt;part2-OMN&gt; 
+      ...)  </pre>
+<p>
+
+ Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (preview-score 
+      '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
+        :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))) 
+      :instruments '(:vln (:program 'violin :sound 'gm) 
+     	            :vlc (:program 'cello :sound 'gm)) 
+      :header '(:title &quot;Opus magnum&quot; 
+     	       :tempo 80)) </pre>
+<p>
+The return value is controlled by {defparameter *preview-score-return-value*}. 
+ </p>
+<p>
+BUG: cannot specify score layout as header argument. 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180431">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+generate-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+fn part-args <em>&amp;key</em> (shared-args nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Generate multiple parts of a polyphonic score by calling a function returning musical material multiple times for multiple parts. 
+ 
+ Returns a headerless score. <a href="score.html#_g180430">
+preview-score</a>
+describes this format. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+fn: A function returning an OMN sequence or a sequence of lengths. 
+ </p>
+</li>
+<li>
+<p>
+part-args (plist): Alternating instrument keywords followed by arguments list for `fn' for that instrument/part. 
+ </p>
+</li>
+<li>
+<p>
+shared-args (list): For all instruments/parts, these arguments are appended at end end of its part-specific arguments. They are useful, e.g., for keyword arguments. 
+ 
+ 
+ Examples: 
+ </p>
+</li>
+</ul>
+<p>
+A random rhythm generated by calling gen-white-noise and vector-to-length with different arguments for different parts. 
+ </p>
+<pre>
+    (generate-parts 
+       #'(lambda (n length low high)  
+           (vector-to-length length low high (gen-white-noise n))) 
+       '(:vln (10 1/12 1 4) 
+         :vlc (12 1/16 1 4))) </pre>
+<p>
+A random rhythm using seed and shared arguments. 
+ </p>
+<pre>
+    (generate-parts 
+       #'(lambda (seed n length low high)  
+           (vector-to-length length low high (gen-white-noise n :seed seed))) 
+       '(:vln (1) 
+         :vlc (2)) 
+       :shared-args '(10 1/12 1 4)) </pre>
+<p>
+NOTE: A polyphonic score of only pitches or other parameters without lengths can be generated, but not previewed. 
+ </p>
+<p>
+</p>
+<pre>
+    (preview-score 
+      (generate-parts 
+       #'(lambda (n range)  
+           (vector-to-pitch range (gen-white-noise n))) 
+       '(:vln (10 (a3 a4)) 
+         :vlc (12 (g2 c4))))) 
+     &gt; Error: No length specified before first pitch  </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180432">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score fn part-args <em>&amp;key</em> (parameter nil) (input-parameter nil) (output-parameter nil) (shared-args nil) (flatten nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Create or transform a polyphonic score. The original purpose is for creating/transforming musical textures, i.e., relations between polyphonic parts. 
+ </p>
+<p>
+Applies function `fn' to parts in `score': this function is a variant of the standard Lisp function `mapcar', but specialised for scores. A score is represented in the format discussed in the documentation of the function `preview-score'. 
+ 
+ Additional arguments for `fn' can be specified in `part-args', and these argument lists can be different for each part. However, one argument is the part of the score. This argument is marked by an underscore (_) in the argument lists. In the following example, the function `pitch-transpose' is applied to a score with two parts. This function has two required arguments, a transposition interval (measured in semitones), and the pitch sequence or OMN to transpose. The transposition interval for the first part is 4 (major third upwards), and the underscore marks the position of the violin part to transpose, etc. 
+ 
+ </p>
+<pre>
+    (map-parts '(:vln ((h e4))  
+     	     :vlc ((h c3)))  
+     	   #'pitch-transpose   
+     	   '(:vln (4 _)   
+     	     :vlc (12 _))) </pre>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+score (headerless score): See <a href="score.html#_g180430">
+preview-score</a>
+for format description. 
+ </p>
+</li>
+<li>
+<p>
+fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
+ </p>
+</li>
+<li>
+<p>
+part-args (plist): Alternating instrument keywords (same as in `score') followed by arguments list for `fn' for that instrument/part. If arguments is <span class="keyword">
+:skip, </span>
+then that part is returned unchanged. 
+ </p>
+</li>
+<li>
+<p>
+parameter (omn parameter, e.g., <span class="keyword">
+:length </span>
+or <span class="keyword">
+:pitch, </span>
+default nil means processing full OMN expression): If `fn' expects only a single OMN parameter to process, then it can be set here. Otherwise, `fn' expects full OMN sequences. 
+ </p>
+</li>
+<li>
+<p>
+input-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' argument -- the parameter returned by `fn' can be set separately. If both `input-parameter' and `parameter' are nil, or `input-parameter' is set to <span class="keyword">
+:all, </span>
+then `fn' expects full OMN sequences. 
+ </p>
+</li>
+<li>
+<p>
+output-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' results that are then inserted into the resulting score -- the parameter expected by `fn' can be set separately. If both `output-parameter' and `parameter' are nil, or `output-parameter' is set to <span class="keyword">
+:all, </span>
+then `fn' returns full OMN sequences. 
+ </p>
+</li>
+<li>
+<p>
+shared-args (list): For all instruments/parts, these arguments are appended at end end of its part-specific arguments. They are useful, e.g., for keyword arguments. 
+ </p>
+</li>
+<li>
+<p>
+flatten (Boolean): If T, the parameter sequence -- encoded by `_' in the argument lists, is flattened before the `fn' is applied. 
+ 
+ Examples: 
+ </p>
+</li>
+</ul>
+<p>
+Metric shifting of parts (see {defun metric-shift}). 
+ </p>
+<p>
+</p>
+<pre>
+    (map-parts '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
+                  :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))) 
+                 #'metric-shift 
+                 '(:vln (-q _) 
+                   :vlc (-h _) 
+                  )) </pre>
+<p>
+An OMN expression to use by several further examples below. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf material '((-3h fs4 pp eb4 &lt;) (q e4 &lt; fs4 &lt;) (3h gs4 mp&gt; a4 &gt; bb4 &gt;) (q a4 pp -) (-5h - g4 pp leg eb4 &lt; leg d4 &lt; leg) (q bb4 &lt; e4 &lt;) (5h g4 mp&gt; leg b4 &gt; leg a4 &gt; leg bb4 &gt; leg d4 &gt; leg) (q gs4 pp -))) </pre>
+<p>
+A strict canon formed with the given material (without any counterpoint rules <span class="keyword">
+:) </span>
+For different parts the material is metrically shifted and transposed. 
+ </p>
+<p>
+Note also that map-parts calls can be nested. 
+ </p>
+<p>
+</p>
+<pre>
+    (map-parts  
+       (map-parts `(:vl1 ,material 
+                    :vl2 ,material   
+                    :vla ,material 
+                    :vlc ,material) 
+                  #'metric-shift  
+                  '(:vl1 :skip ;; leave part unchanged 
+                    :vl2 (-q _)   
+                    :vla (-h _) 
+                    :vlc (-h. _))) 
+       #'pitch-transpose 
+       '(:vl1 (6 _)  
+         :vl2 (4 _)   
+         :vla (2 _) 
+         :vlc :skip)   
+       ) </pre>
+<p>
+Simple homorhythmic texture created by randomised transpositions. Each part shares a similar overall pitch profile. 
+ </p>
+<p>
+Note that calls can be more concise with a (lambda) function that nests calls to transformation functions -- instead of nesting map-parts as shown above. 
+ </p>
+<p>
+</p>
+<pre>
+    (map-parts `(:vl1 ,material 
+                  :vl2 ,material   
+     	     :vla ,material 
+     	     :vlc ,material) 
+     	   #'(lambda (transpose seq) 
+     	       ;; static transposition for moving parts into different registers 
+     	       (pitch-transpose  
+     		transpose  
+     		;; randomised transposition of notes in parts 
+     		(pitch-transpose-n (rnd 10 :low -2 :high 2) seq))) 
+     	   '(:vl1 (7 _)  
+     	     :vl2 (0 _)   
+     	     :vla (-10 _) 
+     	     :vlc (-20 _))) </pre>
+<p>
+Homophonic texture created by random pitch variants (retrograde, inversion etc.). The global pitch profiles of parts differ here, in contrast to the previous example. 
+ </p>
+<p>
+</p>
+<pre>
+    (map-parts  
+       `(:vl1 ,material 
+         :vl2 ,material   
+         :vla ,material 
+         :vlc ,material) 
+       #'pitch-variant  
+       `(:vl1 (_ :transpose 7 :seed 10)  
+         :vl2 (_ :transpose 0 :seed 20)   
+         :vla (_ :transpose -10 :seed 30) 
+         :vlc (_ :transpose -20 :seed 40)) 
+        :shared-args '(:variant ?)) </pre>
+<p>
+
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180433">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-parts-equally&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score fn args <em>&amp;key</em> (parameter nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Variant of map-parts where all args are shared args. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+score (headerless score): See <a href="score.html#_g180430">
+preview-score</a>
+for format description. 
+ </p>
+</li>
+<li>
+<p>
+fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
+ </p>
+</li>
+<li>
+<p>
+args: Arguments list for `fn'. One argument is the part of the score. This argument is marked by an underscore (_) in the argument lists. 
+ </p>
+</li>
+<li>
+<p>
+parameter (omn parameter, e.g., <span class="keyword">
+:length </span>
+or <span class="keyword">
+:pitch, </span>
+default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
+ 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (map-parts-equally 
+      '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
+        :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))) 
+      #'pitch-transpose 
+      '(2 _) 
+      :parameter :pitch) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180434">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+apply-part&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instrument score fn args <em>&amp;key</em> (parameter nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Function applied to a single part of `score'. 
+ 
+ Args: 
+ </p>
+<ul>
+<li>
+<p>
+instrument (symbol): The label of a part in `score'. 
+ </p>
+</li>
+<li>
+<p>
+score (headerless score): See <a href="score.html#_g180430">
+preview-score</a>
+for format description. 
+ </p>
+</li>
+<li>
+<p>
+fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
+ </p>
+</li>
+<li>
+<p>
+args: Arguments list for `fn'. One argument is the part of the score. This argument is marked by an underscore (_) in the argument lists. 
+ </p>
+</li>
+<li>
+<p>
+parameter (omn parameter, e.g., <span class="keyword">
+:length </span>
+or <span class="keyword">
+:pitch, </span>
+default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
+ 
+ 
+ Example: 
+ </p>
+</li>
+</ul>
+<pre>
+    (apply-part 
+      :vlc 
+      '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
+        :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))) 
+      #'pitch-transpose 
+      '(2 _) 
+      :parameter :pitch) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180435">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_append-two-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score1 score2</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180436">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+append-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+<em>&amp;rest</em> scores</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Concatenate multiple scores so that they form a sequence in the resulting score. The OMN expression of instruments that are shared between input scores are appended, while instruments that are missing in some input score are padded with rests for the duration of that score. 
+ </p>
+<p>
+Note that the function assumes all parts in each score to contain the same overall duration and metric structure. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+scores: see <a href="score.html#_g180430">
+preview-score</a>
+for format description of headerless scores. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (setf material '((-3h fs4 pp eb4 &lt;) (q e4 &lt; fs4 &lt;) (3h gs4 mp&gt; a4 &gt; bb4 &gt;) (q a4 pp -))) 
+          
+     (append-parts `(:vl1 ,material 
+                     :vl2 ,(gen-retrograde material :flatten T)) 
+                   `(:vl1 ,material 
+                     :vlc ,(gen-retrograde material :flatten T)) 
+                   `(:vl2 ,material 
+                     :vlc ,(gen-retrograde material :flatten T))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180437">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+mix-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+<em>&amp;rest</em> scores</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Mix multiple scores together to run in parallel. Useful, e.g., for creating melody and polyphonic accompaniment or different textures separately, and then mixing them together. 
+ </p>
+<p>
+Args 
+ </p>
+<ul>
+<li>
+<p>
+scores: see <a href="score.html#_g180430">
+preview-score</a>
+for format description of headerless scores. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (let ((material '((-3h fs4 pp eb4 &lt;) (q e4 &lt; fs4 &lt;) (3h gs4 mp&gt; a4 &gt; bb4 &gt;) (q a4 pp -)))) 
+        (mix-parts `(:vln ,material) 
+                   `(:vlc ,(metric-shift '-h material)))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180438">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+merge-voices2&nbsp;&nbsp;</td>
+<td class="lambda-list">
+seq insert bar/beat</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Merges multiple monophonic lines resulting in a polyphonic part. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+seq (OMN sequence, must be nested): Voice to which other voices are added. The result retains the time signatures of SEQ. 
+ </p>
+</li>
+<li>
+<p>
+insert (list of flat OMN sequences): Voices to merge into SEQ. Their time signatures are overwritten by the meter of SEQ. 
+ </p>
+</li>
+<li>
+<p>
+bar/beat (list): List of start times of inserted sequences. 
+ </p>
+</li>
+</ul>
+<p>
+Each INSERT start time is specified in the following format, where &lt;bar-number&gt; is a 1-based bar number (an int), &lt;beat-number&gt; is a 1-based beat number (an int), and &lt;beat-subdivision&gt; is the divisor for the beat number (also an int). 
+ </p>
+<p>
+</p>
+<pre>
+    (&lt;bar-number&gt; (&lt;beat-number&gt; &lt;beat-subdivision&gt;)) </pre>
+<p>
+
+ For example, (3 (2 4)) indicates the 2nd quarter note in the 3rd bar. 
+ </p>
+<p>
+Examples: 
+ </p>
+<p>
+Merge two OMN sequences. 
+ 
+ </p>
+<pre>
+    (merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4)) 
+                     '((q a4 a4 a4)) 
+                     '((2 (2 8))))   </pre>
+<p>
+Merge three sequences. 
+ 
+ </p>
+<pre>
+    (merge-voices2 '((q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4) (q c4 c4 c4 c4)) 
+                    '((q b5 b5 b5) 
+                      (e a4 a4 a4)) 
+                    '((2 (2 8)) 
+                      (3 (2 16)))) </pre>
+<p>
+See also: 
+ The built-in function MERGE-VOICES is similar, but does not support shifting/offsetting added voices in time. 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180439">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-instruments&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns all instruments of `score', a headerless score (see <a href="score.html#_g180430">
+preview-score</a>
+for its format). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180440">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-part-omn&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instrument score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns the part (OMN expression) of `instrument' in `score', a headerless score (see <a href="score.html#_g180430">
+preview-score</a>
+for its format). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180441">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-parts-omn&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns a list of all OMN parts of `score', a headerless score (see <a href="score.html#_g180430">
+preview-score</a>
+for its format). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180442">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+replace-instruments&nbsp;&nbsp;</td>
+<td class="lambda-list">
+new old score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Replaces old instruments by new instruments in a score. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+new (list of keywords): New instruments to use. 
+ </p>
+</li>
+<li>
+<p>
+old (list of keywords): List of instruments in `score' to be replaced. Must have same length as `new'. 
+ </p>
+</li>
+<li>
+<p>
+score (a headerless score): See <a href="score.html#_g180430">
+preview-score</a>
+for its format. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (replace-instruments '(:trp :trb) '(:vl2 :vlc) 
+     '(:vl1 (h g4) 
+       :vl2 (h e4) 
+       :vla (h c4) 
+       :vlc (h c3))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180443">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+replace-part-omn&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instrument new-part score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Replaces the part (OMN expression) of `instrument' in `score' with `new-part'. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (replace-part-omn  :vlc 
+      '((h g3)) 
+      '(:vln ((h e4)) 
+        :vlc ((h c3)))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180444">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+split-part&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instrument orig-score score-to-insert</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Replaces part of `instrument' in `orig-score' with `score-to-insert'. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (split-part :vl2 
+     '(:vl1 (h g4) 
+       :vl2 (h e4) 
+       :vla (h c4) 
+       :vlc (h c3)) 
+      '(:vl2_div1 (h f4) 
+        :vl2_div2 (h e4))) </pre>
+<p>
+Split divisi strings into parts 
+ </p>
+<p>
+(setf my-score 
+ '(:vl1 (h g4b4 g4a4) 
+ <span class="keyword">
+:vl2 </span>
+(h e4 d4) 
+ <span class="keyword">
+:vla </span>
+(h c4 b3) 
+ <span class="keyword">
+:vlc </span>
+(h c3 g3))) 
+ </p>
+<p>
+(setf divisi-part (single-events (pitch-melodize (get-part-omn <span class="keyword">
+:vl1 </span>
+my-score)))) 
+ </p>
+<p>
+(preview-score 
+ (split-part <span class="keyword">
+:vl1 </span>
+
+ my-score 
+ `(:vl1_div1 ,(flatten (tu:at-even-position divisi-part)) 
+ <span class="keyword">
+:vl1_div2 </span>
+,(flatten (tu:at-odd-position divisi-part))))) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180445">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+remove-part&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instrument score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Removes `instrument' and its OMN expression from `score'. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+(remove-part <span class="keyword">
+:vl2 </span>
+
+ '(:vl1 (h g4) 
+ <span class="keyword">
+:vl2 </span>
+(h e4) 
+ <span class="keyword">
+:vla </span>
+(h c4) 
+ <span class="keyword">
+:vlc </span>
+(h c3))) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180446">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+remove-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instruments score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Removes all `instruments' and their OMN expressions from `score'. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (remove-parts '(:vl1 :vl2) 
+     '(:vl1 (h g4) 
+       :vl2 (h e4) 
+       :vla (h c4) 
+       :vlc (h c3))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g180447">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+extract-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instruments score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Extracts all `instruments' and their OMN expressions from `score'. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (extract-parts '(:vl1 :vla) 
+     '(:vl1 (h g4) 
+       :vl2 (h e4) 
+       :vla (h c4) 
+       :vlc (h c3))) </pre>
+</div>
+</div>
+</div>
+<div class="cludg-footer">
+Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
+CLDOC</a>
+- 2017-08-27 12:17:12</div>
+</body>
+</html>

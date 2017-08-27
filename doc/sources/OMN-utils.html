@@ -21,8 +21,8 @@ OMN-utils</title>
 <a href="utils.html">
 Prev:&nbsp;utils</a>
 <br/>
-<a href="rhythm.html">
-Next:&nbsp;rhythm</a>
+<a href="score.html">
+Next:&nbsp;score</a>
 </td>
 <td>
 &nbsp;&nbsp;&nbsp;&nbsp;</td>
@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182377">
+<a href="OMN-utils.html#_g180419">
 copy-time-signature</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ music-with-time-signature music-to-rebar</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182380">
+<a href="OMN-utils.html#_g180422">
 count-notes</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ notes</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182378">
+<a href="OMN-utils.html#_g180420">
 edit-omn</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ type notation fun <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182383">
+<a href="OMN-utils.html#_g180425">
 length-add</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ length-add</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182382">
+<a href="OMN-utils.html#_g180424">
 length-subtract</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ length-subtract</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182379">
+<a href="OMN-utils.html#_g180421">
 note-no</a>
 </td>
 <td class="summary">
@@ -97,32 +97,16 @@ music</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g182381">
+<a href="OMN-utils.html#_g180423">
 phrase-lengths</a>
 </td>
 <td class="summary">
 lengths</td>
 </tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="OMN-utils.html#_g182384">
-plotter</a>
-</td>
-<td class="summary">
-data <em>&amp;optional</em> (number 100)</td>
-</tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="OMN-utils.html#_g182385">
-pprint-part</a>
-</td>
-<td class="summary">
-part <em>&amp;optional</em> (stream *standard-output*)</td>
-</tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182377">
+<a id="_g180419">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -150,7 +134,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182378">
+<a id="_g180420">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -248,7 +232,7 @@ More information at {https://opusmodus.com/forums/topic/799-user-functions-suppo
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182379">
+<a id="_g180421">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -276,7 +260,7 @@ Returns the number of notes in music, which is a list of lengths values of OMN e
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182380">
+<a id="_g180422">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -304,7 +288,7 @@ Returns number of notes (ignoring rests) in length list or other OMN expression.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182381">
+<a id="_g180423">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -341,7 +325,7 @@ length: lengths or OMN (list or list of list).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182382">
+<a id="_g180424">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -378,7 +362,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182383">
+<a id="_g180425">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -400,7 +384,7 @@ length-add&nbsp;&nbsp;</td>
 </div>
 <div class="doc-body">
 <p>
-Subtraction for OMN length values. 
+Addition of OMN length values. 
  </p>
 <p>
 Example: 
@@ -410,81 +394,10 @@ Example:
      =&gt; wq </pre>
 </div>
 </div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g182384">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-plotter&nbsp;&nbsp;</td>
-<td class="lambda-list">
-data <em>&amp;optional</em> (number 100)</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doc-body">
-<p>
-Aux function for plotting fenvs 
- </p>
-</div>
-</div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g182385">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-pprint-part&nbsp;&nbsp;</td>
-<td class="lambda-list">
-part <em>&amp;optional</em> (stream *standard-output*)</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doc-body">
-<p>
-Pretty prints a part one bar a time, adding a bar line comment before each bar. 
- </p>
-<p>
-Args: 
- </p>
-<ul>
-<li>
-<p>
-part: nested OMN list. 
- </p>
-</li>
-</ul>
-<p>
-Example: 
- </p>
-<pre>
-    (pprint-part '((q c4 d4 e4) (h f4 q e4) (h. d2))) </pre>
-</div>
-</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-08-18 14:43:30</div>
+- 2017-08-27 12:17:12</div>
 </body>
 </html>

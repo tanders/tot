@@ -85,6 +85,7 @@
   Example:
 
 ;;; (setf my-motif '((q. c4 e d4 q. e4 e f4) (h g4 -h)))
+
 ;;; (condense my-motif
 ;;;           #'(lambda (dur pitch &rest other-args)  
 ;;;               (> (omn-encode dur) 1/4)))
