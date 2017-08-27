@@ -172,7 +172,7 @@
 
 
 (defun length-add (&rest length-values)
-  "Subtraction for OMN length values.
+  "Addition of OMN length values.
 
   Example:
 ;;; (length-add 'w 'q)
@@ -180,17 +180,20 @@
   (first (omn-decode (list (apply #'+ (omn-encode length-values))))))
  
 
-
+#|
 ;;; not needed anymore, as CTR-1 does conveniently plot lists/vectors of numbers now
 (defun plotter (data &optional (number 100))
-  "Aux function for plotting fenvs"
+  "Aux function for plotting fenvs
+
+  Meanwhile made redundant by new Opusmodus builtin functionality. Instead use {defun fe:fenv->vector} and Tools > Plot > Numbers and friends."
   (list-plot (cond ((fe:fenv? data) (fe:fenv->vector data number))
                    ((and (listp data) (every #'fe:fenv? data))
                     (mapcar #'(lambda (xs) (fe:fenv->vector xs number)) data))
                    (T data))
 	     :join-points T :point-radius 2))
+|#
 
-
+#|
 (setf *print-pretty* t
       *print-miser-width* 0
       *print-right-margin* 80)
@@ -202,7 +205,9 @@
   - part: nested OMN list.
 
   Example:
-  ;;; (pprint-part '((q c4 d4 e4) (h f4 q e4) (h. d2)))"
+  ;;; (pprint-part '((q c4 d4 e4) (h f4 q e4) (h. d2)))
+
+  Meanwhile made redundant by new Opusmodus builtin functionality: Tools > PPrint Expression, and Tools > PPrint Last Score"
   (pprint-logical-block 
       (stream nil :prefix "(" :suffix ")") 
     (pprint-logical-block (stream part) 
@@ -217,6 +222,7 @@
              (prin1 bar stream))))
     (pprint-indent :block -1 stream) 
     (pprint-newline :mandatory stream)))
+|#
 
 #|
 (pprint-part 
