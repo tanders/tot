@@ -22,7 +22,7 @@
 
 
 (defun edit-omn (type notation fun &key (flat T))
-  "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise functions your functions to support omn notation as input.
+  "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
   Args:
   - type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
@@ -63,7 +63,7 @@
                                     (getf params type))))
                (tu:remove-properties (if type-is-length?
                                        '(:length :duration)
-                                       type)
+                                       (list type))
                                      params)
                ))))
     ;; notation is plain parameter list
