@@ -21,16 +21,17 @@
                                         ;;; TODO: consider allowing to overwrite pitch domain
                                         ; pitch-domains
                                         (rules nil))
+  ;; TMP: unused arg doc
+  ; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
   "CSP transforming the input `score' such that it follows the underlying harmony specified. 
   The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied.
   
   Args:
-  - score (headerless score): See {defun preview-score} for its format.
+  - score (headerless score): See {defun preview-score} for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations.
   - harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord changes of the underlying harmony 
   - scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony
   - constrain-pitch-profiles? (Boolean): Whether to constrain the pitch profile
   - constrain-pitch-intervals? (Boolean): Whether to constrain the pitch intervals
-TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
   - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
     If `rules' is nil, then some default rule set is used. 
 
