@@ -3,6 +3,11 @@
 ;; openmusic package
 (in-package :om)
 
+
+;; articulation to display a score that is no solution
+(add-text-attributes
+ '(no-solution "no solution"))  
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Functionality depending on the libraries Cluster Engine and Cluster Rules
@@ -87,7 +92,7 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
                       (get-time-signature first-part))))
      (copy-cluster-engine-pitches-to-score ; cluster-engine-score 
       score
-      (cr:cluster-engine 
+      (cr:cluster-engine
        (apply #'max (mapcar #'count-notes parts))
        ;; rules
        (let (;; position of all voices in score starting from 2 after scales and chords
@@ -169,35 +174,39 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
                        ((1/4) (1/8))
                        ((60) (61))))
   :instruments '(:vln :vla)))
-  "
-  (let* ((length-lists (butlast (tu:at-even-position cluster-engine-score)))
-         (pitch-lists (tu:at-odd-position cluster-engine-score))
-         (time-sigs (mapcar #'(lambda (ts) (append ts '(1)))
-                            (first (last cluster-engine-score)))))
-    (tu:one-level-flat 
-     (loop 
-       for lengths in length-lists
-       for pitches in pitch-lists
-       for instrument in (or instruments
-                             (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
-                                     (gen-integer 1 (length length-lists))))
-       ; for time-sig in time-sigs
-       collect (list instrument
-                     (omn-to-time-signature 
-                      (make-omn  
-                       ;; 0 length are acciaccaturas 
-                       :length (mapcar #'(lambda (l) (if (= l 0) 1/8 l))
-                                       lengths)
-                       :articulation (mapcar #'(lambda (l) (if (= l 0) 'acc '-))
-                                             lengths)
-                       :pitch (tu:mappend #'(lambda (p) 
-                                              (if (listp p)
-                                                (chordize (midi-to-pitch p))
-                                                (list (midi-to-pitch p))))
-                                          ;; Hack: replace all nil (pitches of rests, but also at end of score) 
-                                          (substitute 60 nil pitches))
-                       :swallow T)
-                      time-sigs))))))
+"
+ (case cluster-engine-score
+  ;; in case of failure return score that displays "no solution"
+  (:no-solution '(:1 ((w no-solution)))) 
+  (otherwise
+   (let* ((length-lists (butlast (tu:at-even-position cluster-engine-score)))
+	  (pitch-lists (tu:at-odd-position cluster-engine-score))
+	  (time-sigs (mapcar #'(lambda (ts) (append ts '(1)))
+			     (first (last cluster-engine-score)))))
+     (tu:one-level-flat 
+      (loop 
+	 for lengths in length-lists
+	 for pitches in pitch-lists
+	 for instrument in (or instruments
+			       (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
+				       (gen-integer 1 (length length-lists))))
+					; for time-sig in time-sigs
+	 collect (list instrument
+		       (omn-to-time-signature 
+			(make-omn  
+			 ;; 0 length are acciaccaturas 
+			 :length (mapcar #'(lambda (l) (if (= l 0) 1/8 l))
+					 lengths)
+			 :articulation (mapcar #'(lambda (l) (if (= l 0) 'acc '-))
+					       lengths)
+			 :pitch (tu:mappend #'(lambda (p) 
+						(if (listp p)
+						    (chordize (midi-to-pitch p))
+						    (list (midi-to-pitch p))))
+					    ;; Hack: replace all nil (pitches of rests, but also at end of score) 
+					    (substitute 60 nil pitches))
+			 :swallow T)
+			time-sigs))))))))
 
 ;;; TODO: 
 ;;; what if scales-position / chords-position is nil? or no scales/chords in score? 
@@ -212,28 +221,32 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
 
   NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
   "
-  (mix-parts 
-   ;; scales and chords part (analysis)
-   (cluster-engine-score 
-    (append (first-n 4 cluster-engine-score)
-            (last cluster-engine-score))
-    :instruments '(:scales :chords))  
-   ;; actual score
-   (let* ((pitch-lists (tu:at-odd-position cluster-engine-score)))
-     (loop
-       for pitches in (cddr pitch-lists) ;; remove pitches of scales and chrods
-       for part-omn in (get-parts-omn score)
-       for instrument in (get-instruments score)
-       append (list instrument
-                    (copy-time-signature
-                     part-omn
-                     (omn-replace :pitch  (flatten 
-                                           (tu:mappend #'(lambda (p) 
-                                                           (if (listp p)
-                                                             (chordize (midi-to-pitch p))
-                                                             (list (midi-to-pitch p))))
-                                                       (remove nil pitches)))
-                                  (flatten part-omn))))))))
+  (case cluster-engine-score
+    ;; in case of failure return score that displays "no solution"
+    (:no-solution '(:1 ((w no-solution))))
+    (otherwise
+     (mix-parts 
+      ;; scales and chords part (analysis)
+      (cluster-engine-score 
+       (append (first-n 4 cluster-engine-score)
+	       (last cluster-engine-score))
+       :instruments '(:scales :chords))  
+      ;; actual score
+      (let* ((pitch-lists (tu:at-odd-position cluster-engine-score)))
+	(loop
+	   for pitches in (cddr pitch-lists) ;; remove pitches of scales and chrods
+	   for part-omn in (get-parts-omn score)
+	   for instrument in (get-instruments score)
+	   append (list instrument
+			(copy-time-signature
+			 part-omn
+			 (omn-replace :pitch  (flatten 
+					       (tu:mappend #'(lambda (p) 
+							       (if (listp p)
+								   (chordize (midi-to-pitch p))
+								   (list (midi-to-pitch p))))
+							   (remove nil pitches)))
+				      (flatten part-omn))))))))))
 
 
 (defun preview-cluster-engine-score (score)
