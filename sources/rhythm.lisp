@@ -167,15 +167,26 @@
 
 
 
-(defun length-rest-series-omn (positions lengths &key (swallow nil) (section nil))
-  "Like the Opusmoduls built-in length-rest-series, but supports arbitrary OMN expressions as input.
+(defun note-rest-series (positions sequence &key (flat nil) (swallow nil) (section nil))
+  "This function is like the Opusmoduls built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
 
-  Suggestion: if you want to process only some sections, surround the call to length-rest-series-omn by a call to do-section."
-  (edit-omn :length lengths 
+  Args:
+  - positions (list of ints): positions of notes to be turned into rests
+  - sequence (list of lengths or OMN expression): music to process
+  - flat (Boolean): whether positions count for sublists (nil) or the whole list (T)
+  - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
+  - section (list of ints): positions of sublists to process
+
+  Example:
+
+;;; (setf melody '((s eb6 < leg f5 < leg c5 < leg f5 < leg) (e e6 f - -q)))
+;;; (length-rest-series-omn '(1 1) melody :swallow T :section '(0))
+"
+  (edit-omn :length sequence 
             #'(lambda (ls) (length-rest-series positions ls))
             :swallow swallow
 	    :section section
-	    :flat nil))
+	    :flat flat))
 
 
 
