@@ -21,14 +21,16 @@
 
 
 
-(defun edit-omn (type notation fun &key (flat T))
+(defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
   Args:
   - type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
   - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
   - notation: a omn sequence or a plain parameter list (can be nested).
-  - flat (default T): whether or not `fun' expects a flat input list.
+  - flat: whether or not `fun' expects a flat input list.
+  - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed)
+  - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
 
   Example: roll your own transposition supporting omn input
   first aux def supporting only pitches
@@ -49,28 +51,75 @@
   ;;; (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2)))
   ;;;  => ((q g4 mp - b4 c5) (h d5 mp tr2))
 
-  More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}."
-  (if (omn-formp notation)
-    (copy-time-signature 
-     notation
-     (let ((params (omn nil notation))
-           (type-is-length? (equal type :length)))
-       (apply #'make-omn 
-              (append  
-               (list type 
-                     (funcall fun (if flat
-                                    (flatten (getf params type))
-                                    (getf params type))))
-               (tu:remove-properties (if type-is-length?
-                                       '(:length :duration)
-                                       (list type))
-                                     params)
-               ))))
-    ;; notation is plain parameter list
-    (span notation 
-          (funcall fun (if flat
-                         (flatten notation)
-                         notation)))))
+  More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}.
+  
+  Suggestion: if you want to process only some sections with the resulting function, surround that call by a call to do-section.
+  "
+  (labels (;; like section-to-binary, but ensures that resulting binary list is long enough to span over full nested param seq
+	   (section-to-binary-better (seq)
+	     (let ((bs (section-to-binary section)))
+	       (append bs (gen-repeat (- (length seq) (length bs)) 0)))))
+    (if (omn-formp notation)
+	(copy-time-signature 
+	 notation
+	 (let* ((params (omn nil notation))
+		(par-seq (getf params type))
+		(omn (append  
+		      (list type
+			    (if flat
+				(funcall fun (flatten par-seq))
+				(if section
+				    (do-section (section-to-binary-better par-seq)
+				      `(flatten (funcall ,fun X))
+				      par-seq)
+				    (funcall fun par-seq))
+				))
+		      (tu:remove-properties (if (equal type :length)
+						'(:length :duration)
+						(list type))
+					    params)
+		      (list :swallow swallow))))
+	   (apply #'make-omn omn)))
+	;; notation is plain parameter list
+	(span notation
+	      (if flat
+		  (funcall fun (flatten notation))
+		  (if section
+		      ;; transform section ints into binary list, but ensure binary list is as long as par-seq
+		      (do-section (section-to-binary-better notation)
+			`(flatten (funcall ,fun X))
+			notation)
+		      (funcall fun notation)))))))
+
+
+  #|
+  ;; I don't like this coding style with eval, but seemingly I need that for using do-section
+  (let ((code `(if (omn-formp ,notation)
+		   (copy-time-signature 
+		    ,notation
+		    (let ((params (omn nil ,notation))
+			  (type-is-length? (equal ,type :length)))
+		      (apply #'make-omn 
+			     (append  
+			      (list ,type 
+				    (funcall ,fun (if ,flat
+						     (flatten (getf params ,type))
+						     (getf params ,type))))
+			      (tu:remove-properties (if type-is-length?
+							'(:length :duration)
+							(list ,type))
+						    params)
+			      (list :swallow ,swallow)
+			      ))))
+		   ;; notation is plain parameter list
+		   (span ,notation 
+			 (funcall ,fun (if ,flat
+					  (flatten ,notation)
+					  ,notation))))))
+    (if section
+	(do-section section code
+    ))
+|#
 
 ;;; TODO: define add-omn when I have variant of disassemble-omn that works with incomplete CMN forms
 #|
@@ -243,6 +292,4 @@
    (s e5 mf e fs5 g5 p s fs5 ff) (s g5 mf gs5 a5 p a5) (e bb5 ff b5 mf s c6 ff c6)))
 
 |#
-
-
 
