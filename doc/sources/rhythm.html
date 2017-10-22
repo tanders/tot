@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230038">
+<a href="rhythm.html#_g229231">
 durational-accent</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merg
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230033">
+<a href="rhythm.html#_g229226">
 even-length-rhythm</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230042">
+<a href="rhythm.html#_g229235">
 isolate-time-signatures</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ ts-forms</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230034">
+<a href="rhythm.html#_g229227">
 length-divide-ext</a>
 </td>
 <td class="summary">
@@ -81,15 +81,7 @@ count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230035">
-length-rest-series-omn</a>
-</td>
-<td class="summary">
-positions lengths <em>&amp;key</em> (swallow nil) (section nil)</td>
-</tr>
-<tr class="table-row-color">
-<td class="summary-name">
-<a href="rhythm.html#_g230040">
+<a href="rhythm.html#_g229233">
 lengths-with-merged-ties</a>
 </td>
 <td class="summary">
@@ -97,7 +89,15 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230041">
+<a href="rhythm.html#_g229228">
+note-rest-series</a>
+</td>
+<td class="summary">
+positions sequence <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229234">
 total-duration</a>
 </td>
 <td class="summary">
@@ -105,7 +105,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230031">
+<a href="rhythm.html#_g229224">
 tuplet-rhythm</a>
 </td>
 <td class="summary">
@@ -113,7 +113,7 @@ lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230032">
+<a href="rhythm.html#_g229225">
 tuplet-walk-rhythm</a>
 </td>
 <td class="summary">
@@ -121,7 +121,7 @@ bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-di
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230036">
+<a href="rhythm.html#_g229229">
 _durational-accent-divide</a>
 </td>
 <td class="summary">
@@ -129,7 +129,7 @@ lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230037">
+<a href="rhythm.html#_g229230">
 _durational-accent-merge</a>
 </td>
 <td class="summary">
@@ -137,7 +137,7 @@ lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g230039">
+<a href="rhythm.html#_g229232">
 _remove-rest-articulations</a>
 </td>
 <td class="summary">
@@ -146,7 +146,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230031">
+<a id="_g229224">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -219,7 +219,7 @@ BUG: seed argument not working as expected.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230032">
+<a id="_g229225">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -290,7 +290,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230033">
+<a id="_g229226">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -353,7 +353,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230034">
+<a id="_g229227">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -395,7 +395,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230035">
+<a id="_g229228">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -406,9 +406,9 @@ Examples:
 <tbody>
 <tr>
 <td class="symbol-name">
-length-rest-series-omn&nbsp;&nbsp;</td>
+note-rest-series&nbsp;&nbsp;</td>
 <td class="lambda-list">
-positions lengths <em>&amp;key</em> (swallow nil) (section nil)</td>
+positions sequence <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -417,16 +417,51 @@ positions lengths <em>&amp;key</em> (swallow nil) (section nil)</td>
 </div>
 <div class="doc-body">
 <p>
-Like the Opusmoduls built-in length-rest-series, but supports arbitrary OMN expressions as input. 
+This function is like the Opusmoduls built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section. 
  </p>
 <p>
-Suggestion: if you want to process only some sections, surround the call to length-rest-series-omn by a call to do-section. 
+Args: 
  </p>
+<ul>
+<li>
+<p>
+positions (list of ints): positions of notes to be turned into rests 
+ </p>
+</li>
+<li>
+<p>
+sequence (list of lengths or OMN expression): music to process 
+ </p>
+</li>
+<li>
+<p>
+flat (Boolean): whether positions count for sublists (nil) or the whole list (T) 
+ </p>
+</li>
+<li>
+<p>
+swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
+ </p>
+</li>
+<li>
+<p>
+section (list of ints): positions of sublists to process 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (setf melody '((s eb6 &lt; leg f5 &lt; leg c5 &lt; leg f5 &lt; leg) (e e6 f - -q))) 
+     (note-rest-series '(1 1) melody :swallow T :section '(0)) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230036">
+<a id="_g229229">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -509,7 +544,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230037">
+<a id="_g229230">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -565,7 +600,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230038">
+<a id="_g229231">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -688,7 +723,7 @@ If you want your final rhythm to contain rests you best add these to your rhythm
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230039">
+<a id="_g229232">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -728,7 +763,7 @@ sequence: OMN expression that _cannot_ be nested.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230040">
+<a id="_g229233">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -776,7 +811,7 @@ See also:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230041">
+<a id="_g229234">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -810,7 +845,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g230042">
+<a id="_g229235">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -846,6 +881,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-10-22 18:54:01</div>
+- 2017-10-22 21:36:12</div>
 </body>
 </html>
