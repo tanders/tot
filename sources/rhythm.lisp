@@ -6,7 +6,7 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
-;;; Rhythm
+;;; Rhythm generation
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -137,6 +137,46 @@
     ) 
    time-sig))
 |#
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Rhythm transformation
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun length-divide-ext (count divide length &rest args &key seed)
+  "Same as length-divide, but arg divide is list of ints (elements circled through).
+
+  Note: implemented by calling length-divide internally for each sublist in length, and therefore arguments like section and exclude are not supported.
+
+  Examples:
+  ;;; (length-divide-ext 1 '(2 3) '((q q) (q q)) :seed 1)
+  ;;; => ((1/8 1/8 1/4) (1/4 1/12 1/12 1/12))
+
+  ;;; (length-divide-ext 1 '(2 3) '(q q) :seed 1)
+  ;;; => ((1/8 1/8) (1/12 1/12 1/12))"
+  (rnd-seed seed)
+  (mapcar #'(lambda (div l)
+              (apply #'length-divide count div l (append (list :seed (seed)) args)))
+          (circle-repeat divide (length length))
+          length))
+
+
+
+(defun length-rest-series-omn (positions lengths &key (swallow nil) (section nil))
+  "Like the Opusmoduls built-in length-rest-series, but supports arbitrary OMN expressions as input.
+
+  Suggestion: if you want to process only some sections, surround the call to length-rest-series-omn by a call to do-section."
+  (edit-omn :length lengths 
+            #'(lambda (ls) (length-rest-series positions ls))
+            :swallow swallow
+	    :section section
+	    :flat nil))
+
 
 
 ;   For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
@@ -413,41 +453,14 @@
 
 
 
-(defun length-divide-ext (count divide length &rest args &key seed)
-  "Same as length-divide, but arg divide is list of ints (elements circled through).
-
-  Note: implemented by calling length-divide internally for each sublist in length, and therefore arguments like section and exclude are not supported.
-
-  Examples:
-  ;;; (length-divide-ext 1 '(2 3) '((q q) (q q)) :seed 1)
-  ;;; => ((1/8 1/8 1/4) (1/4 1/12 1/12 1/12))
-
-  ;;; (length-divide-ext 1 '(2 3) '(q q) :seed 1)
-  ;;; => ((1/8 1/8) (1/12 1/12 1/12))"
-  (rnd-seed seed)
-  (mapcar #'(lambda (div l)
-              (apply #'length-divide count div l (append (list :seed (seed)) args)))
-          (circle-repeat divide (length length))
-          length))
-
-
-(defun isolate-time-signatures (ts-forms)
-  "Transforms time signatures `ts-forms' so that each resulting time signature denotes only a single bar.  
-
-  Example:
-  ;;; (isolate-time-signatures '((3 4 2) (2 4 1)))
-  ;;; => ((3 4 1) (3 4 1) (2 4 1))"
-  (mappend #'(lambda (ts-form) 
-               (destructuring-bind (num denom no)
-                                   ts-form
-                 (gen-repeat no `((,num ,denom 1)))))
-           ts-forms))
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Rhythm utilities
 ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
 
 (defun _remove-rest-articulations (sequence)
   "Strips all articulations from rests. 
@@ -556,4 +569,19 @@
   ;;; (total-duration '((h c4 q) (q h tie) (h.)))
   ;;; => 9/4"
   (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence)))))
+
+
+
+(defun isolate-time-signatures (ts-forms)
+  "Transforms time signatures `ts-forms' so that each resulting time signature denotes only a single bar.  
+
+  Example:
+  ;;; (isolate-time-signatures '((3 4 2) (2 4 1)))
+  ;;; => ((3 4 1) (3 4 1) (2 4 1))"
+  (mappend #'(lambda (ts-form) 
+               (destructuring-bind (num denom no)
+                                   ts-form
+                 (gen-repeat no `((,num ,denom 1)))))
+           ts-forms))
+
 
