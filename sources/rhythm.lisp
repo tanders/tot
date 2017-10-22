@@ -180,7 +180,7 @@
   Example:
 
 ;;; (setf melody '((s eb6 < leg f5 < leg c5 < leg f5 < leg) (e e6 f - -q)))
-;;; (length-rest-series-omn '(1 1) melody :swallow T :section '(0))
+;;; (note-rest-series '(1 1) melody :swallow T :section '(0))
 "
   (edit-omn :length sequence 
             #'(lambda (ls) (length-rest-series positions ls))
