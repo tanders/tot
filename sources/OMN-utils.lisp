@@ -32,7 +32,9 @@
   - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed)
   - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
 
-  Example: roll your own transposition supporting omn input
+  Examples: 
+
+  roll your own transposition supporting omn input
   first aux def supporting only pitches
   ;;; (defun my-transposition-aux (interval pitches)
   ;;;   (midi-to-pitch (loop for p in (pitch-to-midi pitches)
@@ -51,9 +53,18 @@
   ;;; (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2)))
   ;;;  => ((q g4 mp - b4 c5) (h d5 mp tr2))
 
+
+  Another example: expand the built-in function length-rest-series to support arbitrary OMN expressions (not just length lists), and additionally the arguments swallow and section.
+
+;;; (defun length-rest-series-omn (positions lengths &key (swallow nil) (section nil))
+;;;   (edit-omn :length lengths 
+;;; 	    #'(lambda (ls) (length-rest-series positions ls))
+;;; 	    :swallow swallow
+;;; 	    :section section
+;;; 	    :flat nil))
+
   More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}.
   
-  Suggestion: if you want to process only some sections with the resulting function, surround that call by a call to do-section.
   "
   (labels (;; like section-to-binary, but ensures that resulting binary list is long enough to span over full nested param seq
 	   (section-to-binary-better (seq)
@@ -92,34 +103,6 @@
 		      (funcall fun notation)))))))
 
 
-  #|
-  ;; I don't like this coding style with eval, but seemingly I need that for using do-section
-  (let ((code `(if (omn-formp ,notation)
-		   (copy-time-signature 
-		    ,notation
-		    (let ((params (omn nil ,notation))
-			  (type-is-length? (equal ,type :length)))
-		      (apply #'make-omn 
-			     (append  
-			      (list ,type 
-				    (funcall ,fun (if ,flat
-						     (flatten (getf params ,type))
-						     (getf params ,type))))
-			      (tu:remove-properties (if type-is-length?
-							'(:length :duration)
-							(list ,type))
-						    params)
-			      (list :swallow ,swallow)
-			      ))))
-		   ;; notation is plain parameter list
-		   (span ,notation 
-			 (funcall ,fun (if ,flat
-					  (flatten ,notation)
-					  ,notation))))))
-    (if section
-	(do-section section code
-    ))
-|#
 
 ;;; TODO: define add-omn when I have variant of disassemble-omn that works with incomplete CMN forms
 #|
