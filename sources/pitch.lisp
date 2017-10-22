@@ -66,3 +66,11 @@
       result)))
 
 
+
+
+(defun pitch-retrograde-omn (sequence)
+  "My version of pitch-retrograde that is working.
+"
+  (edit-omn :pitch sequence 
+            #'(lambda (ps) (reverse ps))
+	    :flat T))
