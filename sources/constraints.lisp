@@ -20,14 +20,18 @@
 ;;; OK - insert all velo and articulations in score into result
 ;;; OK - Move this function into a new file constraints.lisp into my library tot
 ;; ... solution can be repeating input score
-(defun revise-score-harmonically (score harmonies scales &key 
-                                        (constrain-pitch-profiles? T)
-                                        (constrain-pitch-intervals? T)
-                                        ;;; TODO: consider allowing to overwrite pitch domain
-                                        ; pitch-domains
-                                        (rules nil))
+(defun revise-score-harmonically (score harmonies scales
+				  &key
+				    (constrain-pitch-profiles? T)
+				    ;; BUG: argument ignored and rule not applied?
+				    (constrain-pitch-intervals? T)
+				    (pitch-domains nil)
+				    (pitch-domains-extension 2)
+				    (rules :default)
+				    (additional-rules nil)
+				    (print-csp? nil))
   ;; TMP: unused arg doc
-  ; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
+  ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
   "CSP transforming the input `score' such that it follows the underlying harmony specified. 
   The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied.
   
@@ -37,119 +41,152 @@
   - scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony
   - constrain-pitch-profiles? (Boolean): Whether to constrain the pitch profile
   - constrain-pitch-intervals? (Boolean): Whether to constrain the pitch intervals
+  - pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format: (<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...), where pitches are Opusmodus pitch symbols. For example, if your `score' specifies the first and second violin with the keywords :vl1 and :vl2, `pitch-domains' could be (:vl1 (g3 c6) :vl2 (g3 c6)).     
+    By default, the ambitus of each part of `score' is used to automatically deduce the chromatic pitch domain for that part. When overwriting this default, the pitch domain of all parts must be given explicitly.
+  - pitch-domains-extension: 
+     If 0, the pitch domain for each part is the ambitus of pitches in the respective part of `score' (including all semitones within that ambitus). 
+     If a positive integer, the pitch domain of each part is the respective ambitus extended by this number of semitones both up an down. For example, if `pitch-domains-extension' is 2, and the ambitus of some part in `score' ranges from C4 to C5, then the pitch domain for that part ranges chromatically from Bb3 (2 semitones down at the lower end) to D5 (2 semitones up at the upper end).
+     A pitch domain extension can also be specified for each part separately in either of the following formats: (<part1-name-keyword> <extension> ...) or (<part1-name-keyword> (<lower-extension> <upper-extension>) ...). For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write (:vln1 (0 7)), if you are using :vln1 as keyword in `score'. 
+      When specifying a pitch domain extension for any part explicitly, the extensions for all parts must be given explicitly.
   - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
-    If `rules' is nil, then some default rule set is used. 
+    If `rules' is :default, then some default rule set is used. 
+  - additional-rules (list of cluster-engine rule instances): convenience argument to add rules without overwriting the default rule set by leaving the argument `rules' untouched.
+  - print-csp? (Boolean): if true, print list of arguments to constraint solver cr:cluster-engine (for debugging the CSP).
 
   Example:
 
-Input score defined by turning a melody into some polyphonic texture. 
+Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
 
-;;; (setf galliard-mel 
-;;;       '(:|1| 
-;;;          ((q e5 f slap+stacc -h q eb5 slap+stacc -h) 
-;;;           (q cs5 f slap+stacc eb5 mp ord f5) (q. g5 e gs5 q c6) (h bb5 q a5) (q fs5 - e d5 cs5) (h a5 q b5) (q. cs5 e bb5 q d6) (q cs6 d6 g5) (h e5 q cs6) (q g5 f slap+stacc a5 mp ord bb5) (q. c6 e cs6 q c6) (e b5 a5 q f5 e5) (h b5 q c6) (q eb5 f slap+stacc -e b5 mp ord d6 cs6) (q. eb6 e b5 q e5) (q gs5 d6 b5) (h gs5 q fs5))))
-
+;;; (setf *preview-score-return-value* :headerless-score)
+;;; 
 ;;; (setf polyphonic-score
-;;;       `(:v1 ,(second galliard-mel)
-;;;         :v2 ,(append '((-h.)) (butlast (second galliard-mel) 3))
-;;;         :v3 ,(append '((-h.) (-w.)) (butlast (second galliard-mel) 4))))
+;;;       (preview-score 
+;;;        '(:vl1 ((-3h fs4 pp a4) (q gs4 fs4) (3h e4 eb4 d4) (h eb4))
+;;;          :vl2 ((h d4 pp) (h e4) (h f4 tie) (h f4)))))
 
-The underlying harmony -- both chords and scales -- are also predefined headerless scores.
+The underlying harmony -- both chords and scales -- are declared now.
 
-;;; (setf galliard-harmonies
-;;;       '((h. c4eb4g4a4)
-;;;         (w. c4eb4g4a4)        
-;;;         (w. f4g4a4c4) (w. cs4f4g4b4) (w. b4eb4g4a4) (w. f4a4c4eb4) (w. eb4g4b4cs4) (w. a4cs4eb4g4) (w. cs4f4g4c4) (h. g4b4cs4f4)))
+;;; (setf harmonies
+;;;       '((h c4eb4g4a4) (h c4eb4g4a4)       
+;;;         (h f4g4a4c4) (h f4g4a4c4)))
+;;; 
+;;; (setf scales
+;;;       (list (append (length-merge (flatten (omn :length harmonies))) 
+;;;                     (chordize '(c4 cs4 ds4 f4 g4 a4 b4)))))
 
-;;; (setf galliard-scales
-;;;       (append (length-merge (flatten (omn :length galliard-harmonies))) 
-;;;               (chordize '(c4 cs4 ds4 f4 g4 a4 b4))))
-
-Some playback customisation of preview-score silencing the first two parts.
+Some playback customisation of preview-score is silencing the first two parts (chords and scales are only an underlying analysis).
 
 ;;; (setf *default-preview-score-instruments*
 ;;;       '(;; silent harmony -- :volume 0
 ;;;         :scales (:program 'violin :sound 'gm :channel 16 :volume 0)
 ;;;         :chords (:program 'violin :sound 'gm :channel 16 :volume 0)
-;;;         :v1 (:program 'violin :sound 'gm :channel 1)
-;;;         :v2 (:program 'violin :sound 'gm :channel 1)
-;;;         :v3 (:program 'violin :sound 'gm :channel 1))
-;;;       )
+;;;         :vl1 (:program 'violin :sound 'gm :channel 1)
+;;;         :vl2 (:program 'violin :sound 'gm :channel 1)))
 
-The actual calls to `revise-score-harmonically', first a monophonic and then a polyphonic example. In the second example, the score is also saved to a variable for later inspection, postprocessing etc. 
+The next code snippet shows the actual call to `revise-score-harmonically'. In this example, the resulting score is previewed and at the same time also saved in a variable for later inspection, postprocessing etc.
+
+;;; (setf revised-polyphonic-score
+;;;       (preview-score (revise-score-harmonically polyphonic-score harmonies scales)))
+
+The default pitch domains (the ambitus of parts in the score) can be extended. In the following example it is extended by 3 semitones for all parts (:vl1 and :vl2) in both directions (at the upper and lower end of each ambitus). See the discussion of the argument `pitch-domains-extension' above for further options.
 
 ;;; (preview-score 
-;;;  (revise-score-harmonically galliard-mel galliard-harmonies galliard-scales))
-;;;
-;;; (progn 
-;;;   (setf revised-polyphonic-score
-;;;         (revise-score-harmonically polyphonic-score galliard-harmonies galliard-scales))
-;;;   (preview-score revised-polyphonic-score))
-  "
-   (let* ((parts (get-parts-omn score))
-          (first-part (first parts))
-          (time-sigs (PWGL-time-signatures 
-                      (get-time-signature first-part))))
-     (copy-cluster-engine-pitches-to-score ; cluster-engine-score 
-      score
-      (cr:cluster-engine
-       (apply #'max (mapcar #'count-notes parts))
-       ;; rules
-       (let (;; position of all voices in score starting from 2 after scales and chords
-             (voice-ids (gen-integer 2 (+ (length (get-instruments score)) 1))))
-         (ce::rules->cluster 
-          (append 
-           (when constrain-pitch-profiles?
-             (cr:follow-profile-hr 
-              parts :voices voice-ids :mode :pitch :constrain :profile))
-           (when constrain-pitch-intervals?
-             (cr:follow-profile-hr 
-              parts :voices voice-ids :mode :pitch :constrain :intervals))
-           (list (ce:r-predefine-meter time-sigs)))
-          (apply
-           #'ce::rules->cluster 
-           (if rules 
-             rules 
-             (list 
-              ;; more rules
-              (cr:only-scale-pcs :voices voice-ids :input-mode :all 
-                                 :scale-voice 0)
-              (cr:only-chord-pcs :voices voice-ids :input-mode :beat ; :1st-beat
-                                 :chord-voice 1) 
-              (cr:long-notes-chord-pcs :voices voice-ids :max-nonharmonic-dur 1/4)
-              (cr:stepwise-non-chord-tone-resolution
-               :voices voice-ids :input-mode :all :step-size 3)
-              (cr:chord-tone-before/after-rest :voices voice-ids :input-mode :all)
-              (cr:chord-tone-follows-non-chord-tone :voices voice-ids :input-mode :all)
-              (cr:no-repetition :voices voice-ids :window 3)
-              (cr:resolve-skips :voices voice-ids :resolution-size 4)
-              )))))
-       ;; meter domain
-       (remove-duplicates time-sigs :test #'equal) 
-       ;; voice domains
-       `(
-         ; scale rhythm
-         (,(flatten (omn :length scales)))
-         ; scale pitches
-         (,(pitch-to-midi (flatten (omn :pitch scales))))
-         ; harmonic rhythm for chords 
-         (,(flatten (omn :length harmonies)))
-         ; harmony: chords
-         (,(pitch-to-midi (flatten (omn :pitch harmonies))))
-         ,@(mappend #'(lambda (part)
-                        `( 
-                          ;; rhythm domain: predefined motif
-                          (,(flatten (omn :length part)))
-                          ;; pitch domain
-                          ,(mclist
-                            (apply #'gen-integer 
-                                   (mapcar #'(lambda (p) (+ p 60)) 
-                                           (find-ambitus part))))
-                          ))
-                    parts)
-         ))
-      )))
+;;;  (revise-score-harmonically polyphonic-score harmonies scales
+;;;  			        :pitch-domains-extension 3))
 
+
+The default pitch domains (the ambitus of parts) can be overwritten explicitly. This argument can be combined with the argument `pitch-domains-extension', which then extends the explicitly given pitch domains.
+
+;;; (preview-score 
+;;;  (revise-score-harmonically polyphonic-score harmonies scales
+;;; 			        :pitch-domains '(:vl1 (c4 g5) :vl2 (g3 c5))))
+
+TODO: demonstrate how default rules are overwritten.
+
+  "
+  (let* ((parts (get-parts-omn score))
+	 (pitch-domain-specs (if (listp pitch-domains-extension)
+				 pitch-domains-extension
+				 (tu:map-plist-vals #'(lambda (_)
+							(declare (ignore _))
+							pitch-domains-extension)
+						    score)))
+	 (first-part (first parts))
+	 (time-sigs (PWGL-time-signatures 
+		     (get-time-signature first-part)))
+	 (csp (list
+	       (apply #'max (mapcar #'count-notes parts))
+	       ;; rules
+	       (let (;; position of all voices in score starting from 2 after scales and chords
+		     (voice-ids (gen-integer 2 (+ (length (get-instruments score)) 1))))
+		 (ce::rules->cluster 
+		  (append 
+		   (when constrain-pitch-profiles?
+		     (cr:follow-profile-hr 
+		      parts :voices voice-ids :mode :pitch :constrain :profile))
+		   (when constrain-pitch-intervals?
+		     (cr:follow-profile-hr 
+		      parts :voices voice-ids :mode :pitch :constrain :intervals))
+		   (list (ce:r-predefine-meter time-sigs)))
+		  (apply
+		   #'ce::rules->cluster 
+		   (if (not (eq :default rules))
+		       (append rules additional-rules)
+		       (append 
+			(list 
+			 ;; more rules
+			 (cr:only-scale-pcs :voices voice-ids :input-mode :all 
+					    :scale-voice 0)
+			 (cr:only-chord-pcs :voices voice-ids :input-mode :beat ; :1st-beat
+					    :chord-voice 1) 
+			 (cr:long-notes-chord-pcs :voices voice-ids :max-nonharmonic-dur 1/4)
+			 (cr:stepwise-non-chord-tone-resolution
+			  :voices voice-ids :input-mode :all :step-size 3)
+			 (cr:chord-tone-before/after-rest :voices voice-ids :input-mode :all)
+			 (cr:chord-tone-follows-non-chord-tone :voices voice-ids :input-mode :all)
+			 (cr:no-repetition :voices voice-ids :window 3)
+			 (cr:resolve-skips :voices voice-ids :resolution-size 4)
+			 )
+			additional-rules)))))
+	       ;; meter domain
+	       (remove-duplicates time-sigs :test #'equal) 
+	       ;; voice domains
+	       `(;; scale rhythm
+		 (,(flatten (omn :length scales)))
+		 ;; scale pitches
+		 (,(pitch-to-midi (flatten (omn :pitch scales))))
+		 ;; harmonic rhythm for chords 
+		 (,(flatten (omn :length harmonies)))
+		 ;; harmony: chords
+		 (,(pitch-to-midi (flatten (omn :pitch harmonies))))
+		 ,@(mappend #'(lambda (instr)
+				(let* ((part (getf score instr))
+				       (pitch-dom-spec (getf pitch-domain-specs instr))
+				       (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for every instrument, but that should be fine here
+							(mapcar #'pitch-to-integer (getf pitch-domains instr))
+							(find-ambitus part)))
+				       (pitch-dom-ambitus (cond ((integerp pitch-dom-spec)
+								 (list (- (first raw-ambitus) pitch-dom-spec) (+ (second raw-ambitus) pitch-dom-spec)))
+								((listp pitch-dom-spec)
+								 (list (- (first raw-ambitus) (first pitch-dom-spec)) (+ (second raw-ambitus) (second pitch-dom-spec))))
+								)))
+				  `( 
+				    ;; rhythm domain: predefined motif
+				    (,(flatten (omn :length part)))
+				    ;; pitch domain
+				    ,(mclist
+				      (apply #'gen-integer 
+					     (mapcar #'(lambda (p) (+ p 60)) 
+						     pitch-dom-ambitus)))
+				    )))
+			    (get-instruments score))
+		 ))))
+    (when print-csp?
+      (print csp))
+    (copy-cluster-engine-pitches-to-score ; cluster-engine-score 
+     score
+     (apply #'cr:cluster-engine csp)
+     )))
 
 
 (defun cluster-engine-score (cluster-engine-score &key (instruments nil))
