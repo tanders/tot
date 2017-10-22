@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190954">
+<a href="OMN-utils.html#_g230001">
 copy-time-signature</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ music-with-time-signature music-to-rebar</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190957">
+<a href="OMN-utils.html#_g230004">
 count-notes</a>
 </td>
 <td class="summary">
@@ -65,15 +65,15 @@ notes</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190955">
+<a href="OMN-utils.html#_g230002">
 edit-omn</a>
 </td>
 <td class="summary">
-type notation fun <em>&amp;key</em> (flat t)</td>
+type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190960">
+<a href="OMN-utils.html#_g230007">
 length-add</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ length-add</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190959">
+<a href="OMN-utils.html#_g230006">
 length-subtract</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ length-subtract</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190956">
+<a href="OMN-utils.html#_g230003">
 note-no</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ music</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g190958">
+<a href="OMN-utils.html#_g230005">
 phrase-lengths</a>
 </td>
 <td class="summary">
@@ -106,7 +106,7 @@ lengths</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190954">
+<a id="_g230001">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -134,7 +134,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190955">
+<a id="_g230002">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -147,7 +147,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 <td class="symbol-name">
 edit-omn&nbsp;&nbsp;</td>
 <td class="lambda-list">
-type notation fun <em>&amp;key</em> (flat t)</td>
+type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -193,12 +193,27 @@ notation: a omn sequence or a plain parameter list (can be nested).
 </li>
 <li>
 <p>
-flat (default T): whether or not `fun' expects a flat input list. 
+flat: whether or not `fun' expects a flat input list. 
+ </p>
+</li>
+<li>
+<p>
+swallow: if `type' is <span class="keyword">
+:length, </span>
+and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed) 
+ </p>
+</li>
+<li>
+<p>
+section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T. 
  </p>
 </li>
 </ul>
 <p>
-Example: roll your own transposition supporting omn input 
+Examples: 
+ </p>
+<p>
+roll your own transposition supporting omn input 
  first aux def supporting only pitches 
  </p>
 <pre>
@@ -226,13 +241,27 @@ test with nested OMN including a rest
     (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2))) 
       =&gt; ((q g4 mp - b4 c5) (h d5 mp tr2)) </pre>
 <p>
+Another example: expand the built-in function length-rest-series to support arbitrary OMN expressions (not just length lists), and additionally the arguments swallow and section. 
+ </p>
+<p>
+</p>
+<pre>
+    (defun length-rest-series-omn (positions lengths &amp;key (swallow nil) (section nil)) 
+       (edit-omn :length lengths  
+     	    #'(lambda (ls) (length-rest-series positions ls)) 
+     	    :swallow swallow 
+     	    :section section 
+     	    :flat nil)) </pre>
+<p>
 More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}. 
+ 
+ 
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190956">
+<a id="_g230003">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -260,7 +289,7 @@ Returns the number of notes in music, which is a list of lengths values of OMN e
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190957">
+<a id="_g230004">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -288,7 +317,7 @@ Returns number of notes (ignoring rests) in length list or other OMN expression.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190958">
+<a id="_g230005">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -325,7 +354,7 @@ length: lengths or OMN (list or list of list).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190959">
+<a id="_g230006">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -362,7 +391,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g190960">
+<a id="_g230007">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -398,6 +427,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-10-09 17:25:38</div>
+- 2017-10-22 18:54:01</div>
 </body>
 </html>

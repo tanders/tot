@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g191024">
+<a href="constraints.html#_g230072">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g191025">
+<a href="constraints.html#_g230073">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g191026">
+<a href="constraints.html#_g230074">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -73,16 +73,16 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g191023">
+<a href="constraints.html#_g230071">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (rules nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (print-csp? nil)</td>
 </tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g191023">
+<a id="_g230071">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -95,7 +95,7 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 <td class="symbol-name">
 revise-score-harmonically&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (rules nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (print-csp? nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -112,7 +112,7 @@ CSP transforming the input `score' such that it follows the underlying harmony s
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g190965">
+score (headerless score): See <a href="score.html#_g230012">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -139,8 +139,43 @@ constrain-pitch-intervals? (Boolean): Whether to constrain the pitch intervals
 </li>
 <li>
 <p>
+pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format: (&lt;part1-name-keyword&gt; (&lt;lowest-pitch&gt; &lt;highest-pitch&gt;) ...), where pitches are Opusmodus pitch symbols. For example, if your `score' specifies the first and second violin with the keywords <span class="keyword">
+:vl1 </span>
+and <span class="keyword">
+:vl2, </span>
+`pitch-domains' could be (:vl1 (g3 c6) <span class="keyword">
+:vl2 </span>
+(g3 c6)). 
+ By default, the ambitus of each part of `score' is used to automatically deduce the chromatic pitch domain for that part. When overwriting this default, the pitch domain of all parts must be given explicitly. 
+ </p>
+</li>
+<li>
+<p>
+pitch-domains-extension: 
+ If 0, the pitch domain for each part is the ambitus of pitches in the respective part of `score' (including all semitones within that ambitus). 
+ If a positive integer, the pitch domain of each part is the respective ambitus extended by this number of semitones both up an down. For example, if `pitch-domains-extension' is 2, and the ambitus of some part in `score' ranges from C4 to C5, then the pitch domain for that part ranges chromatically from Bb3 (2 semitones down at the lower end) to D5 (2 semitones up at the upper end). 
+ A pitch domain extension can also be specified for each part separately in either of the following formats: (&lt;part1-name-keyword&gt; &lt;extension&gt; ...) or (&lt;part1-name-keyword&gt; (&lt;lower-extension&gt; &lt;upper-extension&gt;) ...). For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write (:vln1 (0 7)), if you are using <span class="keyword">
+:vln1 </span>
+as keyword in `score'. 
+ When specifying a pitch domain extension for any part explicitly, the extensions for all parts must be given explicitly. 
+ </p>
+</li>
+<li>
+<p>
 rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
- If `rules' is nil, then some default rule set is used. 
+ If `rules' is <span class="keyword">
+:default, </span>
+then some default rule set is used. 
+ </p>
+</li>
+<li>
+<p>
+additional-rules (list of cluster-engine rule instances): convenience argument to add rules without overwriting the default rule set by leaving the argument `rules' untouched. 
+ </p>
+</li>
+<li>
+<p>
+print-csp? (Boolean): if true, print list of arguments to constraint solver cr:cluster-engine (for debugging the CSP). 
  </p>
 </li>
 </ul>
@@ -148,40 +183,32 @@ rules (list of cluster-engine rule instances): further rules to apply, in additi
 Example: 
  </p>
 <p>
-Input score defined by turning a melody into some polyphonic texture. 
+Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
  </p>
 <p>
 </p>
 <pre>
-    (setf galliard-mel  
-           '(:|1|  
-              ((q e5 f slap+stacc -h q eb5 slap+stacc -h)  
-               (q cs5 f slap+stacc eb5 mp ord f5) (q. g5 e gs5 q c6) (h bb5 q a5) (q fs5 - e d5 cs5) (h a5 q b5) (q. cs5 e bb5 q d6) (q cs6 d6 g5) (h e5 q cs6) (q g5 f slap+stacc a5 mp ord bb5) (q. c6 e cs6 q c6) (e b5 a5 q f5 e5) (h b5 q c6) (q eb5 f slap+stacc -e b5 mp ord d6 cs6) (q. eb6 e b5 q e5) (q gs5 d6 b5) (h gs5 q fs5)))) </pre>
+    (setf *preview-score-return-value* :headerless-score) 
+      
+     (setf polyphonic-score 
+           (preview-score  
+            '(:vl1 ((-3h fs4 pp a4) (q gs4 fs4) (3h e4 eb4 d4) (h eb4)) 
+              :vl2 ((h d4 pp) (h e4) (h f4 tie) (h f4))))) </pre>
 <p>
-</p>
-<pre>
-    (setf polyphonic-score 
-           `(:v1 ,(second galliard-mel) 
-             :v2 ,(append '((-h.)) (butlast (second galliard-mel) 3)) 
-             :v3 ,(append '((-h.) (-w.)) (butlast (second galliard-mel) 4)))) </pre>
-<p>
-The underlying harmony -- both chords and scales -- are also predefined headerless scores. 
+The underlying harmony -- both chords and scales -- are declared now. 
  </p>
 <p>
 </p>
 <pre>
-    (setf galliard-harmonies 
-           '((h. c4eb4g4a4) 
-             (w. c4eb4g4a4)         
-             (w. f4g4a4c4) (w. cs4f4g4b4) (w. b4eb4g4a4) (w. f4a4c4eb4) (w. eb4g4b4cs4) (w. a4cs4eb4g4) (w. cs4f4g4c4) (h. g4b4cs4f4))) </pre>
+    (setf harmonies 
+           '((h c4eb4g4a4) (h c4eb4g4a4)        
+             (h f4g4a4c4) (h f4g4a4c4))) 
+      
+     (setf scales 
+           (list (append (length-merge (flatten (omn :length harmonies)))  
+                         (chordize '(c4 cs4 ds4 f4 g4 a4 b4))))) </pre>
 <p>
-</p>
-<pre>
-    (setf galliard-scales 
-           (append (length-merge (flatten (omn :length galliard-harmonies)))  
-                   (chordize '(c4 cs4 ds4 f4 g4 a4 b4)))) </pre>
-<p>
-Some playback customisation of preview-score silencing the first two parts. 
+Some playback customisation of preview-score is silencing the first two parts (chords and scales are only an underlying analysis). 
  </p>
 <p>
 </p>
@@ -190,26 +217,39 @@ Some playback customisation of preview-score silencing the first two parts.
            '(;; silent harmony -- :volume 0 
              :scales (:program 'violin :sound 'gm :channel 16 :volume 0) 
              :chords (:program 'violin :sound 'gm :channel 16 :volume 0) 
-             :v1 (:program 'violin :sound 'gm :channel 1) 
-             :v2 (:program 'violin :sound 'gm :channel 1) 
-             :v3 (:program 'violin :sound 'gm :channel 1)) 
-           ) </pre>
+             :vl1 (:program 'violin :sound 'gm :channel 1) 
+             :vl2 (:program 'violin :sound 'gm :channel 1))) </pre>
 <p>
-The actual calls to `revise-score-harmonically', first a monophonic and then a polyphonic example. In the second example, the score is also saved to a variable for later inspection, postprocessing etc. 
+The next code snippet shows the actual call to `revise-score-harmonically'. In this example, the resulting score is previewed and at the same time also saved in a variable for later inspection, postprocessing etc. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf revised-polyphonic-score 
+           (preview-score (revise-score-harmonically polyphonic-score harmonies scales))) </pre>
+<p>
+The default pitch domains (the ambitus of parts in the score) can be extended. In the following example it is extended by 3 semitones for all parts (:vl1 and <span class="keyword">
+:vl2) </span>
+in both directions (at the upper and lower end of each ambitus). See the discussion of the argument `pitch-domains-extension' above for further options. 
  </p>
 <p>
 </p>
 <pre>
     (preview-score  
-      (revise-score-harmonically galliard-mel galliard-harmonies galliard-scales)) </pre>
+      (revise-score-harmonically polyphonic-score harmonies scales 
+      			        :pitch-domains-extension 3)) </pre>
 <p>
-;;; 
+The default pitch domains (the ambitus of parts) can be overwritten explicitly. This argument can be combined with the argument `pitch-domains-extension', which then extends the explicitly given pitch domains. 
  </p>
+<p>
+</p>
 <pre>
-    (progn  
-       (setf revised-polyphonic-score 
-             (revise-score-harmonically polyphonic-score galliard-harmonies galliard-scales)) 
-       (preview-score revised-polyphonic-score)) </pre>
+    (preview-score  
+      (revise-score-harmonically polyphonic-score harmonies scales 
+     			        :pitch-domains '(:vl1 (c4 g5) :vl2 (g3 c5)))) </pre>
+<p>
+TODO: demonstrate how default rules are overwritten. 
+ </p>
 <p>
 
  </p>
@@ -217,7 +257,7 @@ The actual calls to `revise-score-harmonically', first a monophonic and then a p
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g191024">
+<a id="_g230072">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -279,13 +319,12 @@ Example:
 '(:vln <span class="keyword">
 :vla))) </span>
 
- 
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g191025">
+<a id="_g230073">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -315,7 +354,7 @@ Args:
 <ul>
 <li>
 <p>
-score (headerless score): see <a href="score.html#_g190965">
+score (headerless score): see <a href="score.html#_g230012">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -337,7 +376,7 @@ NOTE: `cluster-engine-score' must contain the same number and order of parts, no
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g191026">
+<a id="_g230074">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -367,6 +406,6 @@ Just shorthand for (preview-score (cluster-engine-score score))
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-10-09 17:25:38</div>
+- 2017-10-22 18:54:01</div>
 </body>
 </html>
