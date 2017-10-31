@@ -93,3 +93,36 @@
   (length-legato
    (filter-notes-if test sequence :section section)))
 
+
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Transformations
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun rotate-omn (n sequence &key (parameter :pitch) (flat T) (section nil))
+  "Rotate the OMN `sequence' by `n' positions.
+
+  Args:
+  - n: an integer (rotation number, positive or negative). The keywords :left and :right are equivalents of the integer values -1 and 1.
+  - sequence: OMN expression.
+  - parameter (keyword): which parameter to rotate (e.g., :length, :pitch...). If nil, everything is rotated. 
+  - flat (Boolean): whether to rotate the full flattened sequence (T) or subsequences. 
+  - section (list of ints): positions of sublists to process. This argument is ignored if flat is T.  
+
+  Examples:
+
+;;; (rotate-omn :right '((-h q c4) (q. f4 e g4 q a4) (h. g4)))
+;;; 
+;;; (rotate-omn :left '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :parameter :length)
+;;; 
+;;; (rotate-omn 2 '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1) :flat nil)
+"  
+  (edit-omn parameter sequence 
+            #'(lambda (ls) (gen-rotate n ls))
+            ; :swallow swallow
+	    :section section
+	    :flat flat))
