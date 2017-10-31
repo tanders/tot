@@ -4,6 +4,102 @@
 (in-package :om)
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Chord generation
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; ?? TODO: revise for actual Opusmodus chords, and dynamic use for (possibly nested) lists of chords and pitches
+;; Inspired by PWGL library FDSDB_XXth_CT
+(defun chord-multiplication (chord1 chord2)
+	 "Boulez's multiplication of chords. The intervals of `chord1' are built over every pitch of `chord2'.
+
+Example:
+
+Over every pitch of the C-major triad (chord2) the fifths of chord1 is created. 
+
+;;; (chord-multiplication '(d4 a4) '(c4 e4 g4))
+
+  References:
+
+Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
+"
+	 (mapcar #'MIDI-to-pitch 
+		 (remove-duplicates
+		  (loop for p in (mapcar #'pitch-to-MIDI chord2)
+		     append (tu:dx->x (tu:x->dx (mapcar #'pitch-to-MIDI chord1)) p)))))
+
+
+;;; ?? TODO: revise for actual Opusmodus chords, and dynamic use for (possibly nested) lists of chords and pitches
+;; Inspired by PWGL library FDSDB_XXth_CT, box Melody-expansion
+(defun stretch-pitches (pitches factor &key (round T))
+  "Proportional streching/shrinking of intervals.
+
+  Args:
+  - pitches: list of Opusmodus pitches
+  - factor (integer, float or fraction): Factor by which all but the first `pitches' are stretched or shrunk. 
+  - round: whether or not to round the result to semitones. Must be T for now, but in future when Opusmodus supports microtonal music this might be refined.
+
+  Examples:
+
+;;; (stretch-pitches '(c4 e4 g4) 2)
+;;; 
+;;; (stretch-pitches '(c4 e4 g4) 1.5)
+;;; 
+;;; (stretch-pitches '(c4 e4 g4) 2/3)  
+
+  References:
+
+Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
+"
+  (let ((MIDI-pitches (mapcar #'pitch-to-MIDI chord)))
+    (mapcar #'MIDI-to-pitch 
+	    (if round
+		(mapcar #'round
+			(tu:dx->x (mapcar #'(lambda (p) (* p factor))
+					  (tu:x->dx MIDI-pitches))
+				  (first MIDI-pitches)))
+		;; depends on Opusmodus microtonal music support
+		(warn "feature not yet implemented")))))
+
+
+;;; TODO: consider revising to support Opusmodus chords instead of pitch lists
+;; Inspired by PWGL library FDSDB_XXth_CT, box Chord-Expansion
+(defun stretch-pitches2 (number chord factor &key (round T))
+  "Creates `number' derivates from chord following a procedure suggested by Giacomo Manzoni where the chord intervals are systematically stretched or shrunk. 
+
+  Args:
+  - number (int): number of chords to generate.
+  - chord: list of Opusmodus pitches
+  - factor (integer, float or fraction): controls the interval between resulting chord pitches. If 1, the first chord interval is increased by 1 semitone, the second by 2 and so on. If 2, the first interval is increased by 2 semitones, the second by 4 etc. 
+
+  Examples:
+
+;;; (stretch-pitches2 5 '(c4 e4 g4) 1)
+;;; 
+;;; (stretch-pitches2 5 '(c4 e4 g4) 1.5)
+
+
+  References:
+
+Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of Music from 26th of June to 1st of July, 1988.
+"
+  (let ((MIDI-pitches (mapcar #'pitch-to-MIDI chord)))
+    (mapcar #'MIDI-to-pitch 
+	    (if round
+		(mapcar #'(lambda (ps) (mapcar #'round ps))
+			(loop for i from 0 to number
+			   collect (tu:dx->x (mapcar #'(lambda (x) (* x factor))
+						     (mapcar #'(lambda (x) (+ x i))
+							     (tu:x->dx MIDI-pitches)))
+					     (first MIDI-pitches))))
+		;; depends on Opusmodus microtonal music support
+		(warn "feature not yet implemented")))))
+
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Process pitches
