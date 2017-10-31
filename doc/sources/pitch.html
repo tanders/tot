@@ -49,7 +49,15 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g228734">
+<a href="pitch.html#_g228978">
+chord-multiplication</a>
+</td>
+<td class="summary">
+chord1 chord2</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g228982">
 fenv-&gt;pitches</a>
 </td>
 <td class="summary">
@@ -57,7 +65,7 @@ fenv n</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g228735">
+<a href="pitch.html#_g228983">
 fenv-transpose-pitch</a>
 </td>
 <td class="summary">
@@ -65,7 +73,7 @@ sequence fenv <em>&amp;rest</em> args</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g228736">
+<a href="pitch.html#_g228984">
 pitch-retrograde-omn</a>
 </td>
 <td class="summary">
@@ -73,16 +81,204 @@ sequence <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g228733">
+<a href="pitch.html#_g228981">
 pitches-&gt;fenv</a>
 </td>
 <td class="summary">
 pitches</td>
 </tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g228979">
+stretch-pitches</a>
+</td>
+<td class="summary">
+pitches factor <em>&amp;key</em> (round t)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g228980">
+stretch-pitches2</a>
+</td>
+<td class="summary">
+number chord factor <em>&amp;key</em> (round t)</td>
+</tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g228733">
+<a id="_g228978">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+chord-multiplication&nbsp;&nbsp;</td>
+<td class="lambda-list">
+chord1 chord2</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Boulez's multiplication of chords. The intervals of `chord1' are built over every pitch of `chord2'. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+Over every pitch of the C-major triad (chord2) the fifths of chord1 is created. 
+ </p>
+<p>
+</p>
+<pre>
+    (chord-multiplication '(d4 a4) '(c4 e4 g4)) </pre>
+<p>
+References: 
+ </p>
+<p>
+Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g228979">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+stretch-pitches&nbsp;&nbsp;</td>
+<td class="lambda-list">
+pitches factor <em>&amp;key</em> (round t)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Proportional streching/shrinking of intervals. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+pitches: list of Opusmodus pitches 
+ </p>
+</li>
+<li>
+<p>
+factor (integer, float or fraction): Factor by which all but the first `pitches' are stretched or shrunk. 
+ </p>
+</li>
+<li>
+<p>
+round: whether or not to round the result to semitones. Must be T for now, but in future when Opusmodus supports microtonal music this might be refined. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+</p>
+<pre>
+    (stretch-pitches '(c4 e4 g4) 2) 
+      
+     (stretch-pitches '(c4 e4 g4) 1.5) 
+      
+     (stretch-pitches '(c4 e4 g4) 2/3)   </pre>
+<p>
+References: 
+ </p>
+<p>
+Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g228980">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+stretch-pitches2&nbsp;&nbsp;</td>
+<td class="lambda-list">
+number chord factor <em>&amp;key</em> (round t)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Creates `number' derivates from chord following a procedure suggested by Giacomo Manzoni where the chord intervals are systematically stretched or shrunk. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+number (int): number of chords to generate. 
+ </p>
+</li>
+<li>
+<p>
+chord: list of Opusmodus pitches 
+ </p>
+</li>
+<li>
+<p>
+factor (integer, float or fraction): controls the interval between resulting chord pitches. If 1, the first chord interval is increased by 1 semitone, the second by 2 and so on. If 2, the first interval is increased by 2 semitones, the second by 4 etc. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+</p>
+<pre>
+    (stretch-pitches2 5 '(c4 e4 g4) 1) 
+      
+     (stretch-pitches2 5 '(c4 e4 g4) 1.5) </pre>
+<p>
+References: 
+ </p>
+<p>
+Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of Music from 26th of June to 1st of July, 1988. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g228981">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -110,7 +306,7 @@ Translates a sequence of pitches into a fenv that linearily inerpolates between 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g228734">
+<a id="_g228982">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -138,7 +334,7 @@ Translates a fenv into a sequence of pitches. Fenv values encode pitches by thei
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g228735">
+<a id="_g228983">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -197,7 +393,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g228736">
+<a id="_g228984">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -227,6 +423,6 @@ My version of pitch-retrograde that is working until the original is fixed for O
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-10-23 11:28:01</div>
+- 2017-10-31 12:55:52</div>
 </body>
 </html>
