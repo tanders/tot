@@ -139,7 +139,15 @@
 |#
 
 
+#|
+;; TODO: unfinished
+;; see Boulez (1981) Orientations: Collected Writings. Harvard University Press, p. 132
+;;
+;; See also PWGL library FDSDB_XXth_CT
+(defun demultiplied-rhythms (proportions )
 
+    )
+|#
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -168,7 +176,7 @@
 
 
 (defun note-rest-series (positions sequence &key (flat nil) (swallow nil) (section nil))
-  "This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
+  "Turn notes at specific positions into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
 
   Args:
   - positions (list of ints): positions of notes to be turned into rests
