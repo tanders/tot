@@ -120,6 +120,12 @@
 (disassemble-omn '((q f jet-up+fermata+comma) (h 0<mp>0 wind-flz+fermata+comma) (q sfffp wind-i+tie q p<ff)))
 |#
 
+(defun total-duration (sequence)
+  "Return the total duration (sum of all note and rest values) of `sequence'."
+  (reduce #'+ (mapcar #'abs (flatten (omn :length sequence))) :initial-value 0))
+
+;; (total-duration '((-h q c4) (q. f4 e g4 q a4) (h. g4)))
+
 ;;; TODO: keep as global fun
 ;;; TODO: see count-notes -- do I need both?
 (defun note-no (music)
