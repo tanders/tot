@@ -12,6 +12,11 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun keyword-to-om-symbol (key)
+  "Translates the keyword `key' into a symbol of the Opusmodus package"
+  (intern (symbol-name key) :om))
+
+
 ;;; TODO: turn into project independent function with doc etc. It is already general enough.
 ;; Based on https://groups.google.com/forum/#!topic/comp.lang.lisp/xDaUVFDnp5w
 (defun map-neighbours (func list &optional n)
