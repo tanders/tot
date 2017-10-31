@@ -24,7 +24,7 @@
   "Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like :title, :key-signature etc.")
 
 (defparameter *preview-score-return-value*
-  :score 
+  :headerless-score 
   "Controls the return value of function preview-score. 
 
   Possible values are
@@ -50,7 +50,7 @@
     ;;;  ...) 
 
     
-Example:
+Examples:
 
 ;;; (preview-score
 ;;;  '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
@@ -60,29 +60,38 @@ Example:
 ;;;  :header '(:title \"Opus magnum\"
 ;;; 	       :tempo 80))
 
-  The return value is controlled by {defparameter *preview-score-return-value*}.
+  NOTE: when specifying the score :layout as header argument, list instrument names as symbols in the Opusmodus package and *not* keywords as in the headerless score. See the example below.
 
-  BUG: cannot specify score layout as header argument.
+;;; (preview-score
+;;;  '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+;;;  :instruments '(:vln (:program 'violin :sound 'gm)
+;;; 		    :vlc (:program 'cello :sound 'gm))
+;;;  :header `(:layout (,(bracket-group (violin-layout 'vln)
+;;;                                     (violoncello-layout 'vlc)))))
+
+  The return value is controlled by {defparameter *preview-score-return-value*}.
   "
   ;; Using eval is problematic (https://stackoverflow.com/questions/2571401/why-exactly-is-eval-evil/),
   ;; but hard to avoid for a dynamically created def-score expression that requires splicing with ,@.
   ;; Possible alternative would be to define preview-score as macro, but then arguments are not evaluated. 
-  (let ((full-score 
-         `(def-score ,name 
-                     ;; quote all header args, because symbol values must be quoted...
-                     ,(mapcar #'(lambda (x) `',x)					
-                              (append header
-                                      ;; add default vals of required header args at end -- they are overwritten by args given
-                                      (tu:remove-properties
-                                       (tu:properties header)
-                                       (list :key-signature 'atonal
-                                             ;; By default, use implicit time signature of 1st part
-                                             :time-signature (om:get-time-signature (second score))
-                                             :tempo 70))))
+  (let* ((full-header (append header
+			      ;; add default vals of required header args at end -- they are overwritten by args given
+			      (tu:remove-properties
+			       (tu:properties header)
+			       (list :key-signature 'atonal
+				     ;; By default, use implicit time signature of 1st part
+				     :time-signature (om:get-time-signature (second score))
+				     :tempo 70))))
+	 (full-score 
+	  `(def-score ,name 
+	       ;; header args must be quoted...
+	       ,(mapcar #'(lambda (x) `',x)					
+			full-header)
             ,@(mapcar #'(lambda (part)
                           (let ((part-symbol (first part))
                                 (part-omn (second part)))
-                            (list* part-symbol 
+                            (list* (keyword-to-om-symbol part-symbol)
                                    :omn `(quote ,part-omn)
                                    (getf instruments part-symbol))))
                       (tu:plist->pairs score)))))
@@ -92,6 +101,7 @@ Example:
       (:headerless-score score)
       (:full-score full-score)
       (:score *last-score*))))
+
 
 
 #|
@@ -593,6 +603,7 @@ length-expansion-variant
 
 ;;; TODO: 
 ;;; - Introduce offset arg for rests before 2nd score. Offset can be negative, resulting in removing rests or even notes (no polyphony)
+;;; - see bug below
 (defun append-parts (&rest scores)
   "Concatenate multiple scores so that they form a sequence in the resulting score. The OMN expression of instruments that are shared between input scores are appended, while instruments that are missing in some input score are padded with rests for the duration of that score. 
 
@@ -611,6 +622,8 @@ length-expansion-variant
 ;;;                 :vlc ,(gen-retrograde material :flatten T))
 ;;;               `(:vl2 ,material
 ;;;                 :vlc ,(gen-retrograde material :flatten T)))
+
+BUG: If one part misses hierarchic nesting in contrast to others, then this lating nesting is preserved, which can lead to inconsistent nesting (some sections of a part being nested, others are not).
 "
   (reduce #'_append-two-parts scores))
   
@@ -1048,3 +1061,10 @@ Split divisi strings into parts
   :vla (h c4)
   :vlc (h c3)))
 |#
+
+(defun reorder-parts (instruments-in-order score)
+  "Changes the order of instruments in `score' to the order given in `instruments-in-order'. Only the instruments included in `instruments-in-order' are parts of the resulting score."
+  (mappend #'(lambda (instr)
+	       (list instr (getf score instr)))
+	   instruments-in-order))
+
