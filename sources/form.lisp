@@ -289,9 +289,9 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
   "Rotate the OMN `sequence' by `n' positions.
 
   Args:
-  - n: an integer (rotation number, positive or negative). The keywords :left and :right are equivalents of the integer values -1 and 1.
+  - n: an integer (rotation number, positive or negative) or a list of ints. The keywords :left and :right are equivalents of the integer values -1 and 1. If `n' is a list then `flat' must be nil.
   - sequence: OMN expression.
-  - parameter (keyword): which parameter to rotate (e.g., :length, :pitch...). If nil, everything is rotated. 
+  - parameter (keyword): which parameter to rotate (e.g., :length, :pitch...). 
   - flat (Boolean): whether to rotate the full flattened sequence (T) or subsequences. 
   - section (list of ints): positions of sublists to process. This argument is ignored if flat is T.  
 
@@ -302,9 +302,44 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 ;;; (rotate-omn :left '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :parameter :length)
 ;;; 
 ;;; (rotate-omn 2 '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1) :flat nil)
-"  
-  (edit-omn parameter sequence 
-            #'(lambda (ls) (gen-rotate n ls))
-            ; :swallow swallow
-	    :section section
-	    :flat flat))
+;;;
+;;; TODO: not working -- coded in edit-omn currently only if section is non-nil
+;;; (rotate-omn '(0 1 2) '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :flat nil)
+;;;
+;;; TODO: not working yet
+;;; (rotate-omn '(0 1) '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1 2) :flat nil)
+"
+  (let ((n-list-arg? (listp n)))
+    (when n-list-arg?
+      (assert (not flat)
+	      (n flat)
+	      "If N is a list then FLAT must be nil."))
+    (edit-omn parameter sequence
+	      #'(lambda (xs)
+		  (format T "xs: ~A~%" xs)
+		  (if n-list-arg?
+		      (gen-rotate (second n) (first xs))
+		      (gen-rotate n xs)))
+	      ;; :swallow swallow
+	      :section section
+	      :flat flat
+	      :additional-args (when n-list-arg? n))))
+
+#|
+(let ((n-list-arg? (listp n)))
+    (when n-list-arg?
+      (assert (not flat)
+	      (n flat)
+	      "If N is a list then FLAT must be nil."))
+    (edit-omn parameter (if n-list-arg?
+			    (tu:mat-trans (list (gen-repeat (length sequence) n)
+						sequence))
+			    sequence)
+	      #'(lambda (xs)
+		  (if n-list-arg?
+		      (gen-rotate (first xs) (second xs))
+		      (gen-rotate n xs)))
+	      ;; :swallow swallow
+	      :section section
+	      :flat flat))
+|#
