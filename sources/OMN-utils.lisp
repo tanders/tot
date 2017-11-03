@@ -21,7 +21,7 @@
 
 
 
-(defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil))
+(defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
   Args:
@@ -31,6 +31,7 @@
   - flat: whether or not `fun' expects a flat input list.
   - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed)
   - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
+  - additional-args (list of args): `additional-args' allows implementing 'dynamic' arguments, i.e., transformations that change over the sublists of `notation' depending on a list of arguments instead of a plain value. If `additional-args' is nil, then `fun' expects parameter values directly. However, if it is a list, then `fun' expects a list where the parameter values are the first element, and an element from `additional-args' is the second element in the list expected by `fun'. 
 
   Examples: 
 
@@ -63,8 +64,6 @@
 ;;; 	    :section section
 ;;; 	    :flat nil))
 
-  More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}.
-  
   "
   (labels (;; like section-to-binary, but ensures that resulting binary list is long enough to span over full nested param seq
 	   (section-to-binary-better (seq)
@@ -78,11 +77,15 @@
 		(omn (append  
 		      (list type
 			    (if flat
+				;; use of additional-args missing
 				(funcall fun (flatten par-seq))
 				(if section
 				    (do-section (section-to-binary-better par-seq)
 				      `(flatten (funcall ,fun X))
-				      par-seq)
+				      (if additional-args
+					  (tu:mat-trans (list par-seq additional-args))
+					  par-seq))
+				    ;; use of additional-args missing
 				    (funcall fun par-seq))
 				))
 		      (tu:remove-properties (if (equal type :length)
@@ -94,12 +97,16 @@
 	;; notation is plain parameter list
 	(span notation
 	      (if flat
+		  ;; use of additional-args missing
 		  (funcall fun (flatten notation))
 		  (if section
 		      ;; transform section ints into binary list, but ensure binary list is as long as par-seq
 		      (do-section (section-to-binary-better notation)
 			`(flatten (funcall ,fun X))
-			notation)
+			(if additional-args
+			    (tu:mat-trans (list notation additional-args))
+			    notation))
+		      ;; use of additional-args missing
 		      (funcall fun notation)))))))
 
 
