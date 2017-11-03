@@ -96,6 +96,188 @@
 
 
 
+(defun alternate-omns (ids seqs-of-seqs &key (append? nil))
+  "This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level.
+
+  Args:
+  - ids (list of 0-based integers): indicating the position of OMN expressions in seqs-of-seqs.
+  - seqs-of-seqs (list of lists of OMN sequences or plain OMN parameters): specifies material between which to switch. The top-level list positions indicate the different materials pointed to by `ids'. The next level specifies the order in which material will be included when `ids' contains repetitions of an id. This order is circling. The lowest level is the actual material either as a flat list (each a single bar), or as a nested list (multiple bars). In case of a nested list at the lowest level you likely want to set `append' to T.
+  - append? (Boolean): whether or not nested OMN sequences should be appended instead of been combined in a list. 
+
+
+Examples:
+
+The following example demonstrates the use of the arguments `ids' and `seqs-of-seqs' with a flat sequence of note lengths. Note the nesting of `seqs-of-seqs', as explained by the comments. 
+ 
+;;; (alternate-omns
+;;;  ;; sequence of IDs
+;;;  '(0 0 1 1 0 0)
+;;;  '(;; ID 0 material/gestures 
+;;;    (;; for first occurance of ID 0 (and again, when circling)
+;;;     (h q q)
+;;;     ;; second occurance of ID 0 etc.
+;;;     (h. e e))
+;;;    ;; ID 1 material//gestures (only one segment, repeated always)
+;;;    ((e e e e e e e e))
+;;;    ))
+;;; ; => ((h q q) (h. e e) (e e e e e e e e) (e e e e e e e e) (h q q) (h. e e))
+
+
+Now, the power of algorithmic composition lies in the fact that each of these arguments can be algorithmically generated. The next example demontrates that. It also demonstrates how the materials/gestures can be OMN expressions with multiple parameters. Still, each of these gestures consist in a single bar (gestures are not nested, though they are nested within two list levels).
+
+;;; (alternate-omns 
+;;;  ;; random sequence of IDs
+;;;  (gen-eval 10 '(rnd-pick '(0 1)))
+;;;  (list 
+;;;   ;; sequence of first kind of musical gestures
+;;;   (make-omn
+;;;    :length (length-rest-series
+;;; 	    (rnd-sample 7 '(7 8 9))
+;;; 	    (length-divide 3 2
+;;; 			   (rnd-sample 7 '((q q q) (h e e) (h.) (h q)))))
+;;;    :pitch '(d4 e4 f4 g4)
+;;;    :velocity '(pp))
+;;;   ;; sequence of second kind of musical gestures
+;;;   (make-omn
+;;;    :length '(s s s s)
+;;;    :pitch (gen-rotate :right '(c5 d5 f5 a5 g5 e5) :type :seq)
+;;;    :velocity '(ff)
+;;;    :span :pitch)))
+
+Remember that resulting OMN expressions can be 're-barred'. This is useful, e.g., for gestures that exceed a single bar but are still stored in a flat list (again, nested within two list levels).
+
+;;; (omn-to-time-signature 
+;;;  (alternate-omns
+;;;   '(0 0 1 0 1 0 1 1 0 0 1 1 1)
+;;;   (list
+;;;    (make-omn 
+;;;     :length (gen-rotate :left '(-1/20 1/20 1/20 1/20 1/20) :type :seq)
+;;;     :pitch '(d4 e4 f4 g4)
+;;;     :velocity '(ff))
+;;;    (make-omn
+;;;     :length '(q e e)
+;;;     :pitch (gen-rotate :left '(c5 e5 f5) :type :seq)
+;;;     :velocity '(pp pp)
+;;;     :attribute '(ten stacc stacc)
+;;;     :span :pitch)))
+;;;  '(4 4))
+
+Alternatively, it is possible to use gestures that consists of nested lists for representing bars (still nested within two higher list levels). In that case, you typically want to set `append?' to T so that the result is a standard OMN sequence with only a single level of nesting, as shown below. 
+
+;;; (alternate-omns '(0 0 1 1 0 0) 
+;;;                 '((;; one nested gestures, circled in case of repeated IDs
+;;; 		       ((-h q c4 p leg) (q. f4 leg e g4 leg q a4 leg) (h. g4)))
+;;;                   (;; one nested gestures
+;;; 		       ((q g4 f leg c5 leg e c4 stacc d4 stacc e4 f4 stacc) (q g4 stacc -h.))))
+;;;                 :append? T)
+"
+  (let ((omn-no (length seqs-of-seqs)))
+    (assert (every #'(lambda (x) (and (integerp x) (< x omn-no))) ids)
+            (ids) "alternate-omns: must be a list of integers between 0 and (1- (length seqs-of-seqs)): ~A" ids)    
+    ;; (assert (and (every #'listp seqs-of-seqs)
+    ;;              (every #'(lambda (x) (every #'listp x)) seqs-of-seqs)
+    ;;              (every #'(lambda (omn) 
+    ;;                         (every #'(lambda (x)
+    ;;                                    (every #'listp x)) 
+    ;;                                omn)) 
+    ;;                     seqs-of-seqs))
+    ;;         (seqs-of-seqs) "alternate-omns: must be a list of nested OMN expressions: ~A" seqs-of-seqs)
+    (let ((hash (make-hash-table)))
+      (loop 
+        for i from 0 to (1- omn-no)
+        for my-omn in seqs-of-seqs
+        ;; span (circular repeat if necessary) omn sublists to number of occurences in specs
+        ;; and fill hash table with that as side effect
+        do (setf (gethash i hash) (circle-repeat my-omn (count i ids))))    
+      (_alternate-omns-aux ids hash append?))))
+
+(defun _alternate-omns-aux (ids hash append?)
+  "Aux def" 
+  (loop 
+     for id in ids
+     if append?
+       append (pop (gethash id hash))
+       else collect (pop (gethash id hash))))
+
+#|
+
+(alternate-omns 
+ (gen-eval 10 '(rnd-pick '(0 1)) :seed 1)
+ (list
+ (make-omn
+  :length (length-rest-series (rnd-sample 7 '(7 8 9))
+			      (length-divide 3 2
+					     (rnd-sample 7 '((q q q) (h e e) (h.) (h q)))))
+  :pitch '(d4 e4 f4 g4)
+  :velocity '(pp))
+ (make-omn
+  :length '(s s s s)
+  :pitch (gen-rotate :right '(c5 d5 f5 a5 g5 e5) :type :seq)
+  :velocity '(ff)
+  :span :pitch)))
+
+;; omns can also be plain lengths, or pitches etc.
+(alternate-omns
+ '(0 0 1 0 1 0 1 1 0 0 1 1 1)
+ (list
+  (gen-rotate :left '(-1/20 1/20 1/20 1/20 1/20) :type :seq)
+  '((q e e))))
+
+
+;; If omn expressions in omns are flat lists, then alternate-omns switches between individual notes
+(alternate-omns 
+ (gen-eval 10 '(rnd-pick '(0 1)))
+ '((q q q)
+   (s s s s)))
+
+
+;; Test illegal cases
+
+;; ids too large
+(alternate-omns 
+ (gen-eval 10 '(rnd-pick '(2 3)))
+ (list
+  (make-omn
+   :length '(q q q)
+   :pitch '(d4 e4 f4 g4)
+   :velocity '(pp))
+  (make-omn
+   :length '(s s s s)
+   :pitch '(c5 d5 f5 a5 g5 e5)
+   :velocity '(ff)
+   :span :pitch)))
+
+;; OMN expressions not sufficiently nested -- uses individual notes instead of gestures
+(alternate-omns 
+ (gen-eval 10 '(rnd-pick '(0 1)))
+ (list
+  (make-omn
+   :length '(q q q)
+   :pitch '(d4 e4 f4 g4)
+   :velocity '(pp))
+  (make-omn
+   :length '(s s s s)
+   :pitch '(c5 d5 f5 a5 g5 e5)
+   :velocity '(ff)
+   :span :pitch)))
+
+|#
+
+
+
+
+;;; TODO:
+;; - allow for keywords in arg-seqs (automatically "multiply" them
+;; - add example where 
+;;
+;; Introduces support for dynamic transformations over nested sequences (incl. double nesting) for arbitrary functions, i.e. transformations where the argument values controlling the transformation can change between sublists.0. 
+(defun map-segments (segments fun arg-seqs &key (section nil) (constant-args nil))
+  ""
+
+  
+  )
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
