@@ -49,7 +49,15 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229015">
+<a href="form.html#_g229857">
+alternate-omns</a>
+</td>
+<td class="summary">
+ids seqs-of-seqs <em>&amp;key</em> (append? nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229856">
 condense</a>
 </td>
 <td class="summary">
@@ -57,7 +65,7 @@ sequence test <em>&amp;key</em> (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229014">
+<a href="form.html#_g229855">
 developing-substitute</a>
 </td>
 <td class="summary">
@@ -65,16 +73,24 @@ map sequence otherwise</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229016">
+<a href="form.html#_g229859">
 rotate-omn</a>
 </td>
 <td class="summary">
 n sequence <em>&amp;key</em> (parameter :pitch) (flat t) (section nil)</td>
 </tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229858">
+_alternate-omns-aux</a>
+</td>
+<td class="summary">
+ids hash append?</td>
+</tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229014">
+<a id="_g229855">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -137,7 +153,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229015">
+<a id="_g229856">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -193,7 +209,159 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229016">
+<a id="_g229857">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+alternate-omns&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ids seqs-of-seqs <em>&amp;key</em> (append? nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+ids (list of 0-based integers): indicating the position of OMN expressions in seqs-of-seqs. 
+ </p>
+</li>
+<li>
+<p>
+seqs-of-seqs (list of lists of OMN sequences or plain OMN parameters): specifies material between which to switch. The top-level list positions indicate the different materials pointed to by `ids'. The next level specifies the order in which material will be included when `ids' contains repetitions of an id. This order is circling. The lowest level is the actual material either as a flat list (each a single bar), or as a nested list (multiple bars). In case of a nested list at the lowest level you likely want to set `append' to T. 
+ </p>
+</li>
+<li>
+<p>
+append? (Boolean): whether or not nested OMN sequences should be appended instead of been combined in a list. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+The following example demonstrates the use of the arguments `ids' and `seqs-of-seqs' with a flat sequence of note lengths. Note the nesting of `seqs-of-seqs', as explained by the comments. 
+ 
+ </p>
+<pre>
+    (alternate-omns 
+      ;; sequence of IDs 
+      '(0 0 1 1 0 0) 
+      '(;; ID 0 material/gestures  
+        (;; for first occurance of ID 0 (and again, when circling) 
+         (h q q) 
+         ;; second occurance of ID 0 etc. 
+         (h. e e)) 
+        ;; ID 1 material//gestures (only one segment, repeated always) 
+        ((e e e e e e e e)) 
+        )) 
+     ; =&gt; ((h q q) (h. e e) (e e e e e e e e) (e e e e e e e e) (h q q) (h. e e)) </pre>
+<p>
+Now, the power of algorithmic composition lies in the fact that each of these arguments can be algorithmically generated. The next example demontrates that. It also demonstrates how the materials/gestures can be OMN expressions with multiple parameters. Still, each of these gestures consist in a single bar (gestures are not nested, though they are nested within two list levels). 
+ </p>
+<p>
+</p>
+<pre>
+    (alternate-omns  
+      ;; random sequence of IDs 
+      (gen-eval 10 '(rnd-pick '(0 1))) 
+      (list  
+       ;; sequence of first kind of musical gestures 
+       (make-omn 
+        :length (length-rest-series 
+     	    (rnd-sample 7 '(7 8 9)) 
+     	    (length-divide 3 2 
+     			   (rnd-sample 7 '((q q q) (h e e) (h.) (h q))))) 
+        :pitch '(d4 e4 f4 g4) 
+        :velocity '(pp)) 
+       ;; sequence of second kind of musical gestures 
+       (make-omn 
+        :length '(s s s s) 
+        :pitch (gen-rotate :right '(c5 d5 f5 a5 g5 e5) :type :seq) 
+        :velocity '(ff) 
+        :span :pitch))) </pre>
+<p>
+Remember that resulting OMN expressions can be 're-barred'. This is useful, e.g., for gestures that exceed a single bar but are still stored in a flat list (again, nested within two list levels). 
+ </p>
+<p>
+</p>
+<pre>
+    (omn-to-time-signature  
+      (alternate-omns 
+       '(0 0 1 0 1 0 1 1 0 0 1 1 1) 
+        (make-omn  
+         :length (gen-rotate :left '(-1/20 1/20 1/20 1/20 1/20) :type :seq) 
+         :pitch '(d4 e4 f4 g4) 
+         :velocity '(ff)) 
+        (make-omn 
+         :length '(q e e) 
+         :pitch (gen-rotate :left '(c5 e5 f5) :type :seq) 
+         :velocity '(pp pp) 
+         :attribute '(ten stacc stacc) 
+         :span :pitch)) 
+      '(4 4)) </pre>
+<p>
+Alternatively, it is possible to use gestures that consists of nested lists for representing bars (still nested within two higher list levels). In that case, you typically want to set `append?' to T so that the result is a standard OMN sequence with only a single level of nesting, as shown below. 
+ </p>
+<p>
+</p>
+<pre>
+    (alternate-omns '(0 0 1 1 0 0)  
+                     '((;; one nested gestures, circled in case of repeated IDs 
+     		       ((-h q c4 p leg) (q. f4 leg e g4 leg q a4 leg) (h. g4))) 
+                       (;; one nested gestures 
+     		       ((q g4 f leg c5 leg e c4 stacc d4 stacc e4 f4 stacc) (q g4 stacc -h.)))) 
+                     :append? T) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229858">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_alternate-omns-aux&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ids hash append?</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Aux def 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229859">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -241,7 +409,7 @@ parameter (keyword): which parameter to rotate (e.g., <span class="keyword">
 :length, </span>
 <span class="keyword">
 :pitch...). </span>
-If nil, everything is rotated. 
+
  </p>
 </li>
 <li>
@@ -272,6 +440,6 @@ Examples:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-10-31 12:55:52</div>
+- 2017-11-02 17:27:49</div>
 </body>
 </html>
