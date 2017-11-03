@@ -198,6 +198,82 @@
 
 
 
+(defun cut-holes-aux (lengths binary-list)
+  "Expects a list of lengths and a matching binary list. Every length at a position of a 1 in the binary list is left untouched, while every length at a 0 is turned into a rest. 
+
+  If binary-list is shorter than lengths it is repeated in a circular fashion.
+
+  Related: length-rest-series"
+  (mapcar #'(lambda (l b)
+	      (if (= b 0) 
+		  (* l -1)
+		  l))      
+          lengths
+          (circle-repeat (flatten binary-list) (length lengths))))
+
+;; (cut-holes-aux '(1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16) '(1 1 1 0 1 1 1))
+
+(defun cut-holes (sequence binary-list &key (swallow nil))
+  "Turns notes in `sequence' into rests if `binary-list' contains a 0 at the matching position. Notes are left untouched if there is a 1 at the matching position.
+
+  Args:
+  - sequence (list of lengths or OMN expression): music to process
+  - binary-list (flat list of ints): 
+  - flat (Boolean): whether binary-list count for sublists (nil) or the whole list (T)
+  - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
+
+  See also: note-rest-series"
+  (edit-omn :length sequence
+	    #'(lambda (ls) (cut-holes-aux ls binary-list))
+	    :flat T
+	    :swallow swallow
+	      ;; - section (list of ints): positions of sublists to process. This argument is ignored if flat is T.
+	    ;; :section section
+	    ))
+
+#|
+(setf notes (make-omn :length '((s :repeat 12) (e :repeat 8) (q :repeat 8))
+		      :pitch (MIDI-to-pitch (gen-integer 60 84))))
+
+(cut-holes notes '(1 0 1 0 1 1 1 1))
+
+(cut-holes notes '(1 0 1 0 1 1 1 1) :swallow T)
+|#
+
+
+
+#| ;; old
+;; Better use length-rest-series or note-rest-series instead
+(defun cut-holes-aux (lengths binary-list)
+  "Expects a neste listed of lengths and a matching nested binary list. Every length at a position of a 1 is left untouched, while every length at a 0 is turned into a rest.
+  NOTE: For now, a flattened list is return, and OMN expressions are not supported.
+
+  Related: length-rest-series"
+  (mapcar #'(lambda (ls bs)
+              (mapcar #'(lambda (l b)
+                          (if (= b 0) 
+                            (* l -1)
+                            l))
+                      ls bs))          
+          ;; must be list of lists
+          lengths
+          binary-list))
+|#
+
+#| ;; very old
+(defun cut-holes (lengths binary-list)
+  "Expects a list of lengths and a binary list. Every length at a position of a 1 is left untouched, while every length at a 0 is turned into a rest.
+  NOTE: For now, a flat list is returned, and OMN expressions are not supported."
+  (mapcar #'(lambda (l b)
+              (if (= b 0) 
+                (* l -1)
+                l))
+          (flatten lengths)
+          (flatten binary-list)))
+
+|#
+
+
 ;   For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
 (defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
                                          (grace-n 0) (grace-length 1/8) (grace-prob 0.5) 
