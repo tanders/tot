@@ -14,6 +14,7 @@
   :serial t ;; the dependencies are linear.
   :components (; (:file "sources/package")
 	       ;; (:file "sources/macros")
+	       (:file "sources/slippery-chicken") ;; independent
 	       (:file "sources/utils")
 	       (:file "sources/OMN-utils")
 	       (:file "sources/score")	       
