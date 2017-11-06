@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229857">
+<a href="form.html#_g229692">
 alternate-omns</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ ids seqs-of-seqs <em>&amp;key</em> (append? nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229856">
+<a href="form.html#_g229691">
 condense</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ sequence test <em>&amp;key</em> (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229855">
+<a href="form.html#_g229690">
 developing-substitute</a>
 </td>
 <td class="summary">
@@ -73,7 +73,15 @@ map sequence otherwise</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229859">
+<a href="form.html#_g229694">
+map-segments</a>
+</td>
+<td class="summary">
+segments fun arg-seqs <em>&amp;key</em> (section nil) (constant-args nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229695">
 rotate-omn</a>
 </td>
 <td class="summary">
@@ -81,7 +89,7 @@ n sequence <em>&amp;key</em> (parameter :pitch) (flat t) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g229858">
+<a href="form.html#_g229693">
 _alternate-omns-aux</a>
 </td>
 <td class="summary">
@@ -90,7 +98,7 @@ ids hash append?</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229855">
+<a id="_g229690">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -153,7 +161,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229856">
+<a id="_g229691">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -209,7 +217,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229857">
+<a id="_g229692">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -306,6 +314,7 @@ Remember that resulting OMN expressions can be 're-barred'. This is useful, e.g.
     (omn-to-time-signature  
       (alternate-omns 
        '(0 0 1 0 1 0 1 1 0 0 1 1 1) 
+       (list 
         (make-omn  
          :length (gen-rotate :left '(-1/20 1/20 1/20 1/20 1/20) :type :seq) 
          :pitch '(d4 e4 f4 g4) 
@@ -315,7 +324,7 @@ Remember that resulting OMN expressions can be 're-barred'. This is useful, e.g.
          :pitch (gen-rotate :left '(c5 e5 f5) :type :seq) 
          :velocity '(pp pp) 
          :attribute '(ten stacc stacc) 
-         :span :pitch)) 
+         :span :pitch))) 
       '(4 4)) </pre>
 <p>
 Alternatively, it is possible to use gestures that consists of nested lists for representing bars (still nested within two higher list levels). In that case, you typically want to set `append?' to T so that the result is a standard OMN sequence with only a single level of nesting, as shown below. 
@@ -333,7 +342,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229858">
+<a id="_g229693">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -361,7 +370,30 @@ Aux def
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229859">
+<a id="_g229694">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-segments&nbsp;&nbsp;</td>
+<td class="lambda-list">
+segments fun arg-seqs <em>&amp;key</em> (section nil) (constant-args nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229695">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -391,11 +423,11 @@ Args:
 <ul>
 <li>
 <p>
-n: an integer (rotation number, positive or negative). The keywords <span class="keyword">
+n: an integer (rotation number, positive or negative) or a list of ints. The keywords <span class="keyword">
 :left </span>
 and <span class="keyword">
 :right </span>
-are equivalents of the integer values -1 and 1. 
+are equivalents of the integer values -1 and 1. If `n' is a list then `flat' must be nil. 
  </p>
 </li>
 <li>
@@ -433,13 +465,24 @@ Examples:
       
      (rotate-omn :left '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :parameter :length) 
       
-     (rotate-omn 2 '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1) :flat nil) </pre>
+     (rotate-omn 2 '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1 2) :flat nil) </pre>
+<p>
+The following examples are rotating subsequences separately. 
+ </p>
+<p>
+</p>
+<pre>
+    (rotate-omn '(0 1 2) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :flat nil) ; default parameter pitch 
+      
+     (rotate-omn '(0 1 2) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :flat nil :parameter :length) 
+      
+     (rotate-omn '(2 1) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :section '(1 2) :flat nil :parameter :length) </pre>
 </div>
 </div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-02 17:27:49</div>
+- 2017-11-06 23:05:58</div>
 </body>
 </html>

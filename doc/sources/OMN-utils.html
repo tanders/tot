@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229772">
+<a href="OMN-utils.html#_g229607">
 copy-time-signature</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ music-with-time-signature music-to-rebar</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229776">
+<a href="OMN-utils.html#_g229611">
 count-notes</a>
 </td>
 <td class="summary">
@@ -65,15 +65,15 @@ notes</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229773">
+<a href="OMN-utils.html#_g229608">
 edit-omn</a>
 </td>
 <td class="summary">
-type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
+type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil) (additional-args nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229779">
+<a href="OMN-utils.html#_g229614">
 length-add</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ length-add</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229778">
+<a href="OMN-utils.html#_g229613">
 length-subtract</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ length-subtract</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229775">
+<a href="OMN-utils.html#_g229610">
 note-no</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ music</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229777">
+<a href="OMN-utils.html#_g229612">
 phrase-lengths</a>
 </td>
 <td class="summary">
@@ -105,7 +105,7 @@ lengths</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g229774">
+<a href="OMN-utils.html#_g229609">
 total-duration</a>
 </td>
 <td class="summary">
@@ -114,7 +114,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229772">
+<a id="_g229607">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -142,7 +142,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229773">
+<a id="_g229608">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -155,7 +155,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 <td class="symbol-name">
 edit-omn&nbsp;&nbsp;</td>
 <td class="lambda-list">
-type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
+type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil) (additional-args nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -208,12 +208,17 @@ flat: whether or not `fun' expects a flat input list.
 <p>
 swallow: if `type' is <span class="keyword">
 :length, </span>
-and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed) 
+and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed). `swallow' is ignored if notation is a plain parameter list (e.g., a 
  </p>
 </li>
 <li>
 <p>
 section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T. 
+ </p>
+</li>
+<li>
+<p>
+additional-args (list of args): `additional-args' allows implementing 'dynamic' arguments, i.e., transformations that change over the sublists of `notation' depending on a list of arguments instead of a plain value. If `additional-args' is nil, then `fun' expects parameter values directly. However, if it is a list, then `fun' expects a list where the parameter values are the first element, and `additional-args' (if `flat' is T) or an element thereof (if `flat' is NIL) the second element in the list expected by `fun'. 
  </p>
 </li>
 </ul>
@@ -249,27 +254,57 @@ test with nested OMN including a rest
     (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2))) 
       =&gt; ((q g4 mp - b4 c5) (h d5 mp tr2)) </pre>
 <p>
-Another example: expand the built-in function length-rest-series to support arbitrary OMN expressions (not just length lists), and additionally the arguments swallow and section. 
+Another example: expand the built-in function `length-rest-series' to support arbitrary OMN expressions (not just length lists), and additionally the arguments `swallow' and `section'. 
  </p>
 <p>
 </p>
 <pre>
-    (defun length-rest-series-omn (positions lengths &amp;key (swallow nil) (section nil)) 
-       (edit-omn :length lengths  
-     	    #'(lambda (ls) (length-rest-series positions ls)) 
-     	    :swallow swallow 
-     	    :section section 
-     	    :flat nil)) </pre>
+    (defun note-rest-series (positions sequence &amp;key (flat nil) (swallow nil) (section nil)) 
+       (edit-omn :length sequence  
+                 #'(lambda (ls) (length-rest-series positions ls)) 
+                 :swallow swallow 
+     	        :section section 
+     	        :flat flat)) 
+      
+     (setf melody '((s eb6 &lt; leg f5 &lt; leg c5 &lt; leg f5 &lt; leg) (e e6 f - -q))) 
+     (note-rest-series '(1 1) melody :swallow T :section '(0)) </pre>
 <p>
-More information at {https://opusmodus.com/forums/topic/799-user-functions-supporting-arbitrary-omn-input-–-defining-them-more-easily/}. 
- 
- 
+The next example demonstrates how 'dynamic' arguments can be implemented, i.e. arguments that support different values for subsections. Below is a simplified definition of the function rotate-omn. Note how the function argument `n' is handed to the argument `additional-args' of `edit-omn' if `n' is a list. The function given to `edit-omn' also tests whether `n' is a list, and in that case extracts the OMN sublist to rotate as first element of the function argument `xs' and the amount of the rotation of this sublist as second element of `xs'. Further 'dynamic' arguments could be implemented by handing `additional-args' a list of argument lists to use, and by then extracting the relevant elements of such sublists within the function given to `edit-omn'. 
+ </p>
+<p>
+</p>
+<pre>
+    (defun rotate-omn (n sequence &amp;key (parameter :pitch) (flat T) (section nil)) 
+       (let ((n-list-arg? (listp n))) 
+         (edit-omn parameter sequence 
+     	          #'(lambda (xs) 
+     		      (if n-list-arg? 
+     		          (gen-rotate (second xs) (first xs)) 
+     		          (gen-rotate n xs))) 
+     	          :section section 
+     	          :flat flat 
+     	          :additional-args (when n-list-arg? n)))) </pre>
+<p>
+The function rotate-omn can now be called with either giving a single number or a list of numbers to its argument `n'. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf melody '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4))) 
+      
+     (rotate-omn 1 melody) ; default parameter pitch 
+      
+     (rotate-omn '(0 1 2) melody :flat nil)  
+      
+     (rotate-omn '(2 1) melody :section '(1 2) :flat nil :parameter :length) </pre>
+<p>
+
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229774">
+<a id="_g229609">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -297,7 +332,7 @@ Return the total duration (sum of all note and rest values) of `sequence'.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229775">
+<a id="_g229610">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -325,7 +360,7 @@ Returns the number of notes in music, which is a list of lengths values of OMN e
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229776">
+<a id="_g229611">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -353,7 +388,7 @@ Returns number of notes (ignoring rests) in length list or other OMN expression.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229777">
+<a id="_g229612">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -390,7 +425,7 @@ length: lengths or OMN (list or list of list).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229778">
+<a id="_g229613">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -427,7 +462,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229779">
+<a id="_g229614">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -463,6 +498,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-02 17:27:49</div>
+- 2017-11-06 23:05:58</div>
 </body>
 </html>
