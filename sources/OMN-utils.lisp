@@ -53,7 +53,7 @@
   ;;;  => ((q g4 mp - b4 c5) (h d5 mp tr2))
 
 
-  Another example: expand the built-in function length-rest-series to support arbitrary OMN expressions (not just length lists), and additionally the arguments `swallow' and `section'.
+  Another example: expand the built-in function `length-rest-series' to support arbitrary OMN expressions (not just length lists), and additionally the arguments `swallow' and `section'.
 
 ;;; (defun note-rest-series (positions sequence &key (flat nil) (swallow nil) (section nil))
 ;;;   (edit-omn :length sequence 
@@ -80,11 +80,13 @@
 
   The function rotate-omn can now be called with either giving a single number or a list of numbers to its argument `n'.
 
-;;; (rotate-omn 1 '((-h q c4) (q. f4 e g4 q a4) (h. g4))) ; default parameter pitch
+;;; (setf melody '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)))
 ;;; 
-;;; (rotate-omn '(0 1 2) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :flat nil) 
+;;; (rotate-omn 1 melody) ; default parameter pitch
 ;;; 
-;;; (rotate-omn '(2 1) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :section '(1 2) :flat nil :parameter :length)
+;;; (rotate-omn '(0 1 2) melody :flat nil) 
+;;; 
+;;; (rotate-omn '(2 1) melody :section '(1 2) :flat nil :parameter :length)
 
   "
   ;; (declare (optimize (debug 3)))
@@ -95,7 +97,7 @@
 	       (append bs (gen-repeat (- (length seq) (length bs)) 0))))
 	   (process-param-seq (par-seq)
 	     (let ((full-args
-		    (cond ((and flat additional-args (not section)) ; (not section) not necessary, but clearer..
+		    (cond ((and flat additional-args) 
 			   (list (flatten par-seq) additional-args))			  
 			  ((and additional-args section (not flat))
 			   ;; `additional-args' may be shorter than `par-seq'. Therefore,
@@ -111,15 +113,11 @@
 					 (tu:replace-element (list (list (nth sec xs) add-args)) sec xs)))
 				   (tu:mat-trans (list section additional-args))
 				   :initial-value par-seq))
-			  ((and additional-args (not flat) (not section))
+			  ((and additional-args)
 			   (tu:mat-trans (list par-seq additional-args)))
-			  ((and flat (not section) (not additional-args))
+			  ((and flat)
 			   (flatten par-seq))
-			  ((and (not flat) (not section) (not additional-args))
-			   par-seq)
-			  ;;; TODO:
- 			  ;; (T (error "Argument combination not supported. flat: ~A, section: ~A, additional-args ~A~%"
-			  ;; 	    (flat nil) (section nil) (additional-args nil)))
+			  (T par-seq)
 			  )))
 	       (cond (flat (funcall fun full-args))
 		     ((and section (not flat))
