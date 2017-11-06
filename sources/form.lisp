@@ -301,13 +301,16 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 ;;; 
 ;;; (rotate-omn :left '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :parameter :length)
 ;;; 
-;;; (rotate-omn 2 '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1) :flat nil)
-;;;
-;;; TODO: not working -- coded in edit-omn currently only if section is non-nil
-;;; (rotate-omn '(0 1 2) '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :flat nil)
-;;;
-;;; TODO: not working yet
-;;; (rotate-omn '(0 1) '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1 2) :flat nil)
+;;; (rotate-omn 2 '((-h q c4) (q. f4 e g4 q a4) (h. g4)) :section '(1 2) :flat nil)
+
+
+The following examples are rotating subsequences separately.
+
+;;; (rotate-omn '(0 1 2) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :flat nil) ; default parameter pitch
+;;; 
+;;; (rotate-omn '(0 1 2) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :flat nil :parameter :length)
+;;; 
+;;; (rotate-omn '(2 1) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :section '(1 2) :flat nil :parameter :length)
 "
   (let ((n-list-arg? (listp n)))
     (when n-list-arg?
@@ -316,14 +319,21 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 	      "If N is a list then FLAT must be nil."))
     (edit-omn parameter sequence
 	      #'(lambda (xs)
-		  (format T "xs: ~A~%" xs)
 		  (if n-list-arg?
-		      (gen-rotate (second n) (first xs))
+		      (gen-rotate (second xs) (first xs))
 		      (gen-rotate n xs)))
 	      ;; :swallow swallow
 	      :section section
 	      :flat flat
 	      :additional-args (when n-list-arg? n))))
+
+#|
+;; with :additional-args and :section give, does do-section work correctly? Seemingly, there are errors in the number of resulting processed sublists and their nesting
+
+(rotate-omn '(2 1) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :section '(1 2) :flat nil :parameter :length)
+=> (make-omn :LENGTH (((-1/2 1/8 1/8) 2) (1/4 3/8 1/8)) :PITCH ((C4 E4) (F4 G4 A4) (G4 F4 E4 D4)) :VELOCITY ((MF MF) (MF MF MF) (MF MF MF MF)) ...)
+
+|#
 
 #|
 (let ((n-list-arg? (listp n)))
