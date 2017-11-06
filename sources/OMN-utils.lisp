@@ -19,8 +19,6 @@
     music-to-rebar))
 
 
-
-
 (defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
@@ -29,9 +27,9 @@
   - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
   - notation: a omn sequence or a plain parameter list (can be nested).
   - flat: whether or not `fun' expects a flat input list.
-  - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed)
+  - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed). `swallow' is ignored if notation is a plain parameter list (e.g., a 
   - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
-  - additional-args (list of args): `additional-args' allows implementing 'dynamic' arguments, i.e., transformations that change over the sublists of `notation' depending on a list of arguments instead of a plain value. If `additional-args' is nil, then `fun' expects parameter values directly. However, if it is a list, then `fun' expects a list where the parameter values are the first element, and an element from `additional-args' is the second element in the list expected by `fun'. 
+  - additional-args (list of args): `additional-args' allows implementing 'dynamic' arguments, i.e., transformations that change over the sublists of `notation' depending on a list of arguments instead of a plain value. If `additional-args' is nil, then `fun' expects parameter values directly. However, if it is a list, then `fun' expects a list where the parameter values are the first element, and `additional-args' (if `flat' is T) or an element thereof (if `flat' is NIL) the second element in the list expected by `fun'. 
 
   Examples: 
 
@@ -65,49 +63,60 @@
 ;;; 	    :flat nil))
 
   "
-  (labels (;; like section-to-binary, but ensures that resulting binary list is long enough to span over full nested param seq
+  ;; (declare (optimize (debug 3)))
+  (labels (;; function section-to-binary-better is like built-in section-to-binary, but ensures that resulting 
+	   ;; binary list is long enough to span over full nested param seq
 	   (section-to-binary-better (seq)
 	     (let ((bs (section-to-binary section)))
-	       (append bs (gen-repeat (- (length seq) (length bs)) 0)))))
-    (if (omn-formp notation)
-	(copy-time-signature 
-	 notation
-	 (let* ((params (omn nil notation))
-		(par-seq (getf params type))
-		(omn (append  
-		      (list type
-			    (if flat
-				;; use of additional-args missing
-				(funcall fun (flatten par-seq))
-				(if section
-				    (do-section (section-to-binary-better par-seq)
-				      `(flatten (funcall ,fun X))
-				      (if additional-args
-					  (tu:mat-trans (list par-seq additional-args))
-					  par-seq))
-				    ;; use of additional-args missing
-				    (funcall fun par-seq))
-				))
-		      (tu:remove-properties (if (equal type :length)
-						'(:length :duration)
-						(list type))
-					    params)
-		      (list :swallow swallow))))
-	   (apply #'make-omn omn)))
-	;; notation is plain parameter list
-	(span notation
-	      (if flat
-		  ;; use of additional-args missing
-		  (funcall fun (flatten notation))
-		  (if section
-		      ;; transform section ints into binary list, but ensure binary list is as long as par-seq
-		      (do-section (section-to-binary-better notation)
+	       (append bs (gen-repeat (- (length seq) (length bs)) 0))))
+	   (process-param-seq (par-seq)
+	     (let ((full-args
+		    (cond ((and flat additional-args (not section)) ; (not section) not necessary, but clearer..
+			   (list (flatten par-seq) additional-args))			  
+			  ((and additional-args section (not flat))
+			   ;; `additional-args' may be shorter than `par-seq'. Therefore,
+			   ;; - start with full `par-seq' as input for generating full args
+			   ;; - substitue elements at positions of `section' with list containing its
+			   ;; subsec from `par-seq' and the the element from `additional-args'
+			   (reduce #'(lambda (xs sec-n-add-args)
+				       (let ((sec (first sec-n-add-args))
+					     (add-args (second sec-n-add-args)))
+					 ;; replacing and additionally calling nth not efficient, but so what
+					 ;;
+					 ;; double listing required by tu:replace-element to insert the contained list
+					 (tu:replace-element (list (list (nth sec xs) add-args)) sec xs)))
+				   (tu:mat-trans (list section additional-args))
+				   :initial-value par-seq))
+			  ((and additional-args (not flat) (not section))
+			   (tu:mat-trans (list par-seq additional-args)))
+			  ((and flat (not section) (not additional-args))
+			   (flatten par-seq))
+			  ((and (not flat) (not section) (not additional-args))
+			   par-seq)
+			  ;;; TODO:
+ 			  ;; (T (error "Argument combination not supported. flat: ~A, section: ~A, additional-args ~A~%"
+			  ;; 	    (flat nil) (section nil) (additional-args nil)))
+			  )))
+	       (cond (flat (funcall fun full-args))
+		     ((and section (not flat))
+		      (do-section (section-to-binary-better par-seq)
 			`(flatten (funcall ,fun X))
-			(if additional-args
-			    (tu:mat-trans (list notation additional-args))
-			    notation))
-		      ;; use of additional-args missing
-		      (funcall fun notation)))))))
+		     full-args))
+		     ((not flat) (flatten (mapcar fun full-args)))))))
+      (if (omn-formp notation)
+	  (copy-time-signature notation
+			       (let* ((params (omn nil notation))
+				      (par-seq (getf params type))
+				      (omn (append  
+					    (list type (process-param-seq par-seq))
+					    (tu:remove-properties (if (equal type :length)
+								      '(:length :duration)
+								      (list type))
+								  params)
+					    (list :swallow swallow))))
+				 (apply #'make-omn omn)))
+	  ;; notation is plain parameter list
+	  (span notation (process-param-seq notation)))))
 
 
 
