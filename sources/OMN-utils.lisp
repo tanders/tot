@@ -53,14 +53,38 @@
   ;;;  => ((q g4 mp - b4 c5) (h d5 mp tr2))
 
 
-  Another example: expand the built-in function length-rest-series to support arbitrary OMN expressions (not just length lists), and additionally the arguments swallow and section.
+  Another example: expand the built-in function length-rest-series to support arbitrary OMN expressions (not just length lists), and additionally the arguments `swallow' and `section'.
 
-;;; (defun length-rest-series-omn (positions lengths &key (swallow nil) (section nil))
-;;;   (edit-omn :length lengths 
-;;; 	    #'(lambda (ls) (length-rest-series positions ls))
-;;; 	    :swallow swallow
-;;; 	    :section section
-;;; 	    :flat nil))
+;;; (defun note-rest-series (positions sequence &key (flat nil) (swallow nil) (section nil))
+;;;   (edit-omn :length sequence 
+;;;             #'(lambda (ls) (length-rest-series positions ls))
+;;;             :swallow swallow
+;;; 	        :section section
+;;; 	        :flat flat))
+;;; 
+;;; (setf melody '((s eb6 < leg f5 < leg c5 < leg f5 < leg) (e e6 f - -q)))
+;;; (note-rest-series '(1 1) melody :swallow T :section '(0))
+
+  The next example demonstrates how 'dynamic' arguments can be implemented, i.e. arguments that support different values for subsections. Below is a simplified definition of the function rotate-omn. Note how the function argument `n' is handed to the argument `additional-args' of `edit-omn' if `n' is a list. The function given to `edit-omn' also tests whether `n' is a list, and in that case extracts the OMN sublist to rotate as first element of the function argument `xs' and the amount of the rotation of this sublist as second element of `xs'. Further 'dynamic' arguments could be implemented by handing `additional-args' a list of argument lists to use, and by then extracting the relevant elements of such sublists within the function given to `edit-omn'. 
+
+;;; (defun rotate-omn (n sequence &key (parameter :pitch) (flat T) (section nil))
+;;;   (let ((n-list-arg? (listp n)))
+;;;     (edit-omn parameter sequence
+;;; 	          #'(lambda (xs)
+;;; 		      (if n-list-arg?
+;;; 		          (gen-rotate (second xs) (first xs))
+;;; 		          (gen-rotate n xs)))
+;;; 	          :section section
+;;; 	          :flat flat
+;;; 	          :additional-args (when n-list-arg? n))))
+
+  The function rotate-omn can now be called with either giving a single number or a list of numbers to its argument `n'.
+
+;;; (rotate-omn 1 '((-h q c4) (q. f4 e g4 q a4) (h. g4))) ; default parameter pitch
+;;; 
+;;; (rotate-omn '(0 1 2) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :flat nil) 
+;;; 
+;;; (rotate-omn '(2 1) '((-h e c4 e4) (q. f4 e g4 q a4) (q g4 f4 e e4 d4)) :section '(1 2) :flat nil :parameter :length)
 
   "
   ;; (declare (optimize (debug 3)))
