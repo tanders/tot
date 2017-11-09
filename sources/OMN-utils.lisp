@@ -89,8 +89,8 @@
 
   "
   ;; (declare (optimize (debug 3)))
-  (if (not (listp (first notation)))
-      ;; notation is not nested
+  (if (not (or (every #'listp notation) flat))
+      ;; If notation is not (consistently) nested then set flat to T
       (edit-omn type notation fun :flat T :swallow swallow :section section :additional-args additional-args)      
       (labels (;; function section-to-binary-better is like built-in section-to-binary, but ensures that resulting 
 	       ;; binary list is long enough to span over full nested param seq
