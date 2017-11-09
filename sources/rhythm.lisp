@@ -331,7 +331,7 @@
                           bar)
                     bar)))
             (append 
-             (map-neighbours ; subdividing last notes in bars
+             (tu:map-neighbours ; subdividing last notes in bars
               #'(lambda (bar1 bar2) 
                   (let ((whether (= 1 (rnd1 :low 0 :high 1 :prob divide-prob :seed (seed))))
                         (no (rnd1 :low 1 :high n :seed (seed)))) ; how many notes to subdivide max
