@@ -265,7 +265,7 @@
   "
   (edit-omn :velocity notation
             #'(lambda (vs) (_simplify-dynamics vs :flat flat))
-            :flat nil))
+            :flat flat))
 
 
 #|
