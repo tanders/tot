@@ -197,6 +197,40 @@
 	    :flat flat))
 
 
+(defun _merge-rest-into-note (lengths)
+  "[Aux def]
+All rests are merged into the following note. This function can be useful for producing harmonic rhythms. 
+
+Args: 
+- lengths: a flat list of length values"
+  (apply #'append
+	 (tu:map-neighbours #'(lambda (l1 l2)
+				(if (< l1 0)
+				    (list (+ (abs l1) l2))
+				    (list l1 l2)))
+			    (length-rest-merge lengths))))
+
+;; (_merge-rest-into-note '(-1/2 3/2 -1/2 3/2 -1/2 3/2 -1/2 -1/2 -1/2 3/2 -1/2 -1 -1/2 1/2 -1/2 3/2 -1/2 -47/2 -1/2 3/2 -1/2 3/2 -1/2 3/2 -1/2 1/2 -1/2 3/2))
+
+(defun merge-rest-into-note (sequence &key (flat nil) (section nil))
+  "All rests are merged into the following note. This function can be useful for producing harmonic rhythms.
+
+Args:
+- sequence: OMN sequence, can be nested
+- flat (Boolean): whether or not to merge rests across bar boundaries
+- section (list of positive integers): selection of sublists to process
+
+Example:
+
+(merge-rest-into-note '((-h w. e4 pp) (-h w. gs4 pp) (-h w. gs4 pp)))
+=> ((d e4 pp) (d gs4) (d gs4))
+"
+  (edit-omn :length sequence 
+            #'(lambda (ls) (_merge-rest-into-note ls))
+	    :section section
+	    :flat flat))
+
+
 #|
 ;;; TODO:
 ;;; - denominator could be list of ints
