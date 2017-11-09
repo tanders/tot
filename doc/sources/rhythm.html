@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229645">
+<a href="rhythm.html#_g237554">
 cut-holes</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ sequence binary-list <em>&amp;key</em> (swallow nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229644">
+<a href="rhythm.html#_g237553">
 cut-holes-aux</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ lengths binary-list</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229648">
+<a href="rhythm.html#_g237557">
 durational-accent</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merg
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229641">
+<a href="rhythm.html#_g237548">
 even-length-rhythm</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229652">
+<a href="rhythm.html#_g237561">
 isolate-time-signatures</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ ts-forms</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229642">
+<a href="rhythm.html#_g237549">
 length-divide-ext</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229650">
+<a href="rhythm.html#_g237559">
 lengths-with-merged-ties</a>
 </td>
 <td class="summary">
@@ -105,7 +105,15 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229643">
+<a href="rhythm.html#_g237552">
+merge-rest-into-note</a>
+</td>
+<td class="summary">
+sequence <em>&amp;key</em> (flat nil) (section nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g237550">
 note-rest-series</a>
 </td>
 <td class="summary">
@@ -113,7 +121,7 @@ positions sequence <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229651">
+<a href="rhythm.html#_g237560">
 total-duration</a>
 </td>
 <td class="summary">
@@ -121,7 +129,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229639">
+<a href="rhythm.html#_g237546">
 tuplet-rhythm</a>
 </td>
 <td class="summary">
@@ -129,7 +137,7 @@ lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229640">
+<a href="rhythm.html#_g237547">
 tuplet-walk-rhythm</a>
 </td>
 <td class="summary">
@@ -137,7 +145,7 @@ bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-di
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229646">
+<a href="rhythm.html#_g237555">
 _durational-accent-divide</a>
 </td>
 <td class="summary">
@@ -145,7 +153,7 @@ lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229647">
+<a href="rhythm.html#_g237556">
 _durational-accent-merge</a>
 </td>
 <td class="summary">
@@ -153,7 +161,15 @@ lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g229649">
+<a href="rhythm.html#_g237551">
+_merge-rest-into-note</a>
+</td>
+<td class="summary">
+lengths</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g237558">
 _remove-rest-articulations</a>
 </td>
 <td class="summary">
@@ -162,7 +178,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229639">
+<a id="_g237546">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -235,7 +251,7 @@ BUG: seed argument not working as expected.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229640">
+<a id="_g237547">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -306,7 +322,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229641">
+<a id="_g237548">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -369,7 +385,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229642">
+<a id="_g237549">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -411,7 +427,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229643">
+<a id="_g237550">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -477,7 +493,101 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229644">
+<a id="_g237551">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_merge-rest-into-note&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Aux def] 
+ All rests are merged into the following note. This function can be useful for producing harmonic rhythms. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+lengths: a flat list of length values 
+ </p>
+</li>
+</ul>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g237552">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+merge-rest-into-note&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence <em>&amp;key</em> (flat nil) (section nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+All rests are merged into the following note. This function can be useful for producing harmonic rhythms. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+sequence: OMN sequence, can be nested 
+ </p>
+</li>
+<li>
+<p>
+flat (Boolean): whether or not to merge rests across bar boundaries 
+ </p>
+</li>
+<li>
+<p>
+section (list of positive integers): selection of sublists to process 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+(merge-rest-into-note '((-h w. e4 pp) (-h w. gs4 pp) (-h w. gs4 pp))) 
+ =&gt; ((d e4 pp) (d gs4) (d gs4)) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g237553">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -511,7 +621,7 @@ Related: length-rest-series
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229645">
+<a id="_g237554">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -567,7 +677,7 @@ See also: note-rest-series
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229646">
+<a id="_g237555">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -650,7 +760,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229647">
+<a id="_g237556">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -706,7 +816,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229648">
+<a id="_g237557">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -829,7 +939,7 @@ If you want your final rhythm to contain rests you best add these to your rhythm
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229649">
+<a id="_g237558">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -869,7 +979,7 @@ sequence: OMN expression that _cannot_ be nested.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229650">
+<a id="_g237559">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -917,7 +1027,7 @@ See also:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229651">
+<a id="_g237560">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -951,7 +1061,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229652">
+<a id="_g237561">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -987,6 +1097,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-06 23:05:58</div>
+- 2017-11-09 23:39:59</div>
 </body>
 </html>
