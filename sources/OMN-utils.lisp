@@ -18,7 +18,6 @@
                            (get-time-signature music-with-time-signature))
     music-to-rebar))
 
-
 (defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
@@ -90,55 +89,58 @@
 
   "
   ;; (declare (optimize (debug 3)))
-  (labels (;; function section-to-binary-better is like built-in section-to-binary, but ensures that resulting 
-	   ;; binary list is long enough to span over full nested param seq
-	   (section-to-binary-better (seq)
-	     (let ((bs (section-to-binary section)))
-	       (append bs (gen-repeat (- (length seq) (length bs)) 0))))
-	   (process-param-seq (par-seq)
-	     (let ((full-args
-		    (cond ((and flat additional-args) 
-			   (list (flatten par-seq) additional-args))			  
-			  ((and additional-args section (not flat))
-			   ;; `additional-args' may be shorter than `par-seq'. Therefore,
-			   ;; - start with full `par-seq' as input for generating full args
-			   ;; - substitue elements at positions of `section' with list containing its
-			   ;; subsec from `par-seq' and the the element from `additional-args'
-			   (reduce #'(lambda (xs sec-n-add-args)
-				       (let ((sec (first sec-n-add-args))
-					     (add-args (second sec-n-add-args)))
-					 ;; replacing and additionally calling nth not efficient, but so what
-					 ;;
-					 ;; double listing required by tu:replace-element to insert the contained list
-					 (tu:replace-element (list (list (nth sec xs) add-args)) sec xs)))
-				   (tu:mat-trans (list section additional-args))
-				   :initial-value par-seq))
-			  ((and additional-args)
-			   (tu:mat-trans (list par-seq additional-args)))
-			  ((and flat)
-			   (flatten par-seq))
-			  (T par-seq)
-			  )))
-	       (cond (flat (funcall fun full-args))
-		     ((and section (not flat))
-		      (do-section (section-to-binary-better par-seq)
-			`(flatten (funcall ,fun X))
-		     full-args))
-		     ((not flat) (flatten (mapcar fun full-args)))))))
-      (if (omn-formp notation)
-	  (copy-time-signature notation
-			       (let* ((params (omn nil notation))
-				      (par-seq (getf params type))
-				      (omn (append  
-					    (list type (process-param-seq par-seq))
-					    (tu:remove-properties (if (equal type :length)
-								      '(:length :duration)
-								      (list type))
-								  params)
-					    (list :swallow swallow))))
-				 (apply #'make-omn omn)))
-	  ;; notation is plain parameter list
-	  (span notation (process-param-seq notation)))))
+  (if (not (listp (first notation)))
+      ;; notation is not nested
+      (edit-omn type notation fun :flat T :swallow swallow :section section :additional-args additional-args)      
+      (labels (;; function section-to-binary-better is like built-in section-to-binary, but ensures that resulting 
+	       ;; binary list is long enough to span over full nested param seq
+	       (section-to-binary-better (seq)
+		 (let ((bs (section-to-binary section)))
+		   (append bs (gen-repeat (- (length seq) (length bs)) 0))))
+	       (process-param-seq (par-seq)
+		 (let ((full-args
+			(cond ((and flat additional-args) 
+			       (list (flatten par-seq) additional-args))			  
+			      ((and additional-args section (not flat))
+			       ;; `additional-args' may be shorter than `par-seq'. Therefore,
+			       ;; - start with full `par-seq' as input for generating full args
+			       ;; - substitue elements at positions of `section' with list containing its
+			       ;; subsec from `par-seq' and the the element from `additional-args'
+			       (reduce #'(lambda (xs sec-n-add-args)
+					   (let ((sec (first sec-n-add-args))
+						 (add-args (second sec-n-add-args)))
+					     ;; replacing and additionally calling nth not efficient, but so what
+					     ;;
+					     ;; double listing required by tu:replace-element to insert the contained list
+					     (tu:replace-element (list (list (nth sec xs) add-args)) sec xs)))
+				       (tu:mat-trans (list section additional-args))
+				       :initial-value par-seq))
+			      ((and additional-args)
+			       (tu:mat-trans (list par-seq additional-args)))
+			      ((and flat)
+			       (flatten par-seq))
+			      (T par-seq)
+			      )))
+		   (cond (flat (funcall fun full-args))
+			 ((and section (not flat))
+			  (do-section (section-to-binary-better par-seq)
+			    `(flatten (funcall ,fun X))
+			    full-args))
+			 ((not flat) (flatten (mapcar fun full-args)))))))
+	(if (omn-formp notation)
+	    (copy-time-signature notation
+				 (let* ((params (omn nil notation))
+					(par-seq (getf params type))
+					(omn (append  
+					      (list type (process-param-seq par-seq))
+					      (tu:remove-properties (if (equal type :length)
+									'(:length :duration)
+									(list type))
+								    params)
+					      (list :swallow swallow))))
+				   (apply #'make-omn omn)))
+	    ;; notation is plain parameter list
+	    (span notation (process-param-seq notation))))))
 
 
 
