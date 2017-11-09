@@ -197,6 +197,29 @@
 	    :flat flat))
 
 
+#|
+;;; TODO:
+;;; - denominator could be list of ints
+;;; - rebarring as before could cause trouble...
+;;; - arg flat could cause trouble if I later want to rebar as before...
+;;; 
+(defun omn-fit (sequence &key (denominator 8) (type :add) (flat nil) (swallow nil) (section nil))
+  "Like built-in length-fit, but with additional support of arguments flat, swallow, and section.
+
+  Examples:
+
+(length-fit '((e a4 q c5 tie e c5 tie 3q c5 b4 3e cs5) (q gs4 tie 3q gs4 3e f4 fs5))
+	    :section  
+	    :denominator 4 
+	    :type :rest
+"
+  (edit-omn :length sequence 
+            #'(lambda (ls) (length-fit ls :denominator denominator :type type))
+            :swallow swallow
+	    :section section
+	    :flat flat))
+|#
+
 
 (defun cut-holes-aux (lengths binary-list)
   "Expects a list of lengths and a matching binary list. Every length at a position of a 1 in the binary list is left untouched, while every length at a 0 is turned into a rest. 
