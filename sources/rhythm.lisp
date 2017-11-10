@@ -203,14 +203,17 @@ All rests are merged into the following note. This function can be useful for pr
 
 Args: 
 - lengths: a flat list of length values"
-  (apply #'append
-	 (tu:map-neighbours #'(lambda (l1 l2)
-				(if (< l1 0)
-				    (list (+ (abs l1) l2))
-				    (list l1 l2)))
-			    (length-rest-merge lengths))))
+  ;; (declare (optimize (debug 3)))
+  (reduce #'(lambda (accum elem)
+	      (if (< elem 0)
+		  (cons (+ (abs elem) (first accum)) (rest accum))
+		  (cons elem accum)))
+	  (reverse (length-rest-merge (butlast lengths)))
+	  :initial-value (last lengths)))
 
 ;; (_merge-rest-into-note '(-1/2 3/2 -1/2 3/2 -1/2 3/2 -1/2 -1/2 -1/2 3/2 -1/2 -1 -1/2 1/2 -1/2 3/2 -1/2 -47/2 -1/2 3/2 -1/2 3/2 -1/2 3/2 -1/2 1/2 -1/2 3/2))
+
+	
 
 (defun merge-rest-into-note (sequence &key (flat nil) (section nil))
   "All rests are merged into the following note. This function can be useful for producing harmonic rhythms.
