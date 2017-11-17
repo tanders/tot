@@ -3,6 +3,7 @@
 ;; openmusic package
 (in-package :om)
 
+;; (declaim (optimize (debug 3)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -497,7 +498,7 @@ length-expansion-variant
 |#           
 
 
-(defun map-parts-equally (score fn args &key (parameter nil))
+(defun map-parts-equally (score fn args &key parameter skip)
   "Variant of map-parts where all args are shared args.
 
   Args:
@@ -505,7 +506,7 @@ length-expansion-variant
   - fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
   - args: Arguments list for `fn'. One argument is the part of the score. This argument is marked by an underscore (_) in the argument lists. 
   - parameter (omn parameter, e.g., :length or :pitch, default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
- 
+  - skip (list of keywords): instruments to skip unprocessed. 
 
   Example:
 
@@ -519,17 +520,21 @@ length-expansion-variant
   (mappend #'(lambda (instr-part)
                (let* ((instrument (first instr-part))
                       (part-omn (second instr-part))
-                      (result (apply fn
-                                     (substitute 
-                                      (if parameter
-                                        (omn parameter part-omn)
-                                        part-omn)
-                                      '_ args))))
-                 (list instrument 
-                       (if parameter
-                         (copy-time-signature part-omn
-                                              (omn-replace parameter (flatten result) (flatten part-omn)))
-                         result)))) 
+		      (skipped? (member instrument skip))
+                      (result (unless skipped?
+				(apply fn
+				       (substitute 
+					(if parameter
+					    (omn parameter part-omn)
+					    part-omn)
+					'_ args)))))
+                 (list instrument
+		       (if skipped?
+			   part-omn
+			   (if parameter
+			       (copy-time-signature part-omn
+						    (omn-replace parameter (flatten result) (flatten part-omn)))
+			       result))))) 
            (tu:plist->pairs score)))
 
 
