@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g237595">
+<a href="constraints.html#_g182216">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g237596">
+<a href="constraints.html#_g182217">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g237597">
+<a href="constraints.html#_g182218">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -73,16 +73,16 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g237594">
+<a href="constraints.html#_g182215">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (print-csp? nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
 </tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237594">
+<a id="_g182215">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -95,7 +95,7 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 <td class="symbol-name">
 revise-score-harmonically&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (print-csp? nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -112,7 +112,7 @@ CSP transforming the input `score' such that it follows the underlying harmony s
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g237526">
+score (headerless score): See <a href="score.html#_g182144">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -175,7 +175,23 @@ additional-rules (list of cluster-engine rule instances): convenience argument t
 </li>
 <li>
 <p>
-print-csp? (Boolean): if true, print list of arguments to constraint solver cr:cluster-engine (for debugging the CSP). 
+split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see `split-score-at-shared-rests'). 
+ NOTE: You cannot use index rules in this modus! (Indices would not be correct) 
+ </p>
+</li>
+<li>
+<p>
+length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer). 
+ </p>
+</li>
+<li>
+<p>
+print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine. 
+ </p>
+</li>
+<li>
+<p>
+unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score. 
  </p>
 </li>
 </ul>
@@ -257,7 +273,7 @@ TODO: demonstrate how default rules are overwritten.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237595">
+<a id="_g182216">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -324,7 +340,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237596">
+<a id="_g182217">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -354,7 +370,7 @@ Args:
 <ul>
 <li>
 <p>
-score (headerless score): see <a href="score.html#_g237526">
+score (headerless score): see <a href="score.html#_g182144">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -376,7 +392,7 @@ NOTE: `cluster-engine-score' must contain the same number and order of parts, no
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237597">
+<a id="_g182218">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -406,6 +422,6 @@ Just shorthand for (preview-score (cluster-engine-score score))
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-09 23:39:59</div>
+- 2017-11-17 23:07:05</div>
 </body>
 </html>

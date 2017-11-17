@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237514">
+<a href="OMN-utils.html#_g182130">
 copy-time-signature</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ music-with-time-signature music-to-rebar</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237518">
+<a href="OMN-utils.html#_g182136">
 count-notes</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ notes</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237515">
+<a href="OMN-utils.html#_g182131">
 edit-omn</a>
 </td>
 <td class="summary">
@@ -73,7 +73,15 @@ type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil) (addi
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237521">
+<a href="OMN-utils.html#_g182134">
+flattened-length-adjust</a>
+</td>
+<td class="summary">
+duration sequence</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g182139">
 length-add</a>
 </td>
 <td class="summary">
@@ -81,7 +89,7 @@ length-add</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237520">
+<a href="OMN-utils.html#_g182138">
 length-subtract</a>
 </td>
 <td class="summary">
@@ -89,7 +97,7 @@ length-subtract</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237517">
+<a href="OMN-utils.html#_g182135">
 note-no</a>
 </td>
 <td class="summary">
@@ -97,7 +105,7 @@ music</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237519">
+<a href="OMN-utils.html#_g182137">
 phrase-lengths</a>
 </td>
 <td class="summary">
@@ -105,7 +113,15 @@ lengths</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g237516">
+<a href="OMN-utils.html#_g182132">
+process-omn2</a>
+</td>
+<td class="summary">
+type function sequence <em>&amp;key</em> flatten flat (span :length) swallow section exclude</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g182133">
 total-duration</a>
 </td>
 <td class="summary">
@@ -114,7 +130,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237514">
+<a id="_g182130">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -142,7 +158,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237515">
+<a id="_g182131">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -304,7 +320,35 @@ The function rotate-omn can now be called with either giving a single number or 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237516">
+<a id="_g182132">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+process-omn2&nbsp;&nbsp;</td>
+<td class="lambda-list">
+type function sequence <em>&amp;key</em> flatten flat (span :length) swallow section exclude</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Function similar to edit-omn that will soon be built-in in Opusmodus. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g182133">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -332,7 +376,37 @@ Return the total duration (sum of all note and rest values) of `sequence'.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237517">
+<a id="_g182134">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+flattened-length-adjust&nbsp;&nbsp;</td>
+<td class="lambda-list">
+duration sequence</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Currently, the built-in function length-adjust has no <span class="keyword">
+:flatten </span>
+argument. This function offers a workaround. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g182135">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -360,7 +434,7 @@ Returns the number of notes in music, which is a list of lengths values of OMN e
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237518">
+<a id="_g182136">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -388,7 +462,7 @@ Returns number of notes (ignoring rests) in length list or other OMN expression.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237519">
+<a id="_g182137">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -425,7 +499,7 @@ length: lengths or OMN (list or list of list).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237520">
+<a id="_g182138">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -462,7 +536,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237521">
+<a id="_g182139">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -498,6 +572,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-09 23:39:59</div>
+- 2017-11-17 23:07:05</div>
 </body>
 </html>

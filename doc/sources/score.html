@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237532">
+<a href="score.html#_g182150">
 append-parts</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ append-parts</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237530">
+<a href="score.html#_g182148">
 apply-part</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ instrument score fn args <em>&amp;key</em> (parameter nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237543">
+<a href="score.html#_g182161">
 extract-parts</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ instruments score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237527">
+<a href="score.html#_g182145">
 generate-parts</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ fn part-args <em>&amp;key</em> (shared-args nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237535">
+<a href="score.html#_g182153">
 get-instruments</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237536">
+<a href="score.html#_g182154">
 get-part-omn</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ instrument score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237537">
+<a href="score.html#_g182155">
 get-parts-omn</a>
 </td>
 <td class="summary">
@@ -105,7 +105,7 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237528">
+<a href="score.html#_g182146">
 map-parts</a>
 </td>
 <td class="summary">
@@ -113,15 +113,15 @@ score fn part-args <em>&amp;key</em> (parameter nil) (input-parameter nil) (outp
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237529">
+<a href="score.html#_g182147">
 map-parts-equally</a>
 </td>
 <td class="summary">
-score fn args <em>&amp;key</em> (parameter nil)</td>
+score fn args <em>&amp;key</em> parameter skip</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237534">
+<a href="score.html#_g182152">
 merge-voices2</a>
 </td>
 <td class="summary">
@@ -129,7 +129,7 @@ seq insert bar/beat</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237533">
+<a href="score.html#_g182151">
 mix-parts</a>
 </td>
 <td class="summary">
@@ -137,7 +137,7 @@ mix-parts</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237526">
+<a href="score.html#_g182144">
 preview-score</a>
 </td>
 <td class="summary">
@@ -145,7 +145,7 @@ score <em>&amp;key</em> (name 'test-score) (instruments *default-preview-score-i
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237541">
+<a href="score.html#_g182159">
 remove-part</a>
 </td>
 <td class="summary">
@@ -153,7 +153,7 @@ instrument score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237542">
+<a href="score.html#_g182160">
 remove-parts</a>
 </td>
 <td class="summary">
@@ -161,7 +161,7 @@ instruments score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237544">
+<a href="score.html#_g182162">
 reorder-parts</a>
 </td>
 <td class="summary">
@@ -169,7 +169,7 @@ instruments-in-order score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237538">
+<a href="score.html#_g182156">
 replace-instruments</a>
 </td>
 <td class="summary">
@@ -177,7 +177,7 @@ new old score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237539">
+<a href="score.html#_g182157">
 replace-part-omn</a>
 </td>
 <td class="summary">
@@ -185,7 +185,15 @@ instrument new-part score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237540">
+<a href="score.html#_g182165">
+score-duration</a>
+</td>
+<td class="summary">
+score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g182158">
 split-part</a>
 </td>
 <td class="summary">
@@ -193,7 +201,23 @@ instrument orig-score score-to-insert</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="score.html#_g237531">
+<a href="score.html#_g182164">
+split-score-at-shared-rests</a>
+</td>
+<td class="summary">
+score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g182163">
+unify-time-signature</a>
+</td>
+<td class="summary">
+instrument-with-time-signature score</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="score.html#_g182149">
 _append-two-parts</a>
 </td>
 <td class="summary">
@@ -202,7 +226,7 @@ score1 score2</td>
 </table>
 <div class="defparam">
 <div class="defunsignatures">
-<a id="_g237523">
+<a id="_g182141">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -236,7 +260,7 @@ etc. -- except for they key <span class="keyword">
 </div>
 <div class="defparam">
 <div class="defunsignatures">
-<a id="_g237524">
+<a id="_g182142">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -268,7 +292,7 @@ etc.
 </div>
 <div class="defparam">
 <div class="defunsignatures">
-<a id="_g237525">
+<a id="_g182143">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -322,7 +346,7 @@ Possible values are
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237526">
+<a id="_g182144">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -427,7 +451,7 @@ The return value is controlled by {defparameter *preview-score-return-value*}.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237527">
+<a id="_g182145">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -451,7 +475,7 @@ fn part-args <em>&amp;key</em> (shared-args nil)</td>
 <p>
 Generate multiple parts of a polyphonic score by calling a function returning musical material multiple times for multiple parts. 
  
- Returns a headerless score. <a href="score.html#_g237526">
+ Returns a headerless score. <a href="score.html#_g182144">
 preview-score</a>
 describes this format. 
  </p>
@@ -514,7 +538,7 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237528">
+<a id="_g182146">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -556,7 +580,7 @@ Args:
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g237526">
+score (headerless score): See <a href="score.html#_g182144">
 preview-score</a>
 for format description. 
  </p>
@@ -702,7 +726,7 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237529">
+<a id="_g182147">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -715,7 +739,7 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
 <td class="symbol-name">
 map-parts-equally&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score fn args <em>&amp;key</em> (parameter nil)</td>
+score fn args <em>&amp;key</em> parameter skip</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -732,7 +756,7 @@ Args:
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g237526">
+score (headerless score): See <a href="score.html#_g182144">
 preview-score</a>
 for format description. 
  </p>
@@ -754,7 +778,11 @@ parameter (omn parameter, e.g., <span class="keyword">
 or <span class="keyword">
 :pitch, </span>
 default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
- 
+ </p>
+</li>
+<li>
+<p>
+skip (list of keywords): instruments to skip unprocessed. 
  </p>
 </li>
 </ul>
@@ -774,7 +802,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237530">
+<a id="_g182148">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -808,7 +836,7 @@ instrument (symbol): The label of a part in `score'.
 </li>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g237526">
+score (headerless score): See <a href="score.html#_g182144">
 preview-score</a>
 for format description. 
  </p>
@@ -848,7 +876,7 @@ default nil means processing full OMN expression): If `fn' expects only single p
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237531">
+<a id="_g182149">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -871,7 +899,7 @@ score1 score2</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237532">
+<a id="_g182150">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -904,7 +932,7 @@ Args:
 <ul>
 <li>
 <p>
-scores: see <a href="score.html#_g237526">
+scores: see <a href="score.html#_g182144">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -931,7 +959,7 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237533">
+<a id="_g182151">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -961,7 +989,7 @@ Args
 <ul>
 <li>
 <p>
-scores: see <a href="score.html#_g237526">
+scores: see <a href="score.html#_g182144">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -980,7 +1008,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237534">
+<a id="_g182152">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1065,7 +1093,7 @@ See also:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237535">
+<a id="_g182153">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1087,7 +1115,7 @@ score</td>
 </div>
 <div class="doc-body">
 <p>
-Returns all instruments of `score', a headerless score (see <a href="score.html#_g237526">
+Returns all instruments of `score', a headerless score (see <a href="score.html#_g182144">
 preview-score</a>
 for its format). 
  </p>
@@ -1095,7 +1123,7 @@ for its format).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237536">
+<a id="_g182154">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1117,7 +1145,7 @@ instrument score</td>
 </div>
 <div class="doc-body">
 <p>
-Returns the part (OMN expression) of `instrument' in `score', a headerless score (see <a href="score.html#_g237526">
+Returns the part (OMN expression) of `instrument' in `score', a headerless score (see <a href="score.html#_g182144">
 preview-score</a>
 for its format). 
  </p>
@@ -1125,7 +1153,7 @@ for its format).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237537">
+<a id="_g182155">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1147,7 +1175,7 @@ score</td>
 </div>
 <div class="doc-body">
 <p>
-Returns a list of all OMN parts of `score', a headerless score (see <a href="score.html#_g237526">
+Returns a list of all OMN parts of `score', a headerless score (see <a href="score.html#_g182144">
 preview-score</a>
 for its format). 
  </p>
@@ -1155,7 +1183,7 @@ for its format).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237538">
+<a id="_g182156">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1195,7 +1223,7 @@ old (list of keywords): List of instruments in `score' to be replaced. Must have
 </li>
 <li>
 <p>
-score (a headerless score): See <a href="score.html#_g237526">
+score (a headerless score): See <a href="score.html#_g182144">
 preview-score</a>
 for its format. 
  </p>
@@ -1216,7 +1244,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237539">
+<a id="_g182157">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1254,7 +1282,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237540">
+<a id="_g182158">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1327,7 +1355,7 @@ my-score))))
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237541">
+<a id="_g182159">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1373,7 +1401,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237542">
+<a id="_g182160">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1412,7 +1440,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237543">
+<a id="_g182161">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1451,7 +1479,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g237544">
+<a id="_g182162">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1477,10 +1505,116 @@ Changes the order of instruments in `score' to the order given in `instruments-i
  </p>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g182163">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+unify-time-signature&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instrument-with-time-signature score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Rebar music of all parts in `score' to match the meter of `instrument-with-time-signature'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g182164">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+split-score-at-shared-rests&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Splits headerless `score' into list of headerless scores. `score' is split at the end of every bar, where each part has either a rest at the end of this bar, or at the beginning of the next bar. 
+ </p>
+<p>
+The bar positions at which the score was split is returned as second value. 
+ </p>
+<p>
+This function is useful to split longer input scores, for which the function `revise-score-harmonically' could take a long time. 
+ </p>
+<p>
+All parts in score must share the same time signatures (nesting). You may want to first use `unify-time-signature' if necessary. 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (split-score-at-shared-rests 
+      '(:vln ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+        :vlc ((q g3) (q c4 b3 h a3) (-q c3 d3)))) 
+     =&gt; ((:vln ((q g4) (q. c5 e d5 q e5 -q)) 
+          :vlc ((q g3) (q c4 b3 h a3))) 
+         (:vln ((h e5 -q)) 
+          :vlc ((-q c3 d3)))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g182165">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+score-duration&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns total duration of `score'. 
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-09 23:39:59</div>
+- 2017-11-17 23:07:05</div>
 </body>
 </html>
