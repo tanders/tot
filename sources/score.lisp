@@ -1062,9 +1062,92 @@ Split divisi strings into parts
   :vlc (h c3)))
 |#
 
+
 (defun reorder-parts (instruments-in-order score)
   "Changes the order of instruments in `score' to the order given in `instruments-in-order'. Only the instruments included in `instruments-in-order' are parts of the resulting score."
   (mappend #'(lambda (instr)
 	       (list instr (getf score instr)))
 	   instruments-in-order))
+
+
+(defun unify-time-signature (instrument-with-time-signature score)
+  "Rebar music of all parts in `score' to match the meter of `instrument-with-time-signature'."
+  (let ((part-with-time-sig (get-part-omn instrument-with-time-signature score)))
+    (map-parts-equally score
+		       #'(lambda (part)
+			   (copy-time-signature part-with-time-sig part))
+		       '(_)
+		       :skip '(instrument-with-time-signature))))
+
+
+(defun split-score-at-shared-rests (score)
+  "Splits headerless `score' into list of headerless scores. `score' is split at the end of every bar, where each part has either a rest at the end of this bar, or at the beginning of the next bar.
+
+  The bar positions at which the score was split is returned as second value.
+
+  This function is useful to split longer input scores, for which the function `revise-score-harmonically' could take a long time.
+
+  All parts in score must share the same time signatures (nesting). You may want to first use `unify-time-signature' if necessary.
+
+Example:
+
+;;; (split-score-at-shared-rests
+;;;  '(:vln ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q))
+;;;    :vlc ((q g3) (q c4 b3 h a3) (-q c3 d3))))
+;;; => ((:vln ((q g4) (q. c5 e d5 q e5 -q))
+;;;      :vlc ((q g3) (q c4 b3 h a3)))
+;;;     (:vln ((h e5 -q))
+;;;      :vlc ((-q c3 d3))))
+"
+  (let* ((instruments (get-instruments score))
+	 (parts (get-parts-omn score))
+	 ;; collect for each part in score the position of all bars that end with a rest, or where the next bar starts with a rest
+	 (parts-bar-positions-starting-with-rest
+	  (mapcar #'(lambda (part)
+		      (tu:positions-if #'length-restp (omn :length part) :key #'first))
+		  parts))
+	 (parts-bar-positions-ending-with-rest
+	  (mapcar #'(lambda (part)
+		      (tu:positions-if #'length-restp (omn :length part) :key #'(lambda (xs) (first (last xs)))))
+		  parts))
+	 (parts-splitable-bar-positions
+	  (mapcar #'(lambda (part-bar-positions-starting-with-rest part-bar-positions-ending-with-rest)
+		      (sort (remove-duplicates (append part-bar-positions-starting-with-rest
+						       (mapcar #'1+ part-bar-positions-ending-with-rest)))
+			    #'<))
+		  parts-bar-positions-starting-with-rest
+		  parts-bar-positions-ending-with-rest))
+	 ;; extract those positions that are shared by all parts
+	 (shared-splitable-bar-positions
+	  (cons 0 ; ensure positions start with 0
+	   (remove 0
+		  (remove nil
+			  (mapcar #'(lambda (pos)
+				      (when (every #'(lambda (other-parts-splitable-bar-positions)
+						       (member pos other-parts-splitable-bar-positions))
+						   (rest parts-splitable-bar-positions))
+					pos))
+				  (first parts-splitable-bar-positions))))))
+	 ;; split each part in subseqs at those positions
+	 (split-parts
+	  (mapcar #'(lambda (part) (tu:subseqs part shared-splitable-bar-positions))
+	    parts)))
+    ;; construct new scores for those subseqs
+    (values 
+     (mapcar #'(lambda (section-parts)
+		 (tu:pairs->plist (mapcar #'list instruments section-parts)))
+	     (tu:mat-trans split-parts))
+     shared-splitable-bar-positions)))
+
+
+; (split-score-at-shared-rests full-score)
+
+;; (multiple-value-list (split-score-at-shared-rests full-score))
+
+(defun score-duration (score)
+  "Returns total duration of `score'."
+  (apply #'max (mapcar #'total-duration (get-parts-omn score))))
+
+
+
 
