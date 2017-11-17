@@ -143,6 +143,69 @@
 	    (span notation (process-param-seq notation))))))
 
 
+;;; TMP: 
+(defun process-omn2 (type function sequence &key flatten flat (span :length) swallow section exclude)
+  "Function similar to edit-omn that will soon be built-in in Opusmodus."
+  (do-verbose ("process-omn2")
+    (labels ((process-omn2* (type function sequence)
+               (if (any-itemp '(:length :pitch :velocity :articulation :all) (list! type))
+                 (let* ((type-par (list! type))
+                        (lval (omn-plist :length sequence))
+                        (pval (remove-nils (omn-plist :pitch sequence)))
+                        (vval (remove-nils (omn-plist :velocity sequence)))
+                        (aval (remove-nils (omn-plist :attribute sequence)))
+                        (length (if (any-itemp '(:length :all) type-par)
+                                  (let ((plen (assemble-seq (funcall function (list! lval)))))
+                                    (cond ((and (listsp lval) flatten)
+                                           (length-span (get-span plen)
+                                                        (flatten (funcall function (list (flatten lval))))))
+                                          ((listsp lval) (funcall function lval))
+                                          (t (car (funcall function (lists! lval))))))
+                                  lval))
+                        (pitch (if (any-itemp '(:pitch :all) type-par)
+                                 (cond ((and (listsp pval) flatten)
+                                        (flatten (funcall function (list! (flatten pval)))))
+                                       ((listsp pval) (car (funcall function  pval)))
+                                       (t (car (funcall function (lists! pval)))))
+                                 pval))
+                        (velocity (if (any-itemp '(:velocity :all) type-par)
+                                    (cond ((and (listsp vval) flatten)
+                                           (flatten (funcall function (list (flatten vval)))))
+                                          ((listsp vval) (funcall function vval))
+                                          (t (car (funcall function (lists! vval)))))
+                                    vval))
+                        (articulation (if (any-itemp '(:articulation :all) type-par)
+                                        (cond ((and (listsp aval) flatten)
+                                               (flatten (funcall function (list (flatten aval)))))
+                                              ((listsp aval) (funcall function aval))
+                                              (t (car (funcall function (lists! aval)))))
+                                        aval)))
+                   (make-omn
+                    :length length
+                    :pitch pitch
+                    :velocity velocity
+                    :articulation articulation
+                    :flat flat
+                    :span span
+                    :swallow swallow))
+                 (error "Not a known type (~A)." type))))
+      
+      (maybe-section
+       (lambda (x) (process-omn2* type function x))
+       sequence section exclude))))
+
+#|
+
+(setf sequence '((s eb6 < leg q e f5 < leg s c5 < leg - f5 < stacc) (-q c4 ff ped1)))
+(setf gen-retrograde (lambda (x) (gen-retrograde x)))
+
+(process-omn2 :articulation gen-retrograde '((s eb6 < leg q e f5 < leg s c5 < leg - f5 < stacc) (-q c4 ff ped)) :flatten nil)
+(process-omn2 :articulation gen-retrograde '((s eb6 < leg q e f5 < leg s c5 < leg - f5 < stacc) (-q c4 ff ped)) :flatten t)
+(process-omn2 :length gen-retrograde '((s eb6 < leg q e f5 < leg s c5 < leg - f5 < stacc) (-q c4 ff ped)) :flatten nil)
+(process-omn2 :length gen-retrograde '((s eb6 < leg q e f5 < leg s c5 < leg - f5 < stacc) (-q c4 ff ped)) :flatten t)
+|#
+
+
 
 ;;; TODO: define add-omn when I have variant of disassemble-omn that works with incomplete CMN forms
 #|
@@ -165,6 +228,25 @@
   (reduce #'+ (mapcar #'abs (flatten (omn :length sequence))) :initial-value 0))
 
 ;; (total-duration '((-h q c4) (q. f4 e g4 q a4) (h. g4)))
+
+(defun flattened-length-adjust (duration sequence)
+  "Currently, the built-in function length-adjust has no :flatten argument. This function offers a workaround."
+  ;; note: length adjusted sequence is longer or shorter than orig sequence -- how does copy-time-signature cope with that?
+  (copy-time-signature 
+   sequence
+   (length-adjust duration (flatten sequence))))
+
+#|
+  (process-omn2 :all
+		#'(lambda (seq) (length-adjust duration seq))
+		sequence
+		:flat T))
+|#
+
+;; (flattened-length-adjust 2 '((h g4) (h g4) (h g4)))
+
+
+
 
 ;;; TODO: keep as global fun
 ;;; TODO: see count-notes -- do I need both?
