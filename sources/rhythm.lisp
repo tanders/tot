@@ -10,6 +10,25 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+;; !! TODO: rhythmic transformation with curve/function/fenv/envelope
+;; - multiplication (or addition) of fenv etc. values to given rhythmic sequence (numerically)
+;; - Optional: some quantisation of results (e.g., allow for limiting rythmic complexity), e.g., with 
+;;   - Opusmodus: vector-to-length (no support for tuplets)
+;;   - ksquant (needs poking in the code, or translating input data into simple format (very easy, just call simple2score), and then resulting ENP score into OMN more tricky, but possible)
+
+#|
+(defun dynamic-rhythmic-transformation (length fenv fun &key (quantize '(1 2 3 4 5 7 8)))
+  "Generic transformation function: transforms the rhythmic sequence `length' in a way that changes over the duration of that sequence and is specified with a fenv and a function.  
+
+  Args:
+  - 
+  "
+  
+  
+  )
+|#
+
 ;; Useful project-wide definition, but likely no need to store it more generally.
 (defun tuplet-rhythm (lengths subdivisions &rest args 
                               &key (length-dividend 1/2) (count-offset 0) (position 'e) (type '?)
