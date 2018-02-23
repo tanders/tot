@@ -18,6 +18,8 @@
                            (get-time-signature music-with-time-signature))
     music-to-rebar))
 
+;;; TODO: add support for processing ties properly using omn-merge-ties. e.g., see
+;;; https://opusmodus.com/forums/topic/989-length-legato-opposite-function/
 (defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
   "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
