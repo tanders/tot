@@ -697,7 +697,7 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 
 ;;; TODO:
 ;;; - Consider: support leading rests per subscore? Can I do this with append-parts or metric-shift?
-(defun mix-parts (&rest scores)
+(defun mix-scores (&rest scores)
   "Mix multiple scores together to run in parallel. Useful, e.g., for creating melody and polyphonic accompaniment or different textures separately, and then mixing them together. 
 
   Args
@@ -706,8 +706,8 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
   Example:
 
 ;;; (let ((material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -))))
-;;;    (mix-parts `(:vln ,material)
-;;;               `(:vlc ,(metric-shift '-h material))))
+;;;    (mix-scores `(:vln ,material)
+;;;                `(:vlc ,(metric-shift '-h material))))
 "
   (apply #'append scores))
 
@@ -718,26 +718,26 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 
 ;;; TODO: why pitch repetitions?
 (preview-score
- (mix-parts `(:vl1 ,material
-              :vl2 ,material)
-            (map-parts 
-             (map-parts 
-              `(:vla ,material
-                :vlc ,material)
-              #'pitch-variant
-              '(:vla (_ :variant r :transpose -7)
-                :vlc (_ :variant r :transpose -12)))
-             #'length-retrograde
-             '(:vla (_)
-               :vlc (_))
-             :shared-args '(:flatten T))))
+ (mix-scores `(:vl1 ,material
+	       :vl2 ,material)
+	     (map-parts 
+	      (map-parts 
+	       `(:vla ,material
+		 :vlc ,material)
+	       #'pitch-variant
+	       '(:vla (_ :variant r :transpose -7)
+		 :vlc (_ :variant r :transpose -12)))
+	      #'length-retrograde
+	      '(:vla (_)
+		:vlc (_))
+	      :shared-args '(:flatten T))))
 
 (preview-score
- (mix-parts `(:vl1 ,material
-              :vl2 ,material)
+ (mix-scores `(:vl1 ,material
+	       :vl2 ,material)
              (map-parts 
               `(:vla ,material
-                :vlc ,material)
+		:vlc ,material)
               #'(lambda (seq variant transpose)
                   (length-retrograde (pitch-variant seq :variant variant :transpose transpose)
                                      :flatten T))
@@ -746,16 +746,16 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 
 ;;; unfinished
 (preview-score
- (mix-parts `(:vl1 ,material
-              :vl2 ,material)
-            (map-parts 
-             `(:vla ,material
-               :vlc ,material)
-             #'gen-retrograde
-             '(:vla (_ :variant r)
-               :vlc (_ :variant r))
-             :shared-args '(:transpose -7)
-             )))
+ (mix-scores `(:vl1 ,material
+	       :vl2 ,material)
+	     (map-parts 
+	      `(:vla ,material
+		:vlc ,material)
+	      #'gen-retrograde
+	      '(:vla (_ :variant r)
+		:vlc (_ :variant r))
+	      :shared-args '(:transpose -7)
+	      )))
 
 |#
 

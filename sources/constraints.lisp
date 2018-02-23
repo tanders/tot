@@ -354,7 +354,7 @@ TODO: demonstrate how default rules are overwritten.
     ;; in case of failure return score that displays "no solution"
     (:no-solution '(:1 ((w no-solution))))
     (otherwise
-     (mix-parts 
+     (mix-scores
       ;; scales and chords part (analysis)
       (cluster-engine-score 
        (append (first-n 4 cluster-engine-score)
