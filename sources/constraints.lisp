@@ -16,6 +16,7 @@
 
 
 ;;; TODO:
+;;; - BUG: Ties in input score can be ignored. Tones tied together in input score can turn out with different pitches in result.
 ;;; - ? Arg: split-score? Add support to split score at harmonic changes (instead of shared rests).
 ;;; - Cut superfluous notes/bars at end (and stop search in time) -- not (always) necessary?
 ;;; OK - insert all velo and articulations in score into result
@@ -23,19 +24,17 @@
 ;; ... solution can be repeating input score
 (defun revise-score-harmonically (score harmonies scales
 				  &key
-				    (constrain-pitch-profiles? T)
-				    ;; BUG: argument ignored and rule not applied?
+				    (constrain-pitch-profiles? T) 
 				    (constrain-pitch-intervals? T)
 				    (pitch-domains nil)
 				    (pitch-domains-extension 2)
+				    (pitch-domain-limits nil)
 				    (rules :default)
 				    (additional-rules nil)
 				    (split-score? nil)
 				    (length-adjust? T)
 				    (print-csp? nil)
 				    (unprocessed-cluster-engine-result? nil))
-  ;; TMP: unused arg doc
-  ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
   "CSP transforming the input `score' such that it follows the underlying harmony specified. 
   The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied.
   
@@ -43,25 +42,28 @@
   - score (headerless score): See {defun preview-score} for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations.
   - harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord changes of the underlying harmony 
   - scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony
-  - constrain-pitch-profiles? (Boolean): Whether to constrain the pitch profile
-  - constrain-pitch-intervals? (Boolean): Whether to constrain the pitch intervals
+  - constrain-pitch-profiles? (Boolean or int): Whether to constrain the pitch profile. If an int, it sets the weigth offset of the profile rule.
+  - constrain-pitch-intervals? (Boolean or int): Whether to constrain the pitch intervals. If an int, it sets the weigth offset of the profile rule.
   - pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format: (<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...), where pitches are Opusmodus pitch symbols. For example, if your `score' specifies the first and second violin with the keywords :vl1 and :vl2, `pitch-domains' could be (:vl1 (g3 c6) :vl2 (g3 c6)).     
     By default, the ambitus of each part of `score' is used to automatically deduce the chromatic pitch domain for that part. When overwriting this default, the pitch domain of all parts must be given explicitly.
   - pitch-domains-extension: 
      If 0, the pitch domain for each part is the ambitus of pitches in the respective part of `score' (including all semitones within that ambitus). 
      If a positive integer, the pitch domain of each part is the respective ambitus extended by this number of semitones both up an down. For example, if `pitch-domains-extension' is 2, and the ambitus of some part in `score' ranges from C4 to C5, then the pitch domain for that part ranges chromatically from Bb3 (2 semitones down at the lower end) to D5 (2 semitones up at the upper end).
      A pitch domain extension can also be specified for each part separately in either of the following formats: (<part1-name-keyword> <extension> ...) or (<part1-name-keyword> (<lower-extension> <upper-extension>) ...). For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write (:vln1 (0 7)), if you are using :vln1 as keyword in `score'. 
-      When specifying a pitch domain extension for any part explicitly, the extensions for all parts must be given explicitly.
+      When specifying a pitch domain extension for any part explicitly, then extensions for all parts must be given explicitly.
+  - pitch-domain-limits: If set, it specifies absolute limits of the pitch domain for some or all parts, which restrict the domain otherwise specified with the pitches of `score' and  `pitch-domains-extension'. This is useful, e.g., to restrict the pitch of a part to the playable range of instruments. This argument in the following format: 
+(<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...), where pitches are Opusmodus pitch symbols or Opusmodus pitch integers (but not MIDI integers!). 
+    When specifying a pitch domain limit for any part, then a limit for all parts must be given.
   - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
     If `rules' is :default, then some default rule set is used. 
   - additional-rules (list of cluster-engine rule instances): convenience argument to add rules without overwriting the default rule set by leaving the argument `rules' untouched.
   - split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see `split-score-at-shared-rests').
-    NOTE: You cannot use index rules in this modus! (Indices would not be correct)
+NOTE: You cannot use index rules in this modus! (Indices would not be correct)
   - length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer).
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
-  - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
+ - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
 
-  Example:
+Example:
 
 Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
 
@@ -110,8 +112,9 @@ The default pitch domains (the ambitus of parts) can be overwritten explicitly. 
 ;;; 			        :pitch-domains '(:vl1 (c4 g5) :vl2 (g3 c5))))
 
 TODO: demonstrate how default rules are overwritten.
-
-  "
+"
+  ;; TMP: unused arg doc
+  ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.  
   (if split-score?
       ;; if split-score? process score section wise 
       (let* ((first-instrument (first score)) ;; used to ensure unified time sigs
@@ -124,7 +127,7 @@ TODO: demonstrate how default rules are overwritten.
 	     ;; split harmonies at split-positions, but first ensure they follow the same time sigs
 	     (split-harmonies (tu:subseqs (copy-time-signature first-score-part harmonies) split-positions))
 	     (split-scales (tu:subseqs (copy-time-signature first-score-part scales) split-positions)))
-	(apply #'append-parts
+	(apply #'append-scores
 	       (mapcar #'(lambda (score-section harmonies-section scales-section)			   
 			   (revise-score-harmonically
 			    score-section harmonies-section scales-section
@@ -142,7 +145,7 @@ TODO: demonstrate how default rules are overwritten.
 		       split-scales)))
       ;; 
       (let* ((parts (get-parts-omn score))
-	     (pitch-domain-specs (if (listp pitch-domains-extension)
+	     (pitch-domain-extension-specs (if (listp pitch-domains-extension)
 				     pitch-domains-extension
 				     (tu:map-plist-vals #'(lambda (_)
 							    (declare (ignore _))
@@ -160,11 +163,15 @@ TODO: demonstrate how default rules are overwritten.
 		     (ce::rules->cluster 
 		      (ce::rules->cluster 
 		       (when constrain-pitch-profiles?
-			 (cr:follow-profile-hr 
-			  parts :voices voice-ids :mode :pitch :constrain :profile))
+			 (cr:follow-profile-hr
+			  parts :voices voice-ids :mode :pitch :constrain :profile :weight-offset (if (numberp constrain-pitch-profiles?)
+												      constrain-pitch-profiles?
+												      0)))
 		       (when constrain-pitch-intervals?
 			 (cr:follow-profile-hr 
-			  parts :voices voice-ids :mode :pitch :constrain :intervals))
+			  parts :voices voice-ids :mode :pitch :constrain :intervals :weight-offset (if (numberp constrain-pitch-intervals?)
+												      constrain-pitch-intervals?
+												      0)))
 		       (ce:r-predefine-meter time-sigs)
 		       ;; stop search after all parts (including chords and scales) reach the duration of the input score
 		       ;; !! NOTE that rule doc says "The stoptime has to be reached in all given voices. Note that the rule ignors the pitch information."
@@ -200,10 +207,11 @@ TODO: demonstrate how default rules are overwritten.
 		     (,(flatten (omn :length harmonies)))
 		     ;; harmony: chords
 		     (,(pitch-to-midi (flatten (omn :pitch harmonies))))
+                     ;; parts
 		     ,@(mappend #'(lambda (instr)
 				    (let* ((part (getf score instr))
-					   (pitch-dom-spec (getf pitch-domain-specs instr))
-					   (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for every instrument, but that should be fine here
+					   (pitch-dom-extension-spec (getf pitch-domain-extension-specs instr))
+					   (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for aevery instrument, but that should be fine here
 							    (mapcar #'pitch-to-integer (getf pitch-domains instr))
 							    (if
 							     (omn :pitch (flatten part))
@@ -211,13 +219,25 @@ TODO: demonstrate how default rules are overwritten.
 							     (find-ambitus part)
 							     ;; otherwise return some default domain 
 							     '(0 1))))
-					   (pitch-dom-ambitus (cond ((integerp pitch-dom-spec)
-								     (list (- (first raw-ambitus) pitch-dom-spec)
-									   (+ (second raw-ambitus) pitch-dom-spec)))
-								    ((listp pitch-dom-spec)
-								     (list (- (first raw-ambitus) (first pitch-dom-spec))
-									   (+ (second raw-ambitus) (second pitch-dom-spec))))
-								    )))
+					   (pitch-dom-ambitus (cond ((integerp pitch-dom-extension-spec)
+								     (list (- (first raw-ambitus) pitch-dom-extension-spec)
+									   (+ (second raw-ambitus) pitch-dom-extension-spec)))
+								    ((listp pitch-dom-extension-spec)
+								     (list (- (first raw-ambitus) (first pitch-dom-extension-spec))
+									   (+ (second raw-ambitus) (second pitch-dom-extension-spec))))
+								    ))
+					   (pitch-dom-limit (getf pitch-domain-limits instr))					   
+					   (limited-pitch-dom-ambitus (if (not pitch-dom-limit)
+									  pitch-dom-ambitus
+									  (let ((pitch-dom-limit-ints
+										 (cond ((integerp (first pitch-dom-limit))
+											pitch-dom-limit)
+										       ((pitchp (first pitch-dom-limit))
+											(pitch-to-integer pitch-dom-limit)))))
+									    (list (max (first pitch-dom-limit-ints)
+										       (first pitch-dom-ambitus))
+										  (min (second pitch-dom-limit-ints)
+										       (second pitch-dom-ambitus)))))))
 				      `( 
 					;; rhythm domain: predefined motif
 					(,(omn :length (omn-merge-ties (flatten part))))
@@ -225,7 +245,7 @@ TODO: demonstrate how default rules are overwritten.
 					,(mclist
 					  (apply #'gen-integer 
 						 (mapcar #'(lambda (p) (+ p 60)) 
-							 pitch-dom-ambitus)))
+							 limited-pitch-dom-ambitus)))
 					)))
 				(get-instruments score))
 		     ))))
