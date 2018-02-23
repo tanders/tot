@@ -656,7 +656,7 @@ length-expansion-variant
 ;;; TODO: 
 ;;; - Introduce offset arg for rests before 2nd score. Offset can be negative, resulting in removing rests or even notes (no polyphony)
 ;;; - see bug below
-(defun append-parts (&rest scores)
+(defun append-scores (&rest scores)
   "Concatenate multiple scores so that they form a sequence in the resulting score. The OMN expression of instruments that are shared between input scores are appended, while instruments that are missing in some input score are padded with rests for the duration of that score. 
 
   Note that the function assumes all parts in each score to contain the same overall duration and metric structure.
@@ -668,12 +668,12 @@ length-expansion-variant
 
 ;;; (setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
 ;;;     
-;;; (append-parts `(:vl1 ,material
-;;;                 :vl2 ,(gen-retrograde material :flatten T))
-;;;               `(:vl1 ,material
-;;;                 :vlc ,(gen-retrograde material :flatten T))
-;;;               `(:vl2 ,material
-;;;                 :vlc ,(gen-retrograde material :flatten T)))
+;;; (append-scores `(:vl1 ,material
+;;;                  :vl2 ,(gen-retrograde material :flatten T))
+;;;                `(:vl1 ,material
+;;;                  :vlc ,(gen-retrograde material :flatten T))
+;;;                `(:vl2 ,material
+;;;                  :vlc ,(gen-retrograde material :flatten T)))
 
 BUG: If one part misses hierarchic nesting in contrast to others, then this lating nesting is preserved, which can lead to inconsistent nesting (some sections of a part being nested, others are not).
 "
@@ -685,7 +685,7 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 (setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
 
 (preview-score
- (append-parts `(:vl1 ,material
+ (append-scores `(:vl1 ,material
                  :vl2 ,(gen-retrograde material :flatten T))
                `(:vl1 ,material
                  :vlc ,(gen-retrograde material :flatten T))
