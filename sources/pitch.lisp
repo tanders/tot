@@ -4,6 +4,22 @@
 (in-package :om)
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Utilities
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun pcs->chord (pcs)
+  "Expects a list of pitch class integers and returns an Opusmodus chord symbol.
+
+  Example:
+  (pcs->chord '(0 4 7))
+  => c4e4g4"
+  (first (chordize
+          (midi-to-pitch (loop for pc in pcs
+                           collect (+ pc 60))))))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
