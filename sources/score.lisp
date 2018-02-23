@@ -249,13 +249,16 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
 |#
 
 
-;;; TODO: have keyargs input-parameter and output-parameter separately, at least as options
+;;; TODO:
+;; - add support for arg swallow: swallow parameters like pitches falling on rests
+;; - have keyargs input-parameter and output-parameter separately, at least as options
 (defun map-parts (score fn part-args &key 
-			(parameter nil) 
-                        (input-parameter nil)
-                        (output-parameter nil)
-                        (shared-args nil)
-                        (flatten nil))
+				       (parameter nil) 
+				       (input-parameter nil)
+				       (output-parameter nil)
+				       (shared-args nil)
+				       (flatten nil)
+				       (swallow nil))
   "Create or transform a polyphonic score. The original purpose is for creating/transforming musical textures, i.e., relations between polyphonic parts.
 
   Applies function `fn' to parts in `score': this function is a variant of the standard Lisp function `mapcar', but specialised for scores. A score is represented in the format discussed in the documentation of the function `preview-score'.     
@@ -263,7 +266,7 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
     Additional arguments for `fn' can be specified in `part-args', and these argument lists can be different for each part. However, one argument is the part of the score. This argument is marked by an underscore (_) in the argument lists. In the following example, the function `pitch-transpose' is applied to a score with two parts. This function has two required arguments, a transposition interval (measured in semitones), and the pitch sequence or OMN to transpose. The transposition interval for the first part is 4 (major third upwards), and the underscore marks the position of the violin part to transpose, etc. 
  
 ;;; (map-parts '(:vln ((h e4)) 
-;;; 	     :vlc ((h c3))) 
+;;; 	         :vlc ((h c3))) 
 ;;; 	   #'pitch-transpose  
 ;;; 	   '(:vln (4 _)  
 ;;; 	     :vlc (12 _)))
@@ -277,6 +280,7 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
   - output-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' results that are then inserted into the resulting score -- the parameter expected by `fn' can be set separately. If both `output-parameter' and `parameter' are nil, or `output-parameter' is set to :all, then `fn' returns full OMN sequences.
   - shared-args (list): For all instruments/parts, these arguments are appended at end end of its part-specific arguments. They are useful, e.g., for keyword arguments. 
   - flatten (Boolean): If T, the parameter sequence -- encoded by `_' in the argument lists, is flattened before the `fn' is applied.
+  - swallow (Boolean): If T (and `parameter' or `input-parameter' is set to any parameter except :length), then those parameter values that fall on rests are 'swallow', i.e., skipped. For example, if `parameter' is set to :pitch, and there are rests in the score, then generated/transforemd pitches that would fall on rests are left out.
     
     Examples:
 
@@ -348,7 +352,7 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
 ;;;     :vlc (_ :transpose -20 :seed 40))
 ;;;    :shared-args '(:variant ?))
     "
-  ;; catching hard-to-find user error...
+  ;; catching hard-to-find user errors...
   (let* ((instruments (get-instruments score))
          (missing-instruments (remove-if #'(lambda (arg-instr) (member arg-instr instruments)) (get-instruments part-args))))
     (assert (not missing-instruments)
@@ -363,36 +367,44 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
   ;;; TODO: not sure whether using a hash-table adds efficiency -- after all, I only need to access each element in plist score only once
   (let ((input-parameter (if input-parameter input-parameter parameter))
         (output-parameter (if output-parameter output-parameter parameter))
-        (parts (make-hash-table :test #'equal)))
+        (parts-hash (make-hash-table :test #'equal)))
     ;; fill hash table, using leading keywords as keys
     (loop for part in (tu:plist->pairs score)
-      do (setf (gethash (first part) parts) part))
+       do (setf (gethash (first part) parts-hash) part))
     (tu:pairs->plist 
      (loop 
-       for instrument-arg-pair in (tu:plist->pairs part-args) 
-       for instrument = (first instrument-arg-pair)
-       for part = (gethash instrument parts)
-       for part-omn = (second part)
-       for fn-args = (second instrument-arg-pair) 
-       collect (if (equal fn-args :skip)
-                 part ; no processing
-                 (cons instrument
-                       (let* ((seq (if (or (not input-parameter)
-                                           (eql :all input-parameter))
-                                     part-omn
-                                     (omn input-parameter part-omn)))
-                              (result (apply fn (append (substitute
-                                                         (if flatten (flatten seq) seq)
-                                                         '_ fn-args)
-                                                        shared-args))))
-                         (list 
-                          (if (or (not output-parameter)
-                                  (eql :all output-parameter))
-                            result
-                            (copy-time-signature part-omn
-                                                 (omn-replace output-parameter (flatten result) (flatten part-omn)))
-                            )))))
-       ))))
+	for instrument-arg-pair in (tu:plist->pairs part-args) 
+	for instrument = (first instrument-arg-pair)
+	for part = (gethash instrument parts-hash)
+	for part-omn = (second part)
+	for fn-args = (second instrument-arg-pair) 
+	collect (if (equal fn-args :skip)
+		    part ; no processing
+		    (cons instrument
+			  (let* ((seq (if (or (not input-parameter)
+					      (eql :all input-parameter))
+					  part-omn
+					  (omn input-parameter part-omn)))
+				 (unswallowed-results (apply fn (append (substitute
+									 (if flatten (flatten seq) seq)
+									 '_ fn-args)
+									shared-args)))
+				 (lengths (omn :length part-omn))
+				 (result (if (and swallow
+						  input-parameter
+						  (not (or (eql input-parameter :length)
+							   (eql output-parameter :length))))
+					     (gen-swallow lengths unswallowed-results
+							  :flatten flatten)
+					     unswallowed-results)))
+			    (list 
+			     (if (or (not output-parameter)
+				     (eql :all output-parameter))
+				 result
+				 (copy-time-signature part-omn
+						      (omn-replace output-parameter (flatten result) (flatten part-omn)))
+				 )))))
+	  ))))
 
 ;; testing / generating examples
 
