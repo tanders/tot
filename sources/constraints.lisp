@@ -250,6 +250,8 @@ TODO: demonstrate how default rules are overwritten.
 
 
 
+;;; TODO:
+;; - Test grace notes are working
 (defun cluster-engine-score (cluster-engine-score &key (instruments nil))
   "Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format.
 
@@ -274,11 +276,12 @@ TODO: demonstrate how default rules are overwritten.
   :instruments '(:vln :vla)))
 "
  (case cluster-engine-score
-  ;; in case of failure return score that displays "no solution"
+  ;; in case of failure return score that displays (preview-score"no solution"
   (:no-solution '(:1 ((w no-solution)))) 
   (otherwise
-   (let* ((length-lists (butlast (tu:at-even-position cluster-engine-score)))
-	  (pitch-lists (tu:at-odd-position cluster-engine-score))
+   (let* ((cluster-engine-score-without-time-sigs (butlast cluster-engine-score))
+          (length-lists (tu:at-even-position cluster-engine-score-without-time-sigs))
+	  (pitch-lists (tu:at-odd-position cluster-engine-score-without-time-sigs))
 	  (time-sigs (mapcar #'(lambda (ts) (append ts '(1)))
 			     (first (last cluster-engine-score)))))
      (tu:one-level-flat 
@@ -289,20 +292,27 @@ TODO: demonstrate how default rules are overwritten.
 			       (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
 				       (gen-integer 1 (length length-lists))))
 					; for time-sig in time-sigs
-	 collect (list instrument
+         ;; TMP: if statement
+         ;; if (not (= (length lengths) (length pitches)))
+         ;; do
+         ;; else do
+         collect (list instrument
 		       (omn-to-time-signature 
 			(make-omn  
 			 ;; 0 length are acciaccaturas 
 			 :length (mapcar #'(lambda (l) (if (= l 0) 1/8 l))
 					 lengths)
+                         ;; BUG: articulations also swallowed?
 			 :articulation (mapcar #'(lambda (l) (if (= l 0) 'acc '-))
 					       lengths)
 			 :pitch (tu:mappend #'(lambda (p) 
 						(if (listp p)
 						    (chordize (midi-to-pitch p))
 						    (list (midi-to-pitch p))))
+                                            ;; BUG: needed?
 					    ;; Hack: replace all nil (pitches of rests, but also at end of score) 
 					    (substitute 60 nil pitches))
+                         ;; NOTE: changed from T to nil 
 			 :swallow T)
 			time-sigs))))))))
 
