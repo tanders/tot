@@ -33,15 +33,19 @@
   - :full-score - the full def-score expression generated
   - :score - the resulting score object")
 
+
+
+(rest (getf *default-preview-score-header* :layout))
+
 (defun preview-score (score &key (name 'test-score)    
-			    (instruments *default-preview-score-instruments*)
-			    (header *default-preview-score-header*))
+			      (instruments *default-preview-score-instruments*)
+			      (header *default-preview-score-header*))
   "Notates and plays a score in a format slightly simpler than expected by def-score, i.e., without its header. 
     
     Args: 
     - score (plist): a headerless score. See below for its format.
     - name (symbol): The score name.
-    - instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn.
+    - instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn. This list can contain more instruments than actually contained in score (e.g., settings for a full orchestra), but only the instruments actually contained in `score' are actually given to the internal `def-score' call. 
     - header (plist): The format is the same as the header settings for `def-score' with keywords like :title, :composer, :key-signature etc. 
     
 
@@ -75,8 +79,51 @@ Examples:
   "
   ;; Using eval is problematic (https://stackoverflow.com/questions/2571401/why-exactly-is-eval-evil/),
   ;; but hard to avoid for a dynamically created def-score expression that requires splicing with ,@.
-  ;; Possible alternative would be to define preview-score as macro, but then arguments are not evaluated. 
-  (let* ((full-header (append header
+  ;; Possible alternative would be to define preview-score as macro, but then arguments are not evaluated.
+  (let* ((score-instruments (tu:properties score))
+	 ;; only use instruments actually in score
+	 (actual-instruments (mappend #'(lambda (p) (list p (getf instruments p)))
+				      score-instruments))
+	 (full-header (append (tu:update-property
+			       header :layout
+			       ;; collect only layouts of instruments actually present in score
+			       (labels ((collect-present-layouts (layouts)
+					  (tu:mappend  ;; all return values listed -- nils removed by append
+					   #'(lambda (spec)
+					       ;; (break "Break lambda in")
+					       (cond (;; recursion in case of groups
+						      (and (listp spec)
+							   (member (first spec)
+								   '(:brace :bracket :square)))
+						      ;; (break "Break group")
+						      (let ((collected-layouts (collect-present-layouts (rest spec))))
+							;; (break "Break after recursive collect-present-layouts call")
+							;; remove complete group if all its instruments were removed
+							(unless
+							    ;; only naming details left like (:name "Organ" :abbr "Org.")
+							    (every #'(lambda (x) (or (keywordp x) (stringp x)))
+								   collected-layouts)
+							  (list (cons (first spec) collected-layouts)))))
+						     (;; instrument spec like (:treble violin :name "Violin" :abbr "Vln.")
+						      (and (listp spec)
+							   (keywordp (first spec))
+							   (member (intern (symbol-name (second spec))
+									   :keyword)
+								   score-instruments))
+						      ;; (break "Break instrumet")
+						      (list spec))							 
+						     (;; layouts was only a single instrument layout taken apart by mappend
+						      (or (symbolp spec) (stringp spec))
+						      ;; (break "Break symbols or string")
+						      (list spec))							 
+						     (;; everything else is removed by mappend
+						      T
+						      ;; (break "Break else")
+						      nil)))
+					   layouts)))
+				 ;; wrap in list for append
+				 (list (collect-present-layouts (getf header :layout)))
+				 ))
 			      ;; add default vals of required header args at end -- they are overwritten by args given
 			      (tu:remove-properties
 			       (tu:properties header)
@@ -89,13 +136,13 @@ Examples:
 	       ;; header args must be quoted...
 	       ,(mapcar #'(lambda (x) `',x)					
 			full-header)
-            ,@(mapcar #'(lambda (part)
-                          (let ((part-symbol (first part))
-                                (part-omn (second part)))
-                            (list* (keyword-to-om-symbol part-symbol)
-                                   :omn `(quote ,part-omn)
-                                   (getf instruments part-symbol))))
-                      (tu:plist->pairs score)))))
+	     ,@(mapcar #'(lambda (part)
+			   (let ((part-symbol (first part))
+				 (part-omn (second part)))
+			     (list* (keyword-to-om-symbol part-symbol)
+				    :omn `(quote ,part-omn)
+				    (getf actual-instruments part-symbol))))
+		       (tu:plist->pairs score)))))
     (eval full-score)
     (audition-musicxml-last-score)
     (case *preview-score-return-value*
