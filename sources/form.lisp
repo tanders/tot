@@ -76,7 +76,7 @@
 
 
 (defun condense (sequence test &key (section nil))
-  "Beethoven-like condensation of music. All notes for which a given test function returns true are removed, and their preceeding note is extended by their duration.
+  "Beethoven-like condensation of music. All notes for which a given test function returns `nil' are removed, and their preceeding note is extended by their duration.
 
   Args:
   - test: Boolean function expecting individual parameters of each note in `OMN'
