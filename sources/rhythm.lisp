@@ -252,12 +252,14 @@ Example:
 
 (merge-rest-into-note '((-h w. e4 pp) (-h w. gs4 pp) (-h w. gs4 pp)))
 => ((d e4 pp) (d gs4) (d gs4))
+
+(merge-rest-into-note '((-w) (-h h e4 pp)) :flat T)
+=> ((w e4 pp tie) (w e4 pp))
 "
   (edit-omn :length sequence 
             #'(lambda (ls) (_merge-rest-into-note ls))
 	    :section section
 	    :flat flat))
-
 
 #|
 ;;; TODO:
