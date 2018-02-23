@@ -74,9 +74,12 @@
 
 
 ;; Originally inspired by reading rhythm of v. Schweinitz scores :)
-(defun tuplet-walk-rhythm (bar-no &key (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-distances '(7 8 9)) 
-                               (last-bar nil)
-                               (seed nil))
+;;; TODO: consider allowing bar-length to be a list of values.
+(defun tuplet-walk-rhythm (bar-no &key (bar-length 1/2) (subdivisions-ambitus '(2 7)) 
+                                  (rest-distances '(7 8 9)) 
+                                  (rest-distance-order :rnd)
+                                  (last-bar nil)
+                                  (seed nil))
   "Some custom algorithm to create rhythmic phrases that randomly walk across tuplet subdivisions and includes some rests.
 
   Args:
@@ -84,7 +87,8 @@
   - bar-length: regular duration of resulting bars
   - lengths: list of lists of length values forming the underlying rhythm that is subdivided by this function
   - subdivisions-ambitus: range of tuplet subdivisions
-  - rest-distances: distances between rests (order will be randomise
+  - rest-distances: distances between rests 
+  - rest-distance-order (:rnd or :seq): whether rest distances will be in the given order (:seq) or randomised (:rnd)
   - last-bar: bar added at end after bar-no bars. If nil, no bar is added. 
 
   Example: 
@@ -99,7 +103,9 @@
                                      :length-dividend bar-length :count-offset 0 :seed (seed))))
       (append 
        (length-rest-series ; rest-distances
-        (rnd-sample bar-no rest-distances :seed (seed)) 
+        (case rest-distance-order
+          (:rnd (rnd-sample bar-no rest-distances :seed (seed)))
+          (:seq rest-distances))
         my-rhythm)
        (when last-bar
          `(,last-bar))))))
