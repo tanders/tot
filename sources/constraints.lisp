@@ -4,15 +4,152 @@
 (in-package :om)
 
 
-;; articulation to display a score that is no solution
+;; articulation to display a score that represents no solution
 (add-text-attributes
  '(no-solution "no solution"))  
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Functionality depending on the libraries Cluster Engine and Cluster Rules
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; TODO:
+;; - Test grace notes are working
+(defun cluster-engine-score (cluster-engine-score &key (instruments nil))
+  "Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format.
+
+  Args:
+  - cluster-engine-score: The score data in the format returned by ClusterEngine.
+  - instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score.
+
+  Example:
+
+(preview-score
+ (cluster-engine-score
+  ;; simple polyphonic constraint problem
+  (ce::ClusterEngine 10 t nil 
+                     ;; single rule: all rhythmic values are equal
+                     (ce::R-rhythms-one-voice 
+                      #'(lambda (x y) (= x y)) '(0 1) :durations)
+                     '((3 4)) 
+                     '(((1/4) (1/8))
+                       ((60) (61))
+                       ((1/4) (1/8))
+                       ((60) (61))))
+  :instruments '(:vln :vla)))
+"
+ (case cluster-engine-score
+  ;; in case of failure return score that displays (preview-score"no solution"
+  (:no-solution '(:1 ((w no-solution)))) 
+  (otherwise
+   (let* ((cluster-engine-score-without-time-sigs (butlast cluster-engine-score))
+          (length-lists (tu:at-even-position cluster-engine-score-without-time-sigs))
+	  (pitch-lists (tu:at-odd-position cluster-engine-score-without-time-sigs))
+	  (time-sigs (mapcar #'(lambda (ts) (append ts '(1)))
+			     (first (last cluster-engine-score)))))
+     (tu:one-level-flat 
+      (loop 
+	 for lengths in length-lists
+	 for pitches in pitch-lists
+	 for instrument in (or instruments
+			       (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
+				       (gen-integer 1 (length length-lists))))
+					; for time-sig in time-sigs
+         ;; TMP: if statement
+         ;; if (not (= (length lengths) (length pitches)))
+         ;; do
+         ;; else do
+         collect (list instrument
+		       (omn-to-time-signature 
+			(make-omn  
+			 ;; 0 length are acciaccaturas 
+			 :length (mapcar #'(lambda (l) (if (= l 0) 1/8 l))
+					 lengths)
+                         ;; BUG: articulations also swallowed?
+			 :articulation (mapcar #'(lambda (l) (if (= l 0) 'acc '-))
+					       lengths)
+			 :pitch (tu:mappend #'(lambda (p) 
+						(if (listp p)
+						    (chordize (midi-to-pitch p))
+						    (list (midi-to-pitch p))))
+                                            ;; BUG: needed?
+					    ;; Hack: replace all nil (pitches of rests, but also at end of score) 
+					    (substitute 60 nil pitches))
+                         ;; NOTE: changed from T to nil 
+			 :swallow T)
+			time-sigs))))))))
+
+;;; TODO: 
+;;; what if scales-position / chords-position is nil? or no scales/chords in score? 
+(defun copy-cluster-engine-pitches-to-score (score cluster-engine-score) 
+  "Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
+
+  Args:
+  - score (headerless score): see {defun preview-score} for format description of headerless scores. 
+  - cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.com/tanders/cluster-engine). 
+
+  NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts).
+
+  NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
+  "
+  ;; (declare (optimize (debug 3)))
+  (case cluster-engine-score
+    ;; in case of failure return score that displays "no solution"
+    (:no-solution '(:1 ((w no-solution))))
+    (otherwise
+     (mix-scores
+      ;; scales and chords part (analysis)
+      (cluster-engine-score 
+       (append (first-n 4 cluster-engine-score)
+	       (last cluster-engine-score))
+       :instruments '(:scales :chords))  
+      ;; actual score
+      (let* ((pitch-lists (tu:at-odd-position cluster-engine-score)))
+	(loop
+	   for pitches in (cddr pitch-lists) ;; remove pitches of scales and chrods
+	   for part-omn in (get-parts-omn score)
+	   for instrument in (get-instruments score)
+	   append (list instrument
+			(copy-time-signature
+			 part-omn
+			 ;;; omn-replace not work with ties -- use make-omn instead
+			 (let ((flat-omn (flatten part-omn)))
+			   ;; (break)
+			   (make-omn :length (omn-merge-ties flat-omn)
+				     :pitch (flatten 
+					     (tu:mappend #'(lambda (p) 
+							     (if (listp p)
+								 (chordize (midi-to-pitch p))
+								 (list (midi-to-pitch p))))
+							 (remove nil pitches)))
+				     :velocity (omn :velocity flat-omn)
+				     :articulation (omn :articulation flat-omn)
+				     :leg (omn :leg flat-omn)
+				     :swallow nil))
+			 #|
+			 (omn-replace :pitch  (flatten 
+					       (tu:mappend #'(lambda (p) 
+							       (if (listp p)
+								   (chordize (midi-to-pitch p))
+								   (list (midi-to-pitch p))))
+							   (remove nil pitches)))
+				      (flatten part-omn))
+			 |#
+			 ))))))))
+
+#|
+;;; omn-replace does not work for ties
+(omn-replace :pitch '((q g4 tie) (q g4) (q a4))
+	     '(d4 e4))
+
+|#
+
+
+(defun preview-cluster-engine-score (score)
+  "Just shorthand for (preview-score (cluster-engine-score score))"
+  (preview-score (cluster-engine-score score)))
 
 
 ;;; TODO:
@@ -58,8 +195,8 @@
   - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
     If `rules' is :default, then some default rule set is used. 
   - additional-rules (list of cluster-engine rule instances): convenience argument to add rules without overwriting the default rule set by leaving the argument `rules' untouched.
-  - split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see `split-score-at-shared-rests').
-NOTE: You cannot use index rules in this modus! (Indices would not be correct)
+  - split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see function `split-score-at-shared-rests').
+    NOTE: You cannot use index rules in this modus -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
   - length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer).
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
  - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
@@ -274,140 +411,4 @@ TODO: demonstrate how default rules are overwritten.
 	       ))))))
 
 
-
-;;; TODO:
-;; - Test grace notes are working
-(defun cluster-engine-score (cluster-engine-score &key (instruments nil))
-  "Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format.
-
-  Args:
-  - cluster-engine-score: The score data in the format returned by ClusterEngine.
-  - instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score.
-
-  Example:
-
-(preview-score
- (cluster-engine-score
-  ;; simple polyphonic constraint problem
-  (ce::ClusterEngine 10 t nil 
-                     ;; single rule: all rhythmic values are equal
-                     (ce::R-rhythms-one-voice 
-                      #'(lambda (x y) (= x y)) '(0 1) :durations)
-                     '((3 4)) 
-                     '(((1/4) (1/8))
-                       ((60) (61))
-                       ((1/4) (1/8))
-                       ((60) (61))))
-  :instruments '(:vln :vla)))
-"
- (case cluster-engine-score
-  ;; in case of failure return score that displays (preview-score"no solution"
-  (:no-solution '(:1 ((w no-solution)))) 
-  (otherwise
-   (let* ((cluster-engine-score-without-time-sigs (butlast cluster-engine-score))
-          (length-lists (tu:at-even-position cluster-engine-score-without-time-sigs))
-	  (pitch-lists (tu:at-odd-position cluster-engine-score-without-time-sigs))
-	  (time-sigs (mapcar #'(lambda (ts) (append ts '(1)))
-			     (first (last cluster-engine-score)))))
-     (tu:one-level-flat 
-      (loop 
-	 for lengths in length-lists
-	 for pitches in pitch-lists
-	 for instrument in (or instruments
-			       (mapcar #'(lambda (i) (intern (write-to-string i) :keyword))
-				       (gen-integer 1 (length length-lists))))
-					; for time-sig in time-sigs
-         ;; TMP: if statement
-         ;; if (not (= (length lengths) (length pitches)))
-         ;; do
-         ;; else do
-         collect (list instrument
-		       (omn-to-time-signature 
-			(make-omn  
-			 ;; 0 length are acciaccaturas 
-			 :length (mapcar #'(lambda (l) (if (= l 0) 1/8 l))
-					 lengths)
-                         ;; BUG: articulations also swallowed?
-			 :articulation (mapcar #'(lambda (l) (if (= l 0) 'acc '-))
-					       lengths)
-			 :pitch (tu:mappend #'(lambda (p) 
-						(if (listp p)
-						    (chordize (midi-to-pitch p))
-						    (list (midi-to-pitch p))))
-                                            ;; BUG: needed?
-					    ;; Hack: replace all nil (pitches of rests, but also at end of score) 
-					    (substitute 60 nil pitches))
-                         ;; NOTE: changed from T to nil 
-			 :swallow T)
-			time-sigs))))))))
-
-;;; TODO: 
-;;; what if scales-position / chords-position is nil? or no scales/chords in score? 
-(defun copy-cluster-engine-pitches-to-score (score cluster-engine-score) 
-  "Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
-
-  Args:
-  - score (headerless score): see {defun preview-score} for format description of headerless scores. 
-  - cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.com/tanders/cluster-engine). 
-
-  NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts).
-
-  NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
-  "
-  ;; (declare (optimize (debug 3)))
-  (case cluster-engine-score
-    ;; in case of failure return score that displays "no solution"
-    (:no-solution '(:1 ((w no-solution))))
-    (otherwise
-     (mix-scores
-      ;; scales and chords part (analysis)
-      (cluster-engine-score 
-       (append (first-n 4 cluster-engine-score)
-	       (last cluster-engine-score))
-       :instruments '(:scales :chords))  
-      ;; actual score
-      (let* ((pitch-lists (tu:at-odd-position cluster-engine-score)))
-	(loop
-	   for pitches in (cddr pitch-lists) ;; remove pitches of scales and chrods
-	   for part-omn in (get-parts-omn score)
-	   for instrument in (get-instruments score)
-	   append (list instrument
-			(copy-time-signature
-			 part-omn
-			 ;;; omn-replace not work with ties -- use make-omn instead
-			 (let ((flat-omn (flatten part-omn)))
-			   ;; (break)
-			   (make-omn :length (omn-merge-ties flat-omn)
-				     :pitch (flatten 
-					     (tu:mappend #'(lambda (p) 
-							     (if (listp p)
-								 (chordize (midi-to-pitch p))
-								 (list (midi-to-pitch p))))
-							 (remove nil pitches)))
-				     :velocity (omn :velocity flat-omn)
-				     :articulation (omn :articulation flat-omn)
-				     :leg (omn :leg flat-omn)
-				     :swallow nil))
-			 #|
-			 (omn-replace :pitch  (flatten 
-					       (tu:mappend #'(lambda (p) 
-							       (if (listp p)
-								   (chordize (midi-to-pitch p))
-								   (list (midi-to-pitch p))))
-							   (remove nil pitches)))
-				      (flatten part-omn))
-			 |#
-			 ))))))))
-
-#|
-;;; omn-replace does not work for ties
-(omn-replace :pitch '((q g4 tie) (q g4) (q a4))
-	     '(d4 e4))
-
-|#
-
-
-(defun preview-cluster-engine-score (score)
-  "Just shorthand for (preview-score (cluster-engine-score score))"
-  (preview-score (cluster-engine-score score)))
 
