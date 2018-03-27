@@ -85,7 +85,6 @@
   Args:
   - bar-no: number of bars to generate
   - bar-length: regular duration of resulting bars
-  - lengths: list of lists of length values forming the underlying rhythm that is subdivided by this function
   - subdivisions-ambitus: range of tuplet subdivisions
   - rest-distances: distances between rests 
   - rest-distance-order (:rnd or :seq): whether rest distances will be in the given order (:seq) or randomised (:rnd)
@@ -94,6 +93,8 @@
   Example: 
   ;;; (tuplet-walk-rhythm 7 :seed 569 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4))
   "
+  ;; ? Old doc of removed arg? -- kann weg?
+  ;;   - lengths: list of lists of length values forming the underlying rhythm that is subdivided by this function
   (do-verbose ("")
     (rnd-seed seed)
     (let* ((underlying-rhythm (gen-repeat bar-no `((,bar-length))))
