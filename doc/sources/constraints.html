@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g182216">
+<a href="constraints.html#_g180348">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g182217">
+<a href="constraints.html#_g180349">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g182218">
+<a href="constraints.html#_g180350">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -73,16 +73,16 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g182215">
+<a href="constraints.html#_g180347">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (pitch-domain-limits nil) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
 </tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182215">
+<a id="_g180347">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -95,7 +95,7 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 <td class="symbol-name">
 revise-score-harmonically&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (pitch-domain-limits nil) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -112,7 +112,7 @@ CSP transforming the input `score' such that it follows the underlying harmony s
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g182144">
+score (headerless score): See <a href="score.html#_g180274">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -124,17 +124,17 @@ harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord 
 </li>
 <li>
 <p>
-scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony 
+scales (OMN expression or NIL): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony. If `scales' is NIL (convenience when there are no constrains restricting the underlying scale) then simply the underlying harmonies are doublicated in the scales staff (the staff is not skipped to preserve the order of parts for the constraints that depend on it). 
  </p>
 </li>
 <li>
 <p>
-constrain-pitch-profiles? (Boolean): Whether to constrain the pitch profile 
+constrain-pitch-profiles? (Boolean or int): Whether to constrain the pitch profile. If an int, it sets the weigth offset of the profile rule. 
  </p>
 </li>
 <li>
 <p>
-constrain-pitch-intervals? (Boolean): Whether to constrain the pitch intervals 
+constrain-pitch-intervals? (Boolean or int): Whether to constrain the pitch intervals. If an int, it sets the weigth offset of the profile rule. 
  </p>
 </li>
 <li>
@@ -157,7 +157,14 @@ pitch-domains-extension:
  A pitch domain extension can also be specified for each part separately in either of the following formats: (&lt;part1-name-keyword&gt; &lt;extension&gt; ...) or (&lt;part1-name-keyword&gt; (&lt;lower-extension&gt; &lt;upper-extension&gt;) ...). For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write (:vln1 (0 7)), if you are using <span class="keyword">
 :vln1 </span>
 as keyword in `score'. 
- When specifying a pitch domain extension for any part explicitly, the extensions for all parts must be given explicitly. 
+ When specifying a pitch domain extension for any part explicitly, then extensions for all parts must be given explicitly. 
+ </p>
+</li>
+<li>
+<p>
+pitch-domain-limits: If set, it specifies absolute limits of the pitch domain for some or all parts, which restrict the domain otherwise specified with the pitches of `score' and `pitch-domains-extension'. This is useful, e.g., to restrict the pitch of a part to the playable range of instruments. This argument in the following format: 
+ (&lt;part1-name-keyword&gt; (&lt;lowest-pitch&gt; &lt;highest-pitch&gt;) ...), where pitches are Opusmodus pitch symbols or Opusmodus pitch integers (but not MIDI integers!). 
+ When specifying a pitch domain limit for any part, then a limit for all parts must be given. 
  </p>
 </li>
 <li>
@@ -175,8 +182,8 @@ additional-rules (list of cluster-engine rule instances): convenience argument t
 </li>
 <li>
 <p>
-split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see `split-score-at-shared-rests'). 
- NOTE: You cannot use index rules in this modus! (Indices would not be correct) 
+split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see function `split-score-at-shared-rests'). 
+ NOTE: You cannot use index rules in this modus -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
  </p>
 </li>
 <li>
@@ -266,14 +273,11 @@ The default pitch domains (the ambitus of parts) can be overwritten explicitly. 
 <p>
 TODO: demonstrate how default rules are overwritten. 
  </p>
-<p>
-
- </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182216">
+<a id="_g180348">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -340,7 +344,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182217">
+<a id="_g180349">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -370,7 +374,7 @@ Args:
 <ul>
 <li>
 <p>
-score (headerless score): see <a href="score.html#_g182144">
+score (headerless score): see <a href="score.html#_g180274">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -392,7 +396,7 @@ NOTE: `cluster-engine-score' must contain the same number and order of parts, no
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g182218">
+<a id="_g180350">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -422,6 +426,6 @@ Just shorthand for (preview-score (cluster-engine-score score))
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2017-11-17 23:07:05</div>
+- 2018-03-27 17:01:29</div>
 </body>
 </html>
