@@ -23,6 +23,7 @@
 ;;; OK - Move this function into a new file constraints.lisp into my library tot
 ;; ... solution can be repeating input score
 (defun revise-score-harmonically (score harmonies scales
+				  ; &optional (scales nil) ;; making scales optional would be nice, but it is not this easy...
 				  &key
 				    (constrain-pitch-profiles? T) 
 				    (constrain-pitch-intervals? T)
@@ -41,7 +42,7 @@
   Args:
   - score (headerless score): See {defun preview-score} for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations.
   - harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord changes of the underlying harmony 
-  - scales (OMN expression): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony
+  - scales (OMN expression or NIL): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony. If `scales' is NIL (convenience when there are no constrains restricting the underlying scale) then simply the underlying harmonies are doublicated in the scales staff (the staff is not skipped to preserve the order of parts for the constraints that depend on it).
   - constrain-pitch-profiles? (Boolean or int): Whether to constrain the pitch profile. If an int, it sets the weigth offset of the profile rule.
   - constrain-pitch-intervals? (Boolean or int): Whether to constrain the pitch intervals. If an int, it sets the weigth offset of the profile rule.
   - pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format: (<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...), where pitches are Opusmodus pitch symbols. For example, if your `score' specifies the first and second violin with the keywords :vl1 and :vl2, `pitch-domains' could be (:vl1 (g3 c6) :vl2 (g3 c6)).     
@@ -126,7 +127,9 @@ TODO: demonstrate how default rules are overwritten.
 	     (split-positions (second aux))
 	     ;; split harmonies at split-positions, but first ensure they follow the same time sigs
 	     (split-harmonies (tu:subseqs (copy-time-signature first-score-part harmonies) split-positions))
-	     (split-scales (tu:subseqs (copy-time-signature first-score-part scales) split-positions)))
+	     (split-scales (if scales
+                              (tu:subseqs (copy-time-signature first-score-part scales) split-positions)
+                             (om:gen-repeat (length split-positions) '(nil)))))
 	(apply #'append-scores
 	       (mapcar #'(lambda (score-section harmonies-section scales-section)			   
 			   (revise-score-harmonically
@@ -200,9 +203,11 @@ TODO: demonstrate how default rules are overwritten.
 		   (remove-duplicates time-sigs :test #'equal) 
 		   ;; voice domains
 		   `(;; scale rhythm
-		     (,(flatten (omn :length scales)))
+		     ,(if scales (list (flatten (omn :length scales)))
+                          (list (flatten (omn :length harmonies))))
 		     ;; scale pitches
-		     (,(pitch-to-midi (flatten (omn :pitch scales))))
+		     ,(if scales (list (pitch-to-midi (flatten (omn :pitch scales))))
+                          (list (pitch-to-midi (flatten (omn :pitch harmonies)))))
 		     ;; harmonic rhythm for chords 
 		     (,(flatten (omn :length harmonies)))
 		     ;; harmony: chords
