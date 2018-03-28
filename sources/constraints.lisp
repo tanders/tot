@@ -195,7 +195,12 @@
   - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
     If `rules' is :default, then some default rule set is used. 
   - additional-rules (list of cluster-engine rule instances): convenience argument to add rules without overwriting the default rule set by leaving the argument `rules' untouched.
-  - split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see function `split-score-at-shared-rests').
+  - split-score? (Boolean or more complex representation, see below): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. 
+    If `split-score?' is  
+    - :at-shared-rests or simply T, the score is split at shared rests (see function `split-score-at-shared-rests').
+    - :at-bar-boundaries, the score is split after every bar.
+    - A list '(:at-bar-boundaries <n>), the score is split after every `n' bars (`n' must be an integer).
+    - A list '(:at-bar-boundaries <list of integers>), the score is split at the given zero-based bar numbers.
     NOTE: You cannot use index rules in this modus -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
   - length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer).
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
@@ -258,8 +263,21 @@ TODO: demonstrate how default rules are overwritten.
       (let* ((first-instrument (first score)) ;; used to ensure unified time sigs
 	     (first-score-part (second score))
 	     ;;; TODO: decide: take out unify-time-signature for efficiency?
+             ;;; TODO: make sure all parts are of the same length 
+             (unified-score (unify-time-signature first-instrument score))
 	     (aux (multiple-value-list
-		   (split-score-at-shared-rests (unify-time-signature first-instrument score))))
+                   (cond ;; split-score? is... 
+                         ;; :at-shared-rests
+                         ((or (equal split-score? :at-shared-rests)
+                              (equal split-score? T))
+      		          (split-score-at-shared-rests unified-score))
+                         ;; :at-bar-boundaries
+                         ((equal split-score? :at-bar-boundaries)
+                          (split-score-at-bar-boundaries unified-score))
+                         ;; (:at-bar-boundaries <int>) or (:at-bar-boundaries <list of ints>)
+                         ((and (listp split-score?)
+                               (equal (first split-score?) :at-bar-boundaries))
+                          (split-score-at-bar-boundaries unified-score (second split-score?))))))
 	     (split-scores (first aux))
 	     (split-positions (second aux))
 	     ;; split harmonies at split-positions, but first ensure they follow the same time sigs
