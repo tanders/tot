@@ -1145,9 +1145,9 @@ Split divisi strings into parts
 
 
 (defun split-score-at-shared-rests (score)
-  "Splits headerless `score' into list of headerless scores. `score' is split at the end of every bar, where each part has either a rest at the end of this bar, or at the beginning of the next bar.
+  "Splits headerless `score' into list of headerless scores. `score' is split at the end of every bar, where each part has either a rest at the end of this bar or at the beginning of the next bar.
 
-  The bar positions at which the score was split is returned as second value.
+  The bar positions (zero-based bar numbers) at which the score was split is returned as second value.
 
   This function is useful to split longer input scores, for which the function `revise-score-harmonically' could take a long time.
 
@@ -1162,6 +1162,7 @@ Example:
 ;;;      :vlc ((q g3) (q c4 b3 h a3)))
 ;;;     (:vln ((h e5 -q))
 ;;;      :vlc ((-q c3 d3))))
+;;;    (0 2)
 "
   (let* ((instruments (get-instruments score))
 	 (parts (get-parts-omn score))
