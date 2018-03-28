@@ -1204,15 +1204,138 @@ Example:
 	     (tu:mat-trans split-parts))
      shared-splitable-bar-positions)))
 
-
 ; (split-score-at-shared-rests full-score)
-
 ;; (multiple-value-list (split-score-at-shared-rests full-score))
+
+
+(defun split-score-at-bar-boundaries (score &optional positions)
+  "Splits headerless `score' into list of headerless scores. `score' is split at the end of bars given at `positions'.
+
+  This function is useful to split longer input scores, for which the function `revise-score-harmonically' could take a long time.
+
+  Args:
+  - score: a headerless score
+  - positions (single integer; list of integers; or NIL): zero-based representation indicating after which bars score should be split.
+    If positions is...
+    - A list of integers, the score is split after each indicated bar number.
+    - A single integer `n', the score is split after every `n' bars. For example, if `n' is 2, the score is split after every 2nd bar.
+    - `nil' (default), the score is split after every bar up to the end of the score
+
+  All parts in score must share the same time signatures (nesting). You may want to first use `unify-time-signature' if necessary.
+
+  The bar positions (zero-based bar numbers) at which the score was split is returned as second value.
+"
+  (let* ((number-of-bars (apply #'max (mapcar #'length (get-parts-omn score))))
+	 (actual-positions (cond ((and positions (listp positions) (every #'numberp positions)) ; position is list of numbers
+				  positions)
+				 ((integerp positions)
+				  (om:gen-integer 0 (1- number-of-bars) positions))
+				 (T
+				  (om:gen-integer 0 (1- number-of-bars)))))
+	 (split-parts
+	  (mapcar #'(lambda (part) (tu:subseqs part actual-positions))
+		  (get-parts-omn score))))
+    (values
+     (mapcar #'(lambda (section-parts)
+		 (tu:pairs->plist (mapcar #'list (get-instruments score) section-parts)))
+	     (tu:mat-trans split-parts))
+     actual-positions)
+    ))
+
+
+#|
+(split-score-at-bar-boundaries 
+ '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+   :lh ((q g3) (q c4 b3 h a3) (-q c3 d3)))
+ '(0 1 2))
+
+(split-score-at-bar-boundaries 
+ '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+   :lh ((q g3) (q c4 b3 h a3) (-q c3 d3)))
+ 2)
+
+(split-score-at-bar-boundaries 
+ '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+   :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))))
+
+|#
+
+
+#|
+;; Fun circle-repeat-length-aux can be replaced by length-span, sigh. 
+;; This code could be removed, but use of loop is nice example for later.
+
+(defun circle-repeat-length-aux (lengths duration)
+  "Repeats (or cuts) sequence to fit exactly into given duration.
+
+  Arg:
+  - lengths (OMN sequence) -- TODO -- currently only flat length list supported
+  - duration (OMN length value)"  
+  (let* (;;; TODO: hashtable more efficient
+	 (flat-lengths (omn :length ;; ensure numeric values -- might be removed later
+			    (flatten lengths)))
+	 ;; ensure numeric values -- might be removed later
+	 (duration-num (first (omn :length (list duration)))) 
+	 (length-no (length flat-lengths))
+	 (i 0))
+    (loop
+       for l = (nth (mod i length-no) flat-lengths)
+       collecting l into result
+       summing l into accum
+       when (>= accum duration-num) return (if (= accum duration-num)
+					   result
+					   (let* ((result-butlast (butlast result))
+						  ;; NOTE: accumulating again -- inefficient
+						  (accum (apply #'+ result-butlast)))
+					     (append result-butlast
+						     (list (- duration-num accum)))))
+       do
+	 (setf i (1+ i)))))
+
+;; (circle-repeat-length-aux '(1/2 1/8 1/8) 19/9)
+;; (circle-repeat-length-aux '(h e e) 'wwe.)
+
+; (length-span 'wwe. '(h e e))
+
+(length-span 'wwe. '((h c4) (e d4 e e4)))
+
+|#
+
+
+
+
 
 (defun score-duration (score)
   "Returns total duration of `score'."
   (apply #'max (mapcar #'total-duration (get-parts-omn score))))
 
+#|
+(score-duration
+ '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+   :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))
+   :ped ((h c3))))
+|#
 
 
+(defun unify-part-durations (score)
+  "Ensure all parts are of the same duration by looping shorter parts until they are as long as the longest part. The resulting time signatures of all parts follows that of the the first longest part."
+  (let* ((parts (get-parts-omn score))
+	 (part-durs (mapcar #'total-duration parts))	  
+	 (dur (apply #'max part-durs))
+	 (longest-part (nth (position dur part-durs) parts))	 
+	 (time-sigs (get-time-signature longest-part))	 
+	 (corrected-parts
+	  (mapcar #'(lambda (part)
+		      (om:omn-to-time-signature (om:length-span dur (om:flatten part))
+						time-sigs))
+		  parts)))
+    (tu:mappend #'list		
+		(get-instruments score)
+		corrected-parts)))
 
+#|
+(unify-part-durations
+  '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+    :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))
+    :ped ((h c3))))
+|#
