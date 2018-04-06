@@ -940,6 +940,10 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 (get-part-omn  :vlc
 '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+
+(get-part-omn  :test
+'(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+  :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
 |#
 
 (defun get-parts-omn (score)
@@ -1010,19 +1014,19 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 
 Split divisi strings into parts
 
-(setf my-score
-      '(:vl1 (h g4b4 g4a4)
-        :vl2 (h e4 d4)
-        :vla (h c4 b3)
-        :vlc (h c3 g3)))
+;;; (setf my-score
+;;;     '(:vl1 (h g4b4 g4a4)
+;;;       :vl2 (h e4 d4)
+;;;       :vla (h c4 b3)
+;;;       :vlc (h c3 g3)))
 
-(setf divisi-part (single-events (pitch-melodize (get-part-omn :vl1 my-score))))
+;; (setf divisi-part (single-events (pitch-melodize (get-part-omn :vl1 my-score))))
 
-(preview-score
- (split-part :vl1
-             my-score
-             `(:vl1_div1 ,(flatten (tu:at-even-position divisi-part))
-               :vl1_div2 ,(flatten (tu:at-odd-position divisi-part)))))
+;; (preview-score
+;;  (split-part :vl1
+;;              my-score
+;;              `(:vl1_div1 ,(flatten (tu:at-even-position divisi-part))
+;;                :vl1_div2 ,(flatten (tu:at-odd-position divisi-part)))))
 "
   (let ((instr-position (position instrument orig-score)))
     (append (subseq orig-score 0 instr-position) 
@@ -1077,6 +1081,12 @@ Split divisi strings into parts
   
 #|
 (remove-part :vl2
+'(:vl1 (h g4)
+  :vl2 (h e4)
+  :vla (h c4)
+  :vlc (h c3)))
+
+(remove-part :test
 '(:vl1 (h g4)
   :vl2 (h e4)
   :vla (h c4)
@@ -1320,7 +1330,9 @@ Example:
 
 
 (defun unify-part-durations (score)
-  "Ensure all parts are of the same duration by looping shorter parts until they are as long as the longest part. The resulting time signatures of all parts follows that of the the first longest part."
+  "Ensure all parts of `score' are of the same duration by effectively looping shorter parts until they are as long as the longest part. The resulting time signatures of all parts follows that of the the first longest part. You may use the function `unify-time-signature' before if you want to enforce time signatures of a different part instead.
+
+An accordingly revised score is returned as first, and the full duration of `score' as a second value."
   (let* ((parts (get-parts-omn score))
 	 (part-durs (mapcar #'total-duration parts))	  
 	 (dur (apply #'max part-durs))
@@ -1331,13 +1343,15 @@ Example:
 		      (om:omn-to-time-signature (om:length-span dur (om:flatten part))
 						time-sigs))
 		  parts)))
-    (tu:mappend #'list		
-		(get-instruments score)
-		corrected-parts)))
+    (values
+     (tu:mappend #'list		
+		 (get-instruments score)
+		 corrected-parts)
+     dur)))
 
 #|
 (unify-part-durations
-  '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q)) 
+  '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q -q)) 
     :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))
     :ped ((h c3))))
 |#
