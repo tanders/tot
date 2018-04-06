@@ -201,7 +201,8 @@
     - :at-bar-boundaries, the score is split after every bar.
     - A list '(:at-bar-boundaries <n>), the score is split after every `n' bars (`n' must be an integer).
     - A list '(:at-bar-boundaries <list of integers>), the score is split at the given zero-based bar numbers.
-    NOTE: You cannot use index rules in this modus -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
+    NOTE: You cannot use index rules if `split-score?' is not NIL -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
+    If you want to split your score at different positions (e.g., in order to ensure that melodic rules towards the first note of the next bar are actually followed), then simply rebar your score before calling `revise-score-harmonically' (e.g., by calling `omn-to-time-signature') and rebar the result back to the original time signature afterwards. 
   - length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer).
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
  - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
@@ -257,176 +258,185 @@ The default pitch domains (the ambitus of parts) can be overwritten explicitly. 
 TODO: demonstrate how default rules are overwritten.
 "
   ;; TMP: unused arg doc
-  ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.  
-  (if split-score?
-      ;; if split-score? process score section wise 
-      (let* ((first-instrument (first score)) ;; used to ensure unified time sigs
-	     (first-score-part (second score))
-	     ;;; TODO: decide: take out unify-time-signature for efficiency?
-             ;;; TODO: make sure all parts are of the same length 
-             (unified-score (unify-time-signature first-instrument score))
-	     (aux (multiple-value-list
-                   (cond ;; split-score? is... 
-                         ;; :at-shared-rests
-                         ((or (equal split-score? :at-shared-rests)
-                              (equal split-score? T))
-      		          (split-score-at-shared-rests unified-score))
-                         ;; :at-bar-boundaries
-                         ((equal split-score? :at-bar-boundaries)
-                          (split-score-at-bar-boundaries unified-score))
-                         ;; (:at-bar-boundaries <int>) or (:at-bar-boundaries <list of ints>)
-                         ((and (listp split-score?)
-                               (equal (first split-score?) :at-bar-boundaries))
-                          (split-score-at-bar-boundaries unified-score (second split-score?))))))
-	     (split-scores (first aux))
-	     (split-positions (second aux))
-	     ;; split harmonies at split-positions, but first ensure they follow the same time sigs
-	     (split-harmonies (tu:subseqs (copy-time-signature first-score-part harmonies) split-positions))
-	     (split-scales (if scales
-                              (tu:subseqs (copy-time-signature first-score-part scales) split-positions)
-                             (om:gen-repeat (length split-positions) '(nil)))))
-	(apply #'append-scores
-	       (mapcar #'(lambda (score-section harmonies-section scales-section)			   
-			   (revise-score-harmonically
-			    score-section harmonies-section scales-section
-			    :constrain-pitch-profiles? constrain-pitch-profiles?
-			    :constrain-pitch-intervals? constrain-pitch-intervals?
-			    :pitch-domains pitch-domains
-			    :pitch-domains-extension pitch-domains-extension
-			    :rules rules
-			    :additional-rules additional-rules
-			    :split-score? nil
-			    :print-csp? print-csp?
-			    :unprocessed-cluster-engine-result? unprocessed-cluster-engine-result?))
-		       split-scores
-		       split-harmonies
-		       split-scales)))
-      ;; 
-      (let* ((parts (get-parts-omn score))
-	     (pitch-domain-extension-specs (if (listp pitch-domains-extension)
-				     pitch-domains-extension
-				     (tu:map-plist-vals #'(lambda (_)
-							    (declare (ignore _))
-							    pitch-domains-extension)
-							score)))
-	     (first-part (first parts))
-	     (time-sigs (PWGL-time-signatures 
-			 (get-time-signature first-part)))
-	     (csp (list
-		   ;; min number of variables with much upper headroom (multiplied with 2), because search is stopped by stop rule
-		   (* 2 (apply #'max (cons (length time-sigs) (mapcar #'count-notes parts))))
-		   ;; rules
-		   (let (;; position of all voices in score starting from 2 after scales and chords
-			 (voice-ids (gen-integer 2 (+ (length (get-instruments score)) 1))))
-		     (ce::rules->cluster 
-		      (ce::rules->cluster 
-		       (when constrain-pitch-profiles?
-			 (cr:follow-profile-hr
-			  parts :voices voice-ids :mode :pitch :constrain :profile :weight-offset (if (numberp constrain-pitch-profiles?)
-												      constrain-pitch-profiles?
-												      0)))
-		       (when constrain-pitch-intervals?
-			 (cr:follow-profile-hr 
-			  parts :voices voice-ids :mode :pitch :constrain :intervals :weight-offset (if (numberp constrain-pitch-intervals?)
-												      constrain-pitch-intervals?
-												      0)))
-		       (ce:r-predefine-meter time-sigs)
-		       ;; stop search after all parts (including chords and scales) reach the duration of the input score
-		       ;; !! NOTE that rule doc says "The stoptime has to be reached in all given voices. Note that the rule ignors the pitch information."
-		       (ce:stop-rule-time (append '(0 1) voice-ids) (score-duration score) :and))
-		      (apply
-		       #'ce::rules->cluster 
-		       (if (not (eq :default rules))
-			   (append rules additional-rules)
-			   (append 
-			    (list 
-			     ;; more rules
-			     (cr:only-scale-pcs :voices voice-ids :input-mode :all 
-						:scale-voice 0)
-			     (cr:only-chord-pcs :voices voice-ids :input-mode :beat ; :1st-beat
-						:chord-voice 1) 
-			     (cr:long-notes-chord-pcs :voices voice-ids :max-nonharmonic-dur 1/4)
-			     (cr:stepwise-non-chord-tone-resolution
-			      :voices voice-ids :input-mode :all :step-size 3)
-			     (cr:chord-tone-before/after-rest :voices voice-ids :input-mode :all)
-			     (cr:chord-tone-follows-non-chord-tone :voices voice-ids :input-mode :all)
-			     (cr:no-repetition :voices voice-ids :window 3)
-			     (cr:resolve-skips :voices voice-ids :resolution-size 4)
-			     )
-			    additional-rules)))))
-		   ;; meter domain
-		   (remove-duplicates time-sigs :test #'equal) 
-		   ;; voice domains
-		   `(;; scale rhythm
-		     ,(if scales (list (flatten (omn :length scales)))
-                          (list (flatten (omn :length harmonies))))
-		     ;; scale pitches
-		     ,(if scales (list (pitch-to-midi (flatten (omn :pitch scales))))
-                          (list (pitch-to-midi (flatten (omn :pitch harmonies)))))
-		     ;; harmonic rhythm for chords 
-		     (,(flatten (omn :length harmonies)))
-		     ;; harmony: chords
-		     (,(pitch-to-midi (flatten (omn :pitch harmonies))))
-                     ;; parts
-		     ,@(mappend #'(lambda (instr)
-				    (let* ((part (getf score instr))
-					   (pitch-dom-extension-spec (getf pitch-domain-extension-specs instr))
-					   (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for aevery instrument, but that should be fine here
-							    (mapcar #'pitch-to-integer (getf pitch-domains instr))
-							    (if
-							     (omn :pitch (flatten part))
-							     ;; part contains pitches
-							     (find-ambitus part)
-							     ;; otherwise return some default domain 
-							     '(0 1))))
-					   (pitch-dom-ambitus (cond ((integerp pitch-dom-extension-spec)
-								     (list (- (first raw-ambitus) pitch-dom-extension-spec)
-									   (+ (second raw-ambitus) pitch-dom-extension-spec)))
-								    ((listp pitch-dom-extension-spec)
-								     (list (- (first raw-ambitus) (first pitch-dom-extension-spec))
-									   (+ (second raw-ambitus) (second pitch-dom-extension-spec))))
-								    ))
-					   (pitch-dom-limit (getf pitch-domain-limits instr))					   
-					   (limited-pitch-dom-ambitus (if (not pitch-dom-limit)
-									  pitch-dom-ambitus
-									  (let ((pitch-dom-limit-ints
-										 (cond ((integerp (first pitch-dom-limit))
-											pitch-dom-limit)
-										       ((pitchp (first pitch-dom-limit))
-											(pitch-to-integer pitch-dom-limit)))))
-									    (list (max (first pitch-dom-limit-ints)
-										       (first pitch-dom-ambitus))
-										  (min (second pitch-dom-limit-ints)
-										       (second pitch-dom-ambitus)))))))
-				      `( 
-					;; rhythm domain: predefined motif
-					(,(omn :length (omn-merge-ties (flatten part))))
-					;; pitch domain
-					,(mclist
-					  (apply #'gen-integer 
-						 (mapcar #'(lambda (p) (+ p 60)) 
-							 limited-pitch-dom-ambitus)))
-					)))
-				(get-instruments score))
-		     ))))
-	(when print-csp?
-	  (pprint csp))
-	(if unprocessed-cluster-engine-result?
-	    (apply #'cr:cluster-engine csp)
-	    (let ((score-dur (score-duration score)))
-	      ;; reduce total duration of each part in score segment to duration of input score
-	      (map-parts-equally 
-	       (copy-cluster-engine-pitches-to-score score (apply #'cr:cluster-engine csp))
-	       #'(lambda (dur part)
-		   ;; (break)
-		   (if length-adjust?
-		       ;; length-adjust does only work for flat list
-		       ;; (length-adjust dur part :flat T)
-		       ;; TMP: 
-		       (flattened-length-adjust dur part)
-		       part))
-	       `(,score-dur _)	       
-	       ))))))
+  ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
+  (let* (;; unify part durations: shorter parts looped until they have same length as longest part of score
+         (unified-full-score-aux (multiple-value-list
+				  (unify-part-durations
+				   (append score
+					   (list :harmonies harmonies)
+					   (when scales
+					     (list :scales scales))))))
+	 (unified-full-score (first unified-full-score-aux))
+	 (score-dur (second unified-full-score-aux))
+	 (unified-score (remove-parts '(:harmonies :scales) unified-full-score))
+	 (unified-harmonies (get-part-omn :harmonies unified-full-score))
+	 (unified-scales (get-part-omn :scales unified-full-score)))
+    (if split-score?
+	;; if split-score? process score section wise 
+	(let* ((split-scores-aux (multiple-value-list
+				  (cond ;; split-score? is... 
+				    ;; :at-shared-rests
+				    ((or (equal split-score? :at-shared-rests)
+					 (equal split-score? T))
+				     (split-score-at-shared-rests unified-score))
+				    ;; :at-bar-boundaries
+				    ((equal split-score? :at-bar-boundaries)
+				     (split-score-at-bar-boundaries unified-score))
+				    ;; (:at-bar-boundaries <int>) or (:at-bar-boundaries <list of ints>)
+				    ((and (listp split-score?)
+					  (equal (first split-score?) :at-bar-boundaries))
+				     (split-score-at-bar-boundaries unified-score (second split-score?))))))
+	       (split-scores (first split-scores-aux))
+	       (split-positions (second split-scores-aux))
+	       ;; split harmonies at split-positions
+	       (split-harmonies (tu:subseqs unified-harmonies split-positions))
+	       (split-scales (if scales
+				 (tu:subseqs unified-scales split-positions)
+				 (om:gen-repeat (length split-positions) '(nil)))))
+	  (apply #'append-scores
+		 (mapcar #'(lambda (score-section harmonies-section scales-section)			   
+			     (revise-score-harmonically
+			      score-section harmonies-section scales-section
+			      :constrain-pitch-profiles? constrain-pitch-profiles?
+			      :constrain-pitch-intervals? constrain-pitch-intervals?
+			      :pitch-domains pitch-domains
+			      :pitch-domains-extension pitch-domains-extension
+			      :rules rules
+			      :additional-rules additional-rules
+			      :split-score? nil
+			      :print-csp? print-csp?
+			      :unprocessed-cluster-engine-result? unprocessed-cluster-engine-result?))
+			 split-scores
+			 split-harmonies
+			 split-scales)))
+	;; 
+	(let* ((parts (get-parts-omn unified-score))
+	       (pitch-domain-extension-specs (if (listp pitch-domains-extension)
+						 pitch-domains-extension
+						 (tu:map-plist-vals #'(lambda (_)
+									(declare (ignore _))
+									pitch-domains-extension)
+								    unified-score)))
+	       (first-part (first parts))
+	       (time-sigs (PWGL-time-signatures 
+			   (get-time-signature first-part)))
+	       (csp (list
+		     ;; min number of variables with much upper headroom (multiplied with 2), because search is stopped by stop rule
+		     (* 2 (apply #'max (cons (length time-sigs) (mapcar #'count-notes parts))))
+		     ;; rules
+		     (let (;; position of all voices in score starting from 2 after scales and chords
+			   (voice-ids (gen-integer 2 (+ (length (get-instruments unified-score)) 1))))
+		       (ce::rules->cluster 
+			(ce::rules->cluster 
+			 (when constrain-pitch-profiles?
+			   (cr:follow-profile-hr
+			    parts :voices voice-ids :mode :pitch :constrain :profile :weight-offset (if (numberp constrain-pitch-profiles?)
+													constrain-pitch-profiles?
+													0)))
+			 (when constrain-pitch-intervals?
+			   (cr:follow-profile-hr 
+			    parts :voices voice-ids :mode :pitch :constrain :intervals :weight-offset (if (numberp constrain-pitch-intervals?)
+													  constrain-pitch-intervals?
+													  0)))
+			 (ce:r-predefine-meter time-sigs)
+			 ;; stop search after all parts (including chords and scales) reach the duration of the input score
+			 ;; !! NOTE that rule doc says "The stoptime has to be reached in all given voices. Note that the rule ignors the pitch information."
+			 (ce:stop-rule-time (append '(0 1) voice-ids) score-dur :and))
+			(apply
+			 #'ce::rules->cluster 
+			 (if (not (eq :default rules))
+			     (append rules additional-rules)
+			     (append 
+			      (list 
+			       ;; more rules
+			       (cr:only-scale-pcs :voices voice-ids :input-mode :all 
+						  :scale-voice 0)
+			       (cr:only-chord-pcs :voices voice-ids :input-mode :beat ; :1st-beat
+						  :chord-voice 1) 
+			       (cr:long-notes-chord-pcs :voices voice-ids :max-nonharmonic-dur 1/4)
+			       (cr:stepwise-non-chord-tone-resolution
+				:voices voice-ids :input-mode :all :step-size 3)
+			       (cr:chord-tone-before/after-rest :voices voice-ids :input-mode :all)
+			       (cr:chord-tone-follows-non-chord-tone :voices voice-ids :input-mode :all)
+			       (cr:no-repetition :voices voice-ids :window 3)
+			       (cr:resolve-skips :voices voice-ids :resolution-size 4)
+			       )
+			      additional-rules)))))
+		     ;; meter domain
+		     (remove-duplicates time-sigs :test #'equal) 
+		     ;; voice domains
+		     `(;; scale rhythm
+		       ,(if scales
+			    (list (flatten (omn :length unified-scales)))
+			    (list (flatten (omn :length unified-harmonies))))
+			;; scale pitches
+			,(if scales
+			     (list (pitch-to-midi (flatten (omn :pitch unified-scales))))
+			     (list (pitch-to-midi (flatten (omn :pitch unified-harmonies)))))
+			;; harmonic rhythm for chords 
+			(,(flatten (omn :length unified-harmonies)))
+			;; harmony: chords
+			(,(pitch-to-midi (flatten (omn :pitch unified-harmonies))))
+			;; parts
+			,@(mappend #'(lambda (instr)
+				       (let* ((part (getf unified-score instr))
+					      (pitch-dom-extension-spec (getf pitch-domain-extension-specs instr))
+					      (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for aevery instrument, but that should be fine here
+							       (mapcar #'pitch-to-integer (getf pitch-domains instr))
+							       (if
+								(omn :pitch (flatten part))
+								;; part contains pitches
+								(find-ambitus part)
+								;; otherwise return some default domain 
+								'(0 1))))
+					      (pitch-dom-ambitus (cond ((integerp pitch-dom-extension-spec)
+									(list (- (first raw-ambitus) pitch-dom-extension-spec)
+									      (+ (second raw-ambitus) pitch-dom-extension-spec)))
+								       ((listp pitch-dom-extension-spec)
+									(list (- (first raw-ambitus) (first pitch-dom-extension-spec))
+									      (+ (second raw-ambitus) (second pitch-dom-extension-spec))))
+								       ))
+					      (pitch-dom-limit (getf pitch-domain-limits instr))					   
+					      (limited-pitch-dom-ambitus (if (not pitch-dom-limit)
+									     pitch-dom-ambitus
+									     (let ((pitch-dom-limit-ints
+										    (cond ((integerp (first pitch-dom-limit))
+											   pitch-dom-limit)
+											  ((pitchp (first pitch-dom-limit))
+											   (pitch-to-integer pitch-dom-limit)))))
+									       (list (max (first pitch-dom-limit-ints)
+											  (first pitch-dom-ambitus))
+										     (min (second pitch-dom-limit-ints)
+											  (second pitch-dom-ambitus)))))))
+					 `( 
+					   ;; rhythm domain: predefined motif
+					   (,(omn :length (omn-merge-ties (flatten part))))
+					   ;; pitch domain
+					   ,(mclist
+					     (apply #'gen-integer 
+						    (mapcar #'(lambda (p) (+ p 60)) 
+							    limited-pitch-dom-ambitus)))
+					   )))
+				   (get-instruments unified-score))
+			))))
+	  (when print-csp?
+	    (pprint csp))
+	  (if unprocessed-cluster-engine-result?
+	      (apply #'cr:cluster-engine csp)
+		;; reduce total duration of each part in score segment to duration of input score
+		(map-parts-equally 
+		 (copy-cluster-engine-pitches-to-score unified-score (apply #'cr:cluster-engine csp))
+		 #'(lambda (dur part)
+		     ;; (break)
+		     (if length-adjust?
+			 ;; length-adjust does only work for flat list
+			 ;; (length-adjust dur part :flat T)
+			 ;; TMP: 
+			 (flattened-length-adjust dur part)
+			 part))
+		 `(,score-dur _)	       
+		 ))))))
+
 
 
 
