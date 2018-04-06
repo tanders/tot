@@ -594,15 +594,17 @@ Example:
   If you want your final rhythm to contain rests you best add these to your rhythmic material before processing it with this function, because turning notes into rests afterwards can contradict your durational accents."
   (do-verbose ("")
     (rnd-seed seed)
-    (_durational-accent-merge 
-     (apply #'_durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
-     :n merge-n :prob merge-prob :seed (seed))
+    (let ((result (_durational-accent-merge 
+		   (apply #'_durational-accent-divide (omn :length lengths) :n divide-n :seed (seed) :allow-other-keys T args)
+		   :n merge-n :prob merge-prob :seed (seed))))
+      (make-omn :length (omn :length result)
+		:articulation (omn :articulation result)))
     #|
     (_durational-accent-merge 
      (apply #'_durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
      :n merge-n :prob merge-prob :seed (seed))
-    |#)
-  )
+    |#
+    ))
 
 #|
 (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
