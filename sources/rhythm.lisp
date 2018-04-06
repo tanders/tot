@@ -768,3 +768,38 @@ Example:
            ts-forms))
 
 
+(defun length->time-signature (sequence)
+  "Expects any OMN sequence, extracts its rhythm, and translates each note value in a time signature of the same length.
+
+  Example: 
+;;; (rhythm-to-time-sig-sequence '(3/4 1/4 1/2))
+;;; => ((3 4 1) (1 4 1) (2 4 1))
+
+  This function is largely the complement of the Opusmodus buildin function `time-signature-length'."
+  (let ((ls (flatten (omn :length sequence)))
+        ;; Time signature subsitutions, e.g., 1/1 -> 4/4
+        (time-sig-subsitutions '(((1 1 1) (4 4 1))
+                                 ((1 2 1) (2 4 1)))))
+    (mapcar #'(lambda (dur)
+                (reduce #'(lambda (xs old-new)
+                            (subst (second old-new) (first old-new) xs :test #'equal))
+                        time-sig-subsitutions
+                        ;; translation of duration ratios into time signature lists
+                        :initial-value (list (numerator dur) (denominator dur) 1))) 
+            ;; list of duration ratios
+            ls)))
+
+
+#| ;; meanwhile buildin in Opusmodus
+(defun metronome (sequence &key (pitch 'c4) (velocity 0.8))
+  "See https://opusmodus.com/forums/topic/1025-easiest-way-to-add-click-track-metronome-in-om/"
+  (do-verbose ("metronome")
+    (let* ((ts (get-time-signature sequence))
+           (len (loop for i in ts
+                  collect (gen-repeat (last1 i) (gen-repeat (car i) (list (/ 1 (second i)))))))
+           (vel (loop for i in ts
+                  collect (cons velocity (gen-repeat (1- (car i)) (list (- velocity 0.15))))))
+           (pch (loop for i in ts
+                  collect (cons pitch (pitch-transpose -2 (gen-repeat (1- (car i)) pitch))))))
+      (make-omn :length len :pitch pch :velocity vel))))
+|#
