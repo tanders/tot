@@ -364,16 +364,21 @@ Example:
 
 ;   For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
 (defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
-                                         (grace-n 0) (grace-length 1/8) (grace-prob 0.5) 
-                                         (set nil) (ignore nil) (seed nil))
+					    (tie-min 0)
+					    (tie-max 0)
+					    (grace-n 0) (grace-length 1/8) (grace-prob 0.5)
+					    (set nil) (ignore nil) (seed nil))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
+
+  If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
 
   Args:
   - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
-  - n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
+  - n (integer): number of notes at end of bars that are potentially subdivided.
   - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
+  - tie-n (integer): number of subdivided notes at end of bars that are potentially tied together.
   - grace-n (integer): number of grace notes potentially inserted before first notes of bars.
-  - grace-length (length value, default 1/8): note value of inserted grace notes.
+  - grace-length (length value, default 1/8): notated note value of inserted grace notes.
   - grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
   - set (length or list of lengths): only specified lengths are subdivided. 
   - ignore (length or list of lengths): specified lengths are *not* subdivided. 
@@ -392,36 +397,55 @@ Example:
                   (if (and (> grace-n 0)
                            whether
                            (length-notep (first bar)))
-                    (cons (cons 'acc (gen-repeat no (list grace-length)))
-                          bar)
-                    bar)))
-            (append 
-             (tu:map-neighbours ; subdividing last notes in bars
-              #'(lambda (bar1 bar2) 
-                  (let ((whether (= 1 (rnd1 :low 0 :high 1 :prob divide-prob :seed (seed))))
-                        (no (rnd1 :low 1 :high n :seed (seed)))) ; how many notes to subdivide max
-                    (if (and whether
-                             (> n 0)
-                             (length-notep (first bar2))
-                             (every #'length-notep (last bar1 no)))
-                      ;; subdivide last note of bar
-                      (append (butlast bar1 no)
-                              (length-divide
-                               ; random control for how many notes subdivision happens
-                               no
-                               (if (listp divide)
-                                 (rnd-pick divide :seed (seed))
-                                 divide) 
-                               (last bar1 no)
-                               :set set
-                               :ignore ignore
-                               :seed (seed)))
-                      ;; otherwise leave bar unchanged
-                      bar1)))
-              lengths)
-             (last lengths)))))
+		      (cons (cons 'acc (gen-repeat no (list grace-length)))
+			    bar)
+		      bar)))
+	    (copy-time-signature
+	     lengths
+	     (flatten
+	      (append 
+	       (tu:map-neighbours ; subdividing last notes in bars
+		#'(lambda (bar1 bar2) 
+		    (let ((whether (= 1 (rnd1 :low 0 :high 1 :prob divide-prob :seed (seed))))
+			  (no (rnd1 :low 1 :high n :seed (seed)))) ; how many notes to subdivide max
+		      (if (and whether
+			       (> n 0)
+			       (length-notep (first bar2))
+			       (every #'length-notep (last bar1 no)))
+			  ;; subdivide last note of bar
+			  (append (butlast bar1 no)
+				  ;; TODO: allow for adding tie to end of (butlast bar1 no). Perhaps also further ties, though resulting longer tied note would create aanother durational accent.		
+				  ;; !! tie in here
+				  ;;; TODO: tie to previous note should be controllable (switch on or off)
+				  (let* ((divided-lengths (length-divide
+							  ;; random control for how many notes subdivision happens
+							  no
+							  (if (listp divide)
+							      (rnd-pick divide :seed (seed))
+							      divide) 
+							  (last bar1 no)
+							  :set set
+							  :ignore ignore
+							  :seed (seed)))
+					(divided-lengths-no (length divided-lengths)) 
+					;; number of notes at the end *not* tied (more easy to split list that way)
+					(tie-invert-no (- divided-lengths-no
+							  (rnd1 :low tie-min :high (min tie-max (1- divided-lengths-no)) :seed (seed)))))
+				    (append (loop for l in (butlast divided-lengths tie-invert-no)
+						 append (list 'tie l))
+					    (last divided-lengths tie-invert-no)
+					    )))
+			  ;; otherwise leave bar unchanged
+			  bar1)))
+		lengths)
+	       (last lengths)))))))
 
 #|
+
+(butlast '(a b c) 3)
+
+(last '(a b c) 3)
+
 
 (defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
                                          (grace-n 0) (grace-length 1/8) (grace-prob 0.5) 
@@ -547,6 +571,7 @@ Example:
 |#
 
 
+;;; TODO: currently only works for sequence of fractions -- generalise for arbitrary OMN rhythm sequences with (omn :length lengths)
 ;;;; TODO: 
 ;;; Turn into project independent function. It is already general enough, except perhaps for OMN support. 
 ;; TODO: 
