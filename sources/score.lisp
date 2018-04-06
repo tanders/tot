@@ -1063,15 +1063,17 @@ Split divisi strings into parts
 
   Example:
 
-(remove-part :vl2
-'(:vl1 (h g4)
-  :vl2 (h e4)
-  :vla (h c4)
-  :vlc (h c3)))
+;; (remove-part :vl2
+;; '(:vl1 (h g4)
+;;   :vl2 (h e4)
+;;   :vla (h c4)
+;;   :vlc (h c3)))
 "
   (let ((instr-position (position instrument score)))
-    (append (subseq score 0 instr-position) 
-            (subseq score (+ instr-position 2)))))
+    (if instr-position
+      (append (subseq score 0 instr-position) 
+              (subseq score (+ instr-position 2)))
+      score)))
   
 #|
 (remove-part :vl2
