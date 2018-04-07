@@ -584,25 +584,28 @@ Example:
 |#
 
 
-;;; TODO: currently only works for sequence of fractions -- generalise for arbitrary OMN rhythm sequences with (omn :length lengths)
-;;;; TODO: 
-;;; Turn into project independent function. It is already general enough, except perhaps for OMN support. 
-;; TODO: 
-;; - generalise: several args could alternatively expect lists to allow controlling a development: 
+;;; TODO:
+;;; - Easy: all args should support lists, and additionally support args like section: use edit-omn for getting that.
+;;   Differently put, but same point: generalise: several args could alternatively expect lists to allow controlling a development: 
 ;;   divide, all *-n args, all *--prob args
+;;; TODO: 
+;;; - Turn into project independent function. It is already general enough, except perhaps for OMN support. 
 ;;
 ;; - ??? extra function to turn notes into rests -- 
 ;;   - leave untouched: first note of bar if preceded by shorter notes and last note of bar is suceeded by longer note
 (defun durational-accent (lengths 
                           &rest args
                           &key (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) &allow-other-keys)
-  "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar or merging notes at the beginning of a bar. 
+  "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar (see divide-related args) or merging notes at the beginning of a bar (see merge-related args). Subdivided notes can be partially tied together for rhythmic variety (see tie-related args), and durational accents can also be expressed with grace notes (see grace-related args). 
 
   Args:
-  - lengths: a list of length lists (multiple bars).
+  - lengths: a list of length lists (multiple bars). `length' can also be arbitrary OMN expressions, but only length lists are returned and other parameters are ignored. 
   - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
   - divide-n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
   - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
+  - tie-n (integer): maximum number of subdivided notes at end of bars (before the next durational accent) that are potentially tied together. Should not be larger than divide * divide-n. (The returned notes are not necessarily tied but can instead be notated, e.g., as dotted note values.)
+  - tie-previous-beat? (Bool): whether or not the first subdivided note before the durational accent is tied to the preceeding note (e.g., the preceeding accent). Such tie never occurs across bar lines. 
+  - tie-prob: probability value controlling whether subdivided notes are tied. 
   - merge-n (integer): number of notes at beginning of bars that are potentially subdivided.
   - merge-prob (default 0.5): probability value controlling whether grace notes are inserted.
   - grace-n (integer): number of grace notes potentially inserted before first notes of bars.
@@ -615,6 +618,16 @@ Example:
   Examples (evaluate multiple times to see range of solutions):
   ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
   ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3)
+
+  allow for ties for greater rhythmic variety, in particular for higher :divide values
+  ;;; (durational-accent (gen-repeat 4 (list (gen-repeat 4 '(1/4))))
+  ;;;                  :divide '(3 4) :divide-n 2
+  ;;;                  :tie-n 2 :tie-prob 0.8)
+
+  ties with ties to previous beat
+  ;;; (durational-accent (gen-repeat 4 (list (gen-repeat 2 '(1/4))))
+  ;;;                  :divide '(4) :divide-n 2 :divide-prob 1
+  ;;;                  :tie-n 1 :tie-prob 1 :tie-previous-beat? t)
   
   shorter tuplet groups to create accents
   ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide '(5 6 7) :divide-n 1 :divide-prob 0.7 :merge-n 3)
@@ -632,11 +645,11 @@ Example:
   If you want your final rhythm to contain rests you best add these to your rhythmic material before processing it with this function, because turning notes into rests afterwards can contradict your durational accents."
   (do-verbose ("")
     (rnd-seed seed)
-    (let ((result (_durational-accent-merge 
-		   (apply #'_durational-accent-divide (omn :length lengths) :n divide-n :seed (seed) :allow-other-keys T args)
-		   :n merge-n :prob merge-prob :seed (seed))))
-      (make-omn :length (omn :length result)
-		:articulation (omn :articulation result)))
+    (omn :length
+	 (omn-merge-ties
+	  (_durational-accent-merge 
+	   (apply #'_durational-accent-divide (omn :length lengths) :n divide-n :seed (seed) :allow-other-keys T args)
+	   :n merge-n :prob merge-prob :seed (seed))))
     #|
     (_durational-accent-merge 
      (apply #'_durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
