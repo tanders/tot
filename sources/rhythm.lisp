@@ -362,10 +362,14 @@ Example:
 |#
 
 
-;   For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
-(defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
-					    (tie-min 0)
-					    (tie-max 0)
+;;; TODO:
+;; - To consider: if tie-previous-beat? is T, then implicitly tie-n is 1, because otherwise I am creating a durational accent on the preceeding beat (I might already with tie-n set to one, in particular if divide-n is a low value such as 2). 
+;; - document tie-related args 
+;; For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
+(defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5)
+					    (tie-n 0)
+					    (tie-previous-beat? nil)
+					    (tie-prob 0.5)
 					    (grace-n 0) (grace-length 1/8) (grace-prob 0.5)
 					    (set nil) (ignore nil) (seed nil))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
@@ -374,9 +378,11 @@ Example:
 
   Args:
   - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
-  - n (integer): number of notes at end of bars that are potentially subdivided.
+  - n (integer): maximum number of notes at end of bars that are potentially subdivided.
   - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
-  - tie-n (integer): number of subdivided notes at end of bars that are potentially tied together.
+  - tie-n (integer): maximum number of subdivided notes at end of bars (before the next durational accent) that are potentially tied together. Should not be larger than n*divide. 
+  - tie-previous-beat? (Bool): whether or not the first subdivided note before the durational accent is tied to the preceeding note (e.g., the preceeding accent). Such tie never occurs across bar lines. 
+  - tie-prob: probability value controlling whether subdivided notes are tied. 
   - grace-n (integer): number of grace notes potentially inserted before first notes of bars.
   - grace-length (length value, default 1/8): notated note value of inserted grace notes.
   - grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
@@ -392,61 +398,68 @@ Example:
             "Given `lengths' ~A is not a sequence of bars (a list of lists).~%" lengths)
     (rnd-seed seed)
     (mapcar #'(lambda (bar) ; adding grace notes before bars
-                (let ((whether (= 1 (rnd1 :low 0 :high 1 :prob grace-prob :seed (seed))))
-                      (no (rnd1 :low 1 :high grace-n :seed (seed))))
+                (let ((whether-grace (= 1 (rnd1 :low 0 :high 1 :prob grace-prob :seed (seed))))
+                      (grace-no (rnd1 :low 1 :high grace-n :seed (seed))))
                   (if (and (> grace-n 0)
-                           whether
+                           whether-grace
                            (length-notep (first bar)))
-		      (cons (cons 'acc (gen-repeat no (list grace-length)))
+		      (cons (cons 'acc (gen-repeat grace-no (list grace-length)))
 			    bar)
 		      bar)))
-	    (copy-time-signature
-	     lengths
-	     (flatten
-	      (append 
-	       (tu:map-neighbours ; subdividing last notes in bars
-		#'(lambda (bar1 bar2) 
-		    (let ((whether (= 1 (rnd1 :low 0 :high 1 :prob divide-prob :seed (seed))))
-			  (no (rnd1 :low 1 :high n :seed (seed)))) ; how many notes to subdivide max
-		      (if (and whether
-			       (> n 0)
-			       (length-notep (first bar2))
-			       (every #'length-notep (last bar1 no)))
-			  ;; subdivide last note of bar
-			  (append (butlast bar1 no)
-				  ;; TODO: allow for adding tie to end of (butlast bar1 no). Perhaps also further ties, though resulting longer tied note would create aanother durational accent.		
-				  ;; !! tie in here
-				  ;;; TODO: tie to previous note should be controllable (switch on or off)
-				  (let* ((divided-lengths (length-divide
-							  ;; random control for how many notes subdivision happens
-							  no
-							  (if (listp divide)
-							      (rnd-pick divide :seed (seed))
-							      divide) 
-							  (last bar1 no)
-							  :set set
-							  :ignore ignore
-							  :seed (seed)))
-					(divided-lengths-no (length divided-lengths)) 
-					;; number of notes at the end *not* tied (more easy to split list that way)
-					(tie-invert-no (- divided-lengths-no
-							  (rnd1 :low tie-min :high (min tie-max (1- divided-lengths-no)) :seed (seed)))))
-				    (append (loop for l in (butlast divided-lengths tie-invert-no)
-						 append (list 'tie l))
-					    (last divided-lengths tie-invert-no)
-					    )))
-			  ;; otherwise leave bar unchanged
-			  bar1)))
-		lengths)
-	       (last lengths)))))))
+	    (append 
+	     (tu:map-neighbours ; subdividing last notes in bars
+	      #'(lambda (bar1 bar2) 
+		  (let ((whether-divide
+			 (= 1 (rnd1 :low 0 :high 1 :prob divide-prob :seed (seed))))
+			;; how many notes to subdivide 
+			(divide-no (rnd1 :low 1 :high n :seed (seed)))) 
+		    (if (and whether-divide
+			     (> n 0)
+			     (length-notep (first bar2))
+			     (every #'length-notep (last bar1 divide-no)))
+			;; subdivide last note of bar
+			(append
+			 (butlast bar1 divide-no)
+			 (let* ((divided-lengths (length-divide
+						  ;; random control for how many notes subdivision happens
+						  divide-no
+						  (if (listp divide)
+						      (rnd-pick divide :seed (seed))
+						      divide) 
+						  (last bar1 divide-no)
+						  :set set
+						  :ignore ignore
+						  :seed (seed)))
+				(divided-lengths-no (length divided-lengths))
+				(whether-tie
+				 (= 1 (rnd1 :low 0 :high 1 :prob tie-prob :seed (seed))))
+				(first-beat-in-bar-divided? (= divide-no
+							       (length bar1)))
+				(tie-to-previous-beat?
+				 (and tie-previous-beat?
+				      (not first-beat-in-bar-divided?)))
+				(tie-no-tmp (rnd1 :low 1
+						  :high (min tie-n
+							     (1- divided-lengths-no))
+						  :seed (seed)))
+				(tie-no (if tie-to-previous-beat?
+					    (1- tie-no-tmp)
+					    tie-no-tmp))
+				)
+			   (if (and whether-tie)
+			       (append (when tie-to-previous-beat? '(tie))
+				       (loop for l in (first-n tie-no divided-lengths)
+					  append (list l 'tie))
+				       (nthcdr tie-no divided-lengths))
+			       divided-lengths)))
+			;; otherwise leave bar unchanged
+			bar1)))
+	      lengths)
+	     (last lengths)))))
+
+
 
 #|
-
-(butlast '(a b c) 3)
-
-(last '(a b c) 3)
-
-
 (defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5) 
                                          (grace-n 0) (grace-length 1/8) (grace-prob 0.5) 
                                          (set nil) (ignore nil) (seed nil))
