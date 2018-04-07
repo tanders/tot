@@ -406,3 +406,22 @@
 
 |#
 
+
+(defun mk-seed (&optional seed)
+  "Generates a random seed value, prints and returns it. Useful for exploring different results of random processes, but then keeping a found solution.
+
+  Args:
+  - seed (int): optionally fixes generated seed.
+
+  Examples:
+
+  (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed))
+  ; 405621 rnd-sample
+  => (c4 e4 d4) 
+
+  (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed 13))
+  ; 13 rnd-sample
+  => (e4 d4 e4) 
+  "
+  (print (if seed seed (rnd-range 1 999999))))
+
