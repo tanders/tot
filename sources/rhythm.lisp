@@ -588,18 +588,18 @@ Example:
 
 
 ;;; TODO:
-;;; - Easy: all args should support lists, and additionally support args like section: use edit-omn for getting that.
-;;   Differently put, but same point: generalise: several args could alternatively expect lists to allow controlling a development: 
-;;   divide, all *-n args, all *--prob args
-;;; TODO: 
-;;; - Turn into project independent function. It is already general enough, except perhaps for OMN support. 
+;;; - [Postponed] All args should support lists, and additionally support args like section: use edit-omn for getting that.
+;;;   Differently put, but same point: generalise: several args could alternatively expect lists to allow controlling a development: divide, all *-n args, all *--prob args
+;;;   NOTE: Implementation more difficult than anticipated, see comments above sketch below this function for details.  
 ;;
 ;; - ??? extra function to turn notes into rests -- 
 ;;   - leave untouched: first note of bar if preceded by shorter notes and last note of bar is suceeded by longer note
 (defun durational-accent (lengths 
-                          &rest args
-                          &key (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) &allow-other-keys)
+			  &rest args
+			  &key (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) &allow-other-keys)
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar (see divide-related args) or merging notes at the beginning of a bar (see merge-related args). Subdivided notes can be partially tied together for rhythmic variety (see tie-related args), and durational accents can also be expressed with grace notes (see grace-related args). 
+
+While `durational-accent' only supports accents of the first beat of each bar, you can easily realise other accent patterns by temporarily rebarring the music (e.g., with `omn-to-time-signature' and perhaps `length->time-signature'), and then afterwards align the result of `durational-accent' again with the original time signatures (e.g., with `copy-time-signature').
 
   Args:
   - lengths: a list of length lists (multiple bars). `length' can also be arbitrary OMN expressions, but only length lists are returned and other parameters are ignored. 
@@ -608,6 +608,7 @@ Example:
   - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
   - tie-n (integer): maximum number of subdivided notes at end of bars (before the next durational accent) that are potentially tied together. Should not be larger than divide * divide-n. (The returned notes are not necessarily tied but can instead be notated, e.g., as dotted note values.)
   - tie-previous-beat? (Bool): whether or not the first subdivided note before the durational accent is tied to the preceeding note (e.g., the preceeding accent). Such tie never occurs across bar lines. 
+    NOTE: If tie-previous-beat? is T, then you may want the argument divide to be 3 or larger, and tie-n to be only 1 (or slightly larger for large values of divide), because otherwise you also turn the preceeding note into a durational accent.
   - tie-prob: probability value controlling whether subdivided notes are tied. 
   - merge-n (integer): number of notes at beginning of bars that are potentially subdivided.
   - merge-prob (default 0.5): probability value controlling whether grace notes are inserted.
@@ -659,6 +660,18 @@ Example:
      :n merge-n :prob merge-prob :seed (seed))
     |#
     ))
+
+#|
+;; unfinished sketch for supporting 'dynamic' arguments, i.e., transformations that change over the sublists.
+;; Implementation more difficult than anticipated, because _durational-accent-divide always needs to look at pairs of consecutive bars, so I would need to generalise edit-omn to allow for that. Also, while _durational-accent-divide depends on pairs, _durational-accent-merge does not, so the nested  _durational-accent-merge must then always only further process the first list returned by _durational-accent-divide. Further, the last bar is never changed by _durational-accent-divide -- that code needs to move into the def below as well. 
+(defun durational-accent (sequence &rest args &key section &allow-other-keys)  
+  (edit-omn :length sequence #'(lambda (ls)
+				 (apply #'_durational-accent ls args))
+	    :section section
+	    ; ?? :swallow 
+	    ; :additional-args  ;; TODO
+  ))
+|#
 
 #|
 (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
