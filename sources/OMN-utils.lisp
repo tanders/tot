@@ -25,8 +25,8 @@
 
   Args:
   - type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
-  - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
   - notation: a omn sequence or a plain parameter list (can be nested).
+  - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
   - flat: whether or not `fun' expects a flat input list.
   - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed). `swallow' is ignored if notation is a plain parameter list (e.g., a 
   - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
