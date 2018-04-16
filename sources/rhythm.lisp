@@ -367,9 +367,7 @@ Example:
 ;; - document tie-related args 
 ;; For now simpler version: accents only supported leading to strong beat at beginning of bar, but metric structure does not need to be regular.
 (defun _durational-accent-divide (lengths &key (divide 2) (n 1) (divide-prob 0.5)
-					    (tie-n 0)
-					    (tie-previous-beat? nil)
-					    (tie-prob 0.5)
+					    (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil)
 					    (grace-n 0) (grace-length 1/8) (grace-prob 0.5)
 					    (set nil) (ignore nil) (seed nil))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
@@ -407,7 +405,8 @@ Example:
 			    bar)
 		      bar)))
 	    (append 
-	     (tu:map-neighbours ; subdividing last notes in bars
+	     (tu:map-neighbours
+	      ;; subdividing last notes in bar1
 	      #'(lambda (bar1 bar2) 
 		  (let ((whether-divide
 			 (= 1 (rnd1 :low 0 :high 1 :prob divide-prob :seed (seed))))
@@ -455,6 +454,7 @@ Example:
 			;; otherwise leave bar unchanged
 			bar1)))
 	      lengths)
+	     ;; last bar never subdivided
 	     (last lengths)))))
 
 
