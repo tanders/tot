@@ -183,3 +183,36 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
   (edit-omn :pitch sequence 
             #'(lambda (ps) (pitch-retrograde ps))
 	    :flat flat))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Accent model
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+
+(defun thomassen-accents (sequence &optional (format :omn))
+  "Expects an OMN sequence (or a different format, see below), and returns a *flat* list of floats representing the associated melodic accent value of each pitch as defined by the Thomassen model.
+
+  Args:
+  - format (keyword): sets the format of `sequence'. 
+    - :omn - full OMN sequence, possibly nested (though the result will be flat)
+    - :pitch - list of OMN pitches, possibly nested
+    - :midi - list of MIDI note numbers  
+
+NOTE: no accent values are available for the first two and the last pitch, therefor nil is return for those pitches.
+
+Hack: Quick evaluation: strong melodic accents have an accent value greater than 0.4.
+
+References:
+Thomassen, J. M. (1982) Melodic accent: Experiments and a tentative model. The Journal of the Acoustical Society of America. 71 (6), 1596–1605.
+Huron, D. & Royal, M. (1996) What is melodic accent? Converging evidence from musical practice. Music Perception. 489–516.
+"
+  (cr:thomassen-accents
+   (flatten
+    (case format
+      (:omn (pitch-to-midi (omn :pitch sequence)))
+      (:pitch (pitch-to-midi sequence))
+      (:midi sequence)))))
