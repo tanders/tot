@@ -559,17 +559,20 @@ Example:
     (rnd-seed seed)
     (mapcar 
      #'(lambda (bar) 
-         (let ((whether (= 1 (rnd1 :low 0 :high 1 :prob prob :seed (seed))))
-               (no (rnd1 :low 1 :high n :seed (seed)))) ; how many notes to merge max
+         (let* ((whether (= 1 (rnd1 :low 0 :high 1 :prob prob :seed (seed))))
+		(no (rnd1 :low 1 :high n :seed (seed))) ; how many notes to merge max
+		(first-no (first-n no bar)))
            (if (and whether
-                    (every #'length-notep (first-n no bar)))
-             ;; merge first notes of bar
-             (append (length-merge (first-n no bar))
-                     (last bar (if (> no (length bar))
-                                 0
-                                 (- (length bar) no))))
-             ;; otherwise leave bar unchanged
-             bar)))
+		    ;; NOTE: only merges if there is no rest among first no notes.
+		    ;; TODO: consider in case the first two or more length values are not a rest to still allow for merging those, up to the rest.
+                    (every #'length-notep first-no))
+	       ;; merge first notes of bar
+	       (append (length-merge first-no)
+		       (last bar (if (> no (length bar))
+				     0
+				     (- (length bar) no))))
+	       ;; otherwise leave bar unchanged
+	       bar)))
      lengths)))
 
 
