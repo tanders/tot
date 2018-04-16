@@ -872,3 +872,46 @@ While `durational-accent' only supports accents of the first beat of each bar, y
                   collect (cons pitch (pitch-transpose -2 (gen-repeat (1- (car i)) pitch))))))
       (make-omn :length len :pitch pch :velocity vel))))
 |#
+
+
+(defun shift-meter-boundaries (lengths positions)
+  "Shift meter boundaries (sublist lengths) between bars in `lengths', by given number of positions forwards or backwards, resulting likely in uneven meter changes. Resulting meter changes may occur even within tuplets, though Opusmodus may not support notating the result. Anyway, such meter transformations can still be useful, e.g., to prepare music for inserting durational accents expressing syncopations, and then afterwards moving the meter boundaries back to their original positions (e.g., using `copy-time-signature' with the original sequence).  
+
+  Args: 
+  - length: list of OMN length values, must be nested
+  - positions (lists of ints, length most be one shorter than number of bars/sublists in lengths): amount by how many note values the bar line should be moved to the left (negative number) or to the right (positive number). `positions' is circled through to meet the length of `lengths'.
+"
+  (reverse
+   ;; Loop over two consecutive elements in list, but with processing each element twice, first as first and then the result as second element. In parallel, iterate over positions
+   (reduce #'(lambda (bars aux)
+	       (let* ((bar1 (first bars))
+		      (bar2 (first aux))
+		      (pos (second aux))
+		      (bars-combined (append bar1 bar2))
+		      (pos-combined (+ pos (length bar1))))
+		 ;; accumulate backwards
+		 (cons (nthcdr pos-combined bars-combined)
+		       (cons (first-n pos-combined bars-combined)
+			     (rest bars)))))
+	   (tu:mat-trans (list (rest lengths)
+			       (circle-repeat positions (1- (length lengths)))))
+	   :initial-value (list (first lengths)))))
+
+; (shift-meter-boundaries '((1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18) (1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16) (1/14 1/14 1/14 1/14 1/14 1/14 1/14) (q -q)) '(0 -1 1))
+
+#| ;; edit-omn does not work here, because shift-meter-boundaries needs access to consecutive bars
+(defun shift-meter-boundaries (sequence)
+  (edit-omn :length sequence
+	    #'_shift-meter-boundaries
+	    :flat nil))
+|#
+
+#|
+;; TODO: Insert length values at the end of bars
+;;; TODO: generalise for arbitrary OMN sequences
+(defun insert-into-bar (lengths ))
+
+;; TODO: Remove given number of length values at the end of bars
+;; NOTE: may result in incomplete tuplets
+
+|#
