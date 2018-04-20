@@ -18,6 +18,75 @@
                            (get-time-signature music-with-time-signature))
     music-to-rebar))
 
+
+(defun map-section (function sequence
+		    &key section exclude section-args shared-args)
+  "Apply a function to only selected bars (sublists) in an OMN sequence. 
+
+  Args:
+  - function: function to apply to sublists in `sequence'
+  - sequence: nested list of OMN parameters or full OMN expressions
+  - section (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is applied.
+  - exclude (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is *not* applied. Only either `section' or `exclude' should be specified, otherwise `exclude' is ignored.
+  - shared-args (list): Further arguments to `function' added behind the current sublist of `sequence' and potentially `section-args'. 
+  - section-args (list or list of lists): Further arguments to `function' added behind the current sublist of `sequence'. If not a nested list, then only a single additional argument is specified for each bar (sublist) to which `function' is applied.
+
+  Examples:
+  (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :section '(1 2))
+
+  (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :exclude '(0))
+
+  (map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
+               :section '(1 2)
+               :shared-args '(7))
+
+  (map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
+               :section '(1 2)
+               :section-args '(7 12))
+
+  (map-section #'(lambda (seq count divide) 
+                   (length-divide count divide seq))
+               '((q q q) (q q q) (q q q) (q q q)) 
+               :section '(1 2 3)
+               :section-args '((1 2) (2 3)))
+
+  (map-section #'(lambda (seq count divide &rest args) 
+                   (apply #'length-divide count divide seq args))
+               '((q q q) (q q q) (q q q) (h.)) 
+               :section '(1 2 3)
+               :section-args '((1 2) (2 3))
+               :shared-args '(:ignore h.))
+
+This function is a generalised and somewhat more clean variant of the Opusmodus builtin `do-section'.
+
+"
+  (let* ((length-sequence (length sequence))
+	 ;; whether using section or exclude
+	 (using-section? section)
+	 (n (if using-section?
+		(length section)
+		(- length-sequence (length exclude))))
+	 ;;; TODO: refactor into array for efficiency
+	 (section-args-full (when section-args (circle-repeat (if (notevery #'listp section-args)
+								  (mclist section-args)
+								  section-args)
+							      n))))
+    (loop
+       for seq in sequence
+       for i from 0 to (1- length-sequence)
+       for apply-fun? = (if using-section?
+			    (member i section)
+			    (not (member i exclude)))
+       count apply-fun? into sec-no
+       collect (if apply-fun?
+		 ;;; TODO: revise using shared-args
+		   (apply function
+			  (append (list seq)
+				  (when section-args (nth (1- sec-no) section-args-full))
+				  (when shared-args shared-args)))
+		   seq)
+	 )))
+
 ;;; TODO: add support for processing ties properly using omn-merge-ties. e.g., see
 ;;; https://opusmodus.com/forums/topic/989-length-legato-opposite-function/
 (defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
@@ -125,6 +194,7 @@
 			      )))
 		   (cond (flat (funcall fun full-args))
 			 ((and section (not flat))
+			  ;;; TODO: consider replacing do-section with map-section
 			  (do-section (section-to-binary-better par-seq)
 			    `(flatten (funcall ,fun X))
 			    full-args))
@@ -321,6 +391,34 @@
 
 |#
 
+
+(defun insert-at-position (position item list &key seed)
+  "Insert item(s) at given position into list.
+
+  Args
+  - position: either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
+  - item: value or list of values to be inserted.
+  - list: flat list of values.
+
+  Examples:
+  (insert-at-position 'e 'x '(a a a a))
+  (insert-at-position 's 'x '(a a a a))
+  (insert-at-position '? 'x '(a a a a))
+  (insert-at-position 'e '(x y) '(a a a a))
+  (insert-at-position '0 '(x y) '(a a a a))
+"
+  (rnd-seed seed)
+  (let* ((pos1 (case position
+		 (s 0)
+		 (e (length list))
+		 (? (round (rnd1 :low 0 :high (length list) :seed (seed))))
+		 (otherwise (if (numberp position)
+				position
+				(error "~A is not a valid position" position)))))
+	 (pos (if (listp item)
+		  (gen-integer pos1 (+ pos1 (1- (length item))))
+		  pos1)))
+    (position-insert pos item list)))
 
 
 (defun length-subtract (&rest length-values)
