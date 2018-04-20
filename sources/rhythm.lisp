@@ -906,10 +906,60 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 	    :flat nil))
 |#
 
+  
+(defun insert-into-bar (positions new lengths &key section seed)
+  "Inserts item(s) 
+
+  Args
+  - positions (list of position values): either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
+  - new: list of OMN length values to be inserted, can be nested or partially nested. 
+  - lengths: list of OMN length values, must be nested.
+  `positions' and `new' is circled through to meet the length of `lengths' or `section'.
+  - section (list of ints): selected sublists to process.
+
+  Examples
+  (insert-into-bar '(s e) '(q (e e)) '((h) (h) (h)))
+  (insert-into-bar '(?) '(q (e e)) '((h) (h) (h)) :section '(1 2) :seed 1)
+
+See also Opusmodus builtin `position-insert'.
+"
+  (rnd-seed seed)
+  (map-section #'(lambda (seq position item)
+		   (insert-at-position position item seq :seed (seed)))	       
+	       (omn :length lengths)
+	       :section section
+	       ;;; TODO: circle-repeat positions and new, so that their length can differ 
+	       :section-args (tu:mat-trans (list positions new))))
+
+
+
+
 #|
 ;; TODO: Insert length values at the end of bars
-;;; TODO: generalise for arbitrary OMN sequences
-(defun insert-into-bar (lengths ))
+;;; NOTE: cannot use edit-omn, because I do not want to preserve orig time signatures
+(defun insert-into-bar (positions new lengths &key section)
+  "Inserts item(s) 
+
+  Args
+  - positions: either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
+  - items: list of OMN length values to be inserted, can be nested. `new' is circled through to meet the length of `lengths'.
+  - lists: list of OMN length values, must be nested.
+
+See also Opusmodus builtin `position-insert'.
+"
+  (edit-omn :length
+ 
+  )
+|#
+
+
+#|
+(position-insert '(0 2 4) '((g4 f4) c5) 
+		 '((c4 c4 c4 c4 c4) (d4 d4 d4 d4 d4))
+		 :type 'list)
+|#
+
+#|
 
 ;; TODO: Remove given number of length values at the end of bars
 ;; NOTE: may result in incomplete tuplets
