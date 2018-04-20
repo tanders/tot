@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180316">
+<a href="pitch.html#_g179263">
 chord-multiplication</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ chord1 chord2</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180320">
+<a href="pitch.html#_g179267">
 fenv-&gt;pitches</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ fenv n</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180321">
+<a href="pitch.html#_g179268">
 fenv-transpose-pitch</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ sequence fenv <em>&amp;rest</em> args</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180315">
+<a href="pitch.html#_g179262">
 pcs-&gt;chord</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ pcs</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180322">
+<a href="pitch.html#_g179269">
 pitch-retrograde-omn</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ sequence <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180319">
+<a href="pitch.html#_g179266">
 pitches-&gt;fenv</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ pitches</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180317">
+<a href="pitch.html#_g179264">
 stretch-pitches</a>
 </td>
 <td class="summary">
@@ -105,16 +105,24 @@ pitches factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g180318">
+<a href="pitch.html#_g179265">
 stretch-pitches2</a>
 </td>
 <td class="summary">
 number chord factor <em>&amp;key</em> (round t)</td>
 </tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g179270">
+thomassen-accents</a>
+</td>
+<td class="summary">
+sequence <em>&amp;optional</em> (format :omn)</td>
+</tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180315">
+<a id="_g179262">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -147,7 +155,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180316">
+<a id="_g179263">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -191,7 +199,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180317">
+<a id="_g179264">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -256,7 +264,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180318">
+<a id="_g179265">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -319,7 +327,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180319">
+<a id="_g179266">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -347,7 +355,7 @@ Translates a sequence of pitches into a fenv that linearily inerpolates between 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180320">
+<a id="_g179267">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -375,7 +383,7 @@ Translates a fenv into a sequence of pitches. Fenv values encode pitches by thei
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180321">
+<a id="_g179268">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -434,7 +442,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180322">
+<a id="_g179269">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -460,10 +468,80 @@ My version of pitch-retrograde that is working until the original is fixed for O
  </p>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179270">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+thomassen-accents&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence <em>&amp;optional</em> (format :omn)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Expects an OMN sequence (or a different format, see below), and returns a *flat* list of floats representing the associated melodic accent value of each pitch as defined by the Thomassen model. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+format (keyword): sets the format of `sequence'. 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:omn </span>
+- full OMN sequence, possibly nested (though the result will be flat) 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:pitch </span>
+- list of OMN pitches, possibly nested 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:midi </span>
+- list of MIDI note numbers 
+ </p>
+</li>
+</ul>
+<p>
+NOTE: no accent values are available for the first two and the last pitch, therefor nil is return for those pitches. 
+ </p>
+<p>
+Hack: Quick evaluation: strong melodic accents have an accent value greater than 0.4. 
+ </p>
+<p>
+References: 
+ Thomassen, J. M. (1982) Melodic accent: Experiments and a tentative model. The Journal of the Acoustical Society of America. 71 (6), 1596–1605. 
+ Huron, D. &amp; Royal, M. (1996) What is melodic accent? Converging evidence from musical practice. Music Perception. 489–516. 
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-03-27 17:01:28</div>
+- 2018-04-20 15:26:27</div>
 </body>
 </html>

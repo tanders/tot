@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g180348">
+<a href="constraints.html#_g179295">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g180349">
+<a href="constraints.html#_g179296">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g180350">
+<a href="constraints.html#_g179297">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g180347">
+<a href="constraints.html#_g179298">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
@@ -82,7 +82,154 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180347">
+<a id="_g179295">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+cluster-engine-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+cluster-engine-score: The score data in the format returned by ClusterEngine. 
+ </p>
+</li>
+<li>
+<p>
+instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ </p>
+<p>
+(preview-score 
+ (cluster-engine-score 
+ ;; simple polyphonic constraint problem 
+ (ce::ClusterEngine 10 t nil 
+ ;; single rule: all rhythmic values are equal 
+ (ce::R-rhythms-one-voice 
+ #'(lambda (x y) (= x y)) '(0 1) <span class="keyword">
+:durations) </span>
+
+ '((3 4)) 
+ '(((1/4) (1/8)) 
+ ((60) (61)) 
+ ((1/4) (1/8)) 
+ ((60) (61)))) 
+ <span class="keyword">
+:instruments </span>
+'(:vln <span class="keyword">
+:vla))) </span>
+
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179296">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+copy-cluster-engine-pitches-to-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score cluster-engine-score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+score (headerless score): see <a href="score.html#_g179217">
+preview-score</a>
+for format description of headerless scores. 
+ </p>
+</li>
+<li>
+<p>
+cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.com/tanders/cluster-engine). 
+ </p>
+</li>
+</ul>
+<p>
+NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts). 
+ </p>
+<p>
+NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179297">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+preview-cluster-engine-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Just shorthand for (preview-score (cluster-engine-score score)) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179298">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -112,7 +259,7 @@ CSP transforming the input `score' such that it follows the underlying harmony s
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g180274">
+score (headerless score): See <a href="score.html#_g179217">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -182,8 +329,34 @@ additional-rules (list of cluster-engine rule instances): convenience argument t
 </li>
 <li>
 <p>
-split-score? (Boolean): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. The score is split at shared rests (see function `split-score-at-shared-rests'). 
- NOTE: You cannot use index rules in this modus -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
+split-score? (Boolean or more complex representation, see below): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. 
+ If `split-score?' is 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:at-shared-rests </span>
+or simply T, the score is split at shared rests (see function `split-score-at-shared-rests'). 
+ </p>
+</li>
+<li>
+<p>
+<span class="keyword">
+:at-bar-boundaries, </span>
+the score is split after every bar. 
+ </p>
+</li>
+<li>
+<p>
+A list '(:at-bar-boundaries &lt;n&gt;), the score is split after every `n' bars (`n' must be an integer). 
+ </p>
+</li>
+<li>
+<p>
+A list '(:at-bar-boundaries &lt;list of integers&gt;), the score is split at the given zero-based bar numbers. 
+ NOTE: You cannot use index rules if `split-score?' is not NIL -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
+ If you want to split your score at different positions (e.g., in order to ensure that melodic rules towards the first note of the next bar are actually followed), then simply rebar your score before calling `revise-score-harmonically' (e.g., by calling `omn-to-time-signature') and rebar the result back to the original time signature afterwards. 
  </p>
 </li>
 <li>
@@ -275,157 +448,10 @@ TODO: demonstrate how default rules are overwritten.
  </p>
 </div>
 </div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g180348">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-cluster-engine-score&nbsp;&nbsp;</td>
-<td class="lambda-list">
-cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doc-body">
-<p>
-Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format. 
- </p>
-<p>
-Args: 
- </p>
-<ul>
-<li>
-<p>
-cluster-engine-score: The score data in the format returned by ClusterEngine. 
- </p>
-</li>
-<li>
-<p>
-instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score. 
- </p>
-</li>
-</ul>
-<p>
-Example: 
- </p>
-<p>
-(preview-score 
- (cluster-engine-score 
- ;; simple polyphonic constraint problem 
- (ce::ClusterEngine 10 t nil 
- ;; single rule: all rhythmic values are equal 
- (ce::R-rhythms-one-voice 
- #'(lambda (x y) (= x y)) '(0 1) <span class="keyword">
-:durations) </span>
-
- '((3 4)) 
- '(((1/4) (1/8)) 
- ((60) (61)) 
- ((1/4) (1/8)) 
- ((60) (61)))) 
- <span class="keyword">
-:instruments </span>
-'(:vln <span class="keyword">
-:vla))) </span>
-
- </p>
-</div>
-</div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g180349">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-copy-cluster-engine-pitches-to-score&nbsp;&nbsp;</td>
-<td class="lambda-list">
-score cluster-engine-score</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doc-body">
-<p>
-Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
- </p>
-<p>
-Args: 
- </p>
-<ul>
-<li>
-<p>
-score (headerless score): see <a href="score.html#_g180274">
-preview-score</a>
-for format description of headerless scores. 
- </p>
-</li>
-<li>
-<p>
-cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.com/tanders/cluster-engine). 
- </p>
-</li>
-</ul>
-<p>
-NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts). 
- </p>
-<p>
-NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
- 
- </p>
-</div>
-</div>
-<div class="defun">
-<div class="defunsignatures">
-<a id="_g180350">
-</a>
-<table cellpadding="0" cellspacing="0" width="100%">
-<colgroup span="3">
-<col width="0*"/>
-<col width="1*"/>
-<col width="0*"/>
-</colgroup>
-<tbody>
-<tr>
-<td class="symbol-name">
-preview-cluster-engine-score&nbsp;&nbsp;</td>
-<td class="lambda-list">
-score</td>
-<td class="symbol-type">
-&nbsp;[Function]</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="doc-body">
-<p>
-Just shorthand for (preview-score (cluster-engine-score score)) 
- </p>
-</div>
-</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-03-27 17:01:29</div>
+- 2018-04-20 15:26:27</div>
 </body>
 </html>

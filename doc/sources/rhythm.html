@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180306">
+<a href="rhythm.html#_g179250">
 cut-holes</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ sequence binary-list <em>&amp;key</em> (swallow nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180305">
+<a href="rhythm.html#_g179249">
 cut-holes-aux</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ lengths binary-list</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180309">
+<a href="rhythm.html#_g179253">
 durational-accent</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merg
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180300">
+<a href="rhythm.html#_g179244">
 even-length-rhythm</a>
 </td>
 <td class="summary">
@@ -81,7 +81,15 @@ length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180313">
+<a href="rhythm.html#_g179260">
+insert-into-bar</a>
+</td>
+<td class="summary">
+positions new lengths <em>&amp;key</em> section seed</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g179257">
 isolate-time-signatures</a>
 </td>
 <td class="summary">
@@ -89,7 +97,15 @@ ts-forms</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180301">
+<a href="rhythm.html#_g179258">
+length-&gt;time-signature</a>
+</td>
+<td class="summary">
+sequence</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g179245">
 length-divide-ext</a>
 </td>
 <td class="summary">
@@ -97,7 +113,7 @@ count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180311">
+<a href="rhythm.html#_g179255">
 lengths-with-merged-ties</a>
 </td>
 <td class="summary">
@@ -105,7 +121,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180304">
+<a href="rhythm.html#_g179248">
 merge-rest-into-note</a>
 </td>
 <td class="summary">
@@ -113,7 +129,7 @@ sequence <em>&amp;key</em> (flat nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180302">
+<a href="rhythm.html#_g179246">
 note-rest-series</a>
 </td>
 <td class="summary">
@@ -121,7 +137,15 @@ positions sequence <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180312">
+<a href="rhythm.html#_g179259">
+shift-meter-boundaries</a>
+</td>
+<td class="summary">
+lengths positions</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g179256">
 total-duration</a>
 </td>
 <td class="summary">
@@ -129,7 +153,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180298">
+<a href="rhythm.html#_g179242">
 tuplet-rhythm</a>
 </td>
 <td class="summary">
@@ -137,7 +161,7 @@ lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180299">
+<a href="rhythm.html#_g179243">
 tuplet-walk-rhythm</a>
 </td>
 <td class="summary">
@@ -145,15 +169,15 @@ bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-di
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180307">
+<a href="rhythm.html#_g179251">
 _durational-accent-divide</a>
 </td>
 <td class="summary">
-lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (set nil) (ignore nil) (seed nil)</td>
+lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (set nil) (ignore nil) (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180308">
+<a href="rhythm.html#_g179252">
 _durational-accent-merge</a>
 </td>
 <td class="summary">
@@ -161,7 +185,7 @@ lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180303">
+<a href="rhythm.html#_g179247">
 _merge-rest-into-note</a>
 </td>
 <td class="summary">
@@ -169,7 +193,7 @@ lengths</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g180310">
+<a href="rhythm.html#_g179254">
 _remove-rest-articulations</a>
 </td>
 <td class="summary">
@@ -178,7 +202,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180298">
+<a id="_g179242">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -245,13 +269,13 @@ With irregular meter
 <pre>
     (tuplet-rhythm (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) 'h)) '(3 4 5 6 5 4 3 2) :seed 1234) </pre>
 <p>
-BUG: seed argument not working as expected. 
+BUG: seed argument not working as expected -- it is not even used in this function! 
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180299">
+<a id="_g179243">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -322,7 +346,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180300">
+<a id="_g179244">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -385,7 +409,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180301">
+<a id="_g179245">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -427,7 +451,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180302">
+<a id="_g179246">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -493,7 +517,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180303">
+<a id="_g179247">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -532,7 +556,7 @@ lengths: a flat list of length values
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180304">
+<a id="_g179248">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -593,7 +617,7 @@ T)
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180305">
+<a id="_g179249">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -627,7 +651,7 @@ Related: length-rest-series
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180306">
+<a id="_g179250">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -683,7 +707,7 @@ See also: note-rest-series
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180307">
+<a id="_g179251">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -696,7 +720,7 @@ See also: note-rest-series
 <td class="symbol-name">
 _durational-accent-divide&nbsp;&nbsp;</td>
 <td class="lambda-list">
-lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (set nil) (ignore nil) (seed nil)</td>
+lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (set nil) (ignore nil) (seed nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -706,6 +730,9 @@ lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (grace-n 0) (grace-
 <div class="doc-body">
 <p>
 Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
+ </p>
+<p>
+If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
  </p>
 <p>
 Args: 
@@ -718,7 +745,7 @@ divide (integer or list of integers, default 2): specifies into how many equal n
 </li>
 <li>
 <p>
-n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
+n (integer): maximum number of notes at end of bars that are potentially subdivided. 
  </p>
 </li>
 <li>
@@ -728,12 +755,27 @@ divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling wh
 </li>
 <li>
 <p>
+tie-n (integer): maximum number of subdivided notes at end of bars (before the next durational accent) that are potentially tied together. Should not be larger than n*divide. 
+ </p>
+</li>
+<li>
+<p>
+tie-previous-beat? (Bool): whether or not the first subdivided note before the durational accent is tied to the preceeding note (e.g., the preceeding accent). Such tie never occurs across bar lines. 
+ </p>
+</li>
+<li>
+<p>
+tie-prob: probability value controlling whether subdivided notes are tied. 
+ </p>
+</li>
+<li>
+<p>
 grace-n (integer): number of grace notes potentially inserted before first notes of bars. 
  </p>
 </li>
 <li>
 <p>
-grace-length (length value, default 1/8): note value of inserted grace notes. 
+grace-length (length value, default 1/8): notated note value of inserted grace notes. 
  </p>
 </li>
 <li>
@@ -766,7 +808,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180308">
+<a id="_g179252">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -822,7 +864,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180309">
+<a id="_g179253">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -844,7 +886,10 @@ lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merg
 </div>
 <div class="doc-body">
 <p>
-Adds durational accents on first notes of bars by subdividing the last note of the preceding bar or merging notes at the beginning of a bar. 
+Adds durational accents on first notes of bars by subdividing the last note of the preceding bar (see divide-related args) or merging notes at the beginning of a bar (see merge-related args). Subdivided notes can be partially tied together for rhythmic variety (see tie-related args), and durational accents can also be expressed with grace notes (see grace-related args). 
+ </p>
+<p>
+While `durational-accent' only supports accents of the first beat of each bar, you can easily realise other accent patterns by temporarily rebarring the music (e.g., with `omn-to-time-signature' and perhaps `length-&gt;time-signature'), and then afterwards align the result of `durational-accent' again with the original time signatures (e.g., with `copy-time-signature'). 
  </p>
 <p>
 Args: 
@@ -852,7 +897,7 @@ Args:
 <ul>
 <li>
 <p>
-lengths: a list of length lists (multiple bars). 
+lengths: a list of length lists (multiple bars). `length' can also be arbitrary OMN expressions, but only length lists are returned and other parameters are ignored. 
  </p>
 </li>
 <li>
@@ -868,6 +913,22 @@ divide-n (integer): number of notes at end of bars that are potentially subdivid
 <li>
 <p>
 divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely. 
+ </p>
+</li>
+<li>
+<p>
+tie-n (integer): maximum number of subdivided notes at end of bars (before the next durational accent) that are potentially tied together. Should not be larger than divide * divide-n. (The returned notes are not necessarily tied but can instead be notated, e.g., as dotted note values.) 
+ </p>
+</li>
+<li>
+<p>
+tie-previous-beat? (Bool): whether or not the first subdivided note before the durational accent is tied to the preceeding note (e.g., the preceeding accent). Such tie never occurs across bar lines. 
+ NOTE: If tie-previous-beat? is T, then you may want the argument divide to be 3 or larger, and tie-n to be only 1 (or slightly larger for large values of divide), because otherwise you also turn the preceeding note into a durational accent. 
+ </p>
+</li>
+<li>
+<p>
+tie-prob: probability value controlling whether subdivided notes are tied. 
  </p>
 </li>
 <li>
@@ -918,6 +979,22 @@ Examples (evaluate multiple times to see range of solutions):
     (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3) 
      (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3) </pre>
 <p>
+allow for ties for greater rhythmic variety, in particular for higher <span class="keyword">
+:divide </span>
+values 
+ </p>
+<pre>
+    (durational-accent (gen-repeat 4 (list (gen-repeat 4 '(1/4)))) 
+                      :divide '(3 4) :divide-n 2 
+                      :tie-n 2 :tie-prob 0.8) </pre>
+<p>
+ties with ties to previous beat 
+ </p>
+<pre>
+    (durational-accent (gen-repeat 4 (list (gen-repeat 2 '(1/4)))) 
+                      :divide '(4) :divide-n 2 :divide-prob 1 
+                      :tie-n 1 :tie-prob 1 :tie-previous-beat? t) </pre>
+<p>
 
  shorter tuplet groups to create accents 
  </p>
@@ -945,7 +1022,7 @@ If you want your final rhythm to contain rests you best add these to your rhythm
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180310">
+<a id="_g179254">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -985,7 +1062,7 @@ sequence: OMN expression that _cannot_ be nested.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180311">
+<a id="_g179255">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1033,7 +1110,7 @@ See also:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180312">
+<a id="_g179256">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1067,7 +1144,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180313">
+<a id="_g179257">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1099,10 +1176,165 @@ Example:
      =&gt; ((3 4 1) (3 4 1) (2 4 1)) </pre>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179258">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+length-&gt;time-signature&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Expects any OMN sequence, extracts its rhythm, and translates each note value in a time signature of the same length. 
+ </p>
+<p>
+Example: 
+ </p>
+<pre>
+    (rhythm-to-time-sig-sequence '(3/4 1/4 1/2)) 
+     =&gt; ((3 4 1) (1 4 1) (2 4 1)) </pre>
+<p>
+This function is largely the complement of the Opusmodus buildin function `time-signature-length'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179259">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+shift-meter-boundaries&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths positions</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Shift meter boundaries (sublist lengths) between bars in `lengths', by given number of positions (number of notes or rests) forwards or backwards. Such meter transformations can be useful, e.g., to prepare music for inserting durational accents expressing syncopations, and then afterwards moving the meter boundaries back to their original positions (e.g., using `copy-time-signature' with the original sequence). 
+ </p>
+<p>
+Note that resulting meter changes may occur even within tuplets, though Opusmodus may not support notating the result. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+length: list of OMN length values, must be nested 
+ </p>
+</li>
+<li>
+<p>
+positions (lists of ints, length most be one shorter than number of bars/sublists in lengths): amount by how many note values the bar line should be moved to the left (negative number) or to the right (positive number). `positions' is circled through to meet the length of `lengths'. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ (shift-meter-boundaries '((1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18) (1/16 1/16 1/16 1/16 1/16 1/16 1/16 -1/16) (-1/14 1/14 1/14 1/14 1/14 1/14 1/14) (q -q)) '(0 -1 1)) 
+ </p>
+<p>
+</p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179260">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+insert-into-bar&nbsp;&nbsp;</td>
+<td class="lambda-list">
+positions new lengths <em>&amp;key</em> section seed</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Inserts item(s) 
+ </p>
+<p>
+Args 
+ </p>
+<ul>
+<li>
+<p>
+positions (list of position values): either symbol 's (start), 'e (end) or '? (random position), or integer specifying position. 
+ </p>
+</li>
+<li>
+<p>
+new: list of OMN length values to be inserted, can be nested or partially nested. 
+ </p>
+</li>
+<li>
+<p>
+lengths: list of OMN length values, must be nested. 
+ `positions' and `new' is circled through to meet the length of `lengths' or `section'. 
+ </p>
+</li>
+<li>
+<p>
+section (list of ints): selected sublists to process. 
+ </p>
+</li>
+</ul>
+<p>
+Examples 
+ (insert-into-bar '(s e) '(q (e e)) '((h) (h) (h))) 
+ (insert-into-bar '(?) '(q (e e)) '((h) (h) (h)) <span class="keyword">
+:section </span>
+'(1 2) <span class="keyword">
+:seed </span>
+1) 
+ </p>
+<p>
+See also Opusmodus builtin `position-insert'. 
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-03-27 17:01:28</div>
+- 2018-04-20 15:26:27</div>
 </body>
 </html>

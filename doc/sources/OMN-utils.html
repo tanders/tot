@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180260">
+<a href="OMN-utils.html#_g179200">
 copy-time-signature</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ music-with-time-signature music-to-rebar</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180266">
+<a href="OMN-utils.html#_g179207">
 count-notes</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ notes</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180261">
+<a href="OMN-utils.html#_g179202">
 edit-omn</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil) (addi
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180264">
+<a href="OMN-utils.html#_g179205">
 flattened-length-adjust</a>
 </td>
 <td class="summary">
@@ -81,7 +81,15 @@ duration sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180269">
+<a href="OMN-utils.html#_g179209">
+insert-at-position</a>
+</td>
+<td class="summary">
+position item list <em>&amp;key</em> seed</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g179211">
 length-add</a>
 </td>
 <td class="summary">
@@ -89,7 +97,7 @@ length-add</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180268">
+<a href="OMN-utils.html#_g179210">
 length-subtract</a>
 </td>
 <td class="summary">
@@ -97,7 +105,23 @@ length-subtract</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180265">
+<a href="OMN-utils.html#_g179201">
+map-section</a>
+</td>
+<td class="summary">
+function sequence <em>&amp;key</em> section exclude section-args shared-args</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g179212">
+mk-seed</a>
+</td>
+<td class="summary">
+<em>&amp;optional</em> seed</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g179206">
 note-no</a>
 </td>
 <td class="summary">
@@ -105,7 +129,7 @@ music</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180267">
+<a href="OMN-utils.html#_g179208">
 phrase-lengths</a>
 </td>
 <td class="summary">
@@ -113,7 +137,7 @@ lengths</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180262">
+<a href="OMN-utils.html#_g179203">
 process-omn2</a>
 </td>
 <td class="summary">
@@ -121,7 +145,7 @@ type function sequence <em>&amp;key</em> flatten flat (span :length) swallow sec
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g180263">
+<a href="OMN-utils.html#_g179204">
 total-duration</a>
 </td>
 <td class="summary">
@@ -130,7 +154,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180260">
+<a id="_g179200">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -158,7 +182,129 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180261">
+<a id="_g179201">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-section&nbsp;&nbsp;</td>
+<td class="lambda-list">
+function sequence <em>&amp;key</em> section exclude section-args shared-args</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Apply a function to only selected bars (sublists) in an OMN sequence. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+function: function to apply to sublists in `sequence' 
+ </p>
+</li>
+<li>
+<p>
+sequence: nested list of OMN parameters or full OMN expressions 
+ </p>
+</li>
+<li>
+<p>
+section (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is applied. 
+ </p>
+</li>
+<li>
+<p>
+exclude (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is *not* applied. Only either `section' or `exclude' should be specified, otherwise `exclude' is ignored. 
+ </p>
+</li>
+<li>
+<p>
+shared-args (list): Further arguments to `function' added behind the current sublist of `sequence' and potentially `section-args'. 
+ </p>
+</li>
+<li>
+<p>
+section-args (list or list of lists): Further arguments to `function' added behind the current sublist of `sequence'. If not a nested list, then only a single additional argument is specified for each bar (sublist) to which `function' is applied. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) <span class="keyword">
+:section </span>
+'(1 2)) 
+ </p>
+<p>
+(map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) <span class="keyword">
+:exclude </span>
+'(0)) 
+ </p>
+<p>
+(map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
+ <span class="keyword">
+:section </span>
+'(1 2) 
+ <span class="keyword">
+:shared-args </span>
+'(7)) 
+ </p>
+<p>
+(map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
+ <span class="keyword">
+:section </span>
+'(1 2) 
+ <span class="keyword">
+:section-args </span>
+'(7 12)) 
+ </p>
+<p>
+(map-section #'(lambda (seq count divide) 
+ (length-divide count divide seq)) 
+ '((q q q) (q q q) (q q q) (q q q)) 
+ <span class="keyword">
+:section </span>
+'(1 2 3) 
+ <span class="keyword">
+:section-args </span>
+'((1 2) (2 3))) 
+ </p>
+<p>
+(map-section #'(lambda (seq count divide &amp;rest args) 
+ (apply #'length-divide count divide seq args)) 
+ '((q q q) (q q q) (q q q) (h.)) 
+ <span class="keyword">
+:section </span>
+'(1 2 3) 
+ <span class="keyword">
+:section-args </span>
+'((1 2) (2 3)) 
+ <span class="keyword">
+:shared-args </span>
+'(:ignore h.)) 
+ </p>
+<p>
+This function is a generalised and somewhat more clean variant of the Opusmodus builtin `do-section'. 
+ </p>
+<p>
+</p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179202">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -207,12 +353,12 @@ or <span class="keyword">
 </li>
 <li>
 <p>
-fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly. 
+notation: a omn sequence or a plain parameter list (can be nested). 
  </p>
 </li>
 <li>
 <p>
-notation: a omn sequence or a plain parameter list (can be nested). 
+fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly. 
  </p>
 </li>
 <li>
@@ -320,7 +466,7 @@ The function rotate-omn can now be called with either giving a single number or 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180262">
+<a id="_g179203">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -348,7 +494,7 @@ Function similar to edit-omn that will soon be built-in in Opusmodus.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180263">
+<a id="_g179204">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -376,7 +522,7 @@ Return the total duration (sum of all note and rest values) of `sequence'.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180264">
+<a id="_g179205">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -406,7 +552,7 @@ argument. This function offers a workaround.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180265">
+<a id="_g179206">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -434,7 +580,7 @@ Returns the number of notes in music, which is a list of lengths values of OMN e
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180266">
+<a id="_g179207">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -462,7 +608,7 @@ Returns number of notes (ignoring rests) in length list or other OMN expression.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180267">
+<a id="_g179208">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -499,7 +645,63 @@ length: lengths or OMN (list or list of list).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180268">
+<a id="_g179209">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+insert-at-position&nbsp;&nbsp;</td>
+<td class="lambda-list">
+position item list <em>&amp;key</em> seed</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Insert item(s) at given position into list. 
+ </p>
+<p>
+Args 
+ </p>
+<ul>
+<li>
+<p>
+position: either symbol 's (start), 'e (end) or '? (random position), or integer specifying position. 
+ </p>
+</li>
+<li>
+<p>
+item: value or list of values to be inserted. 
+ </p>
+</li>
+<li>
+<p>
+list: flat list of values. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ (insert-at-position 'e 'x '(a a a a)) 
+ (insert-at-position 's 'x '(a a a a)) 
+ (insert-at-position '? 'x '(a a a a)) 
+ (insert-at-position 'e '(x y) '(a a a a)) 
+ (insert-at-position '0 '(x y) '(a a a a)) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179210">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -536,7 +738,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g180269">
+<a id="_g179211">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -568,10 +770,66 @@ Example:
      =&gt; wq </pre>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g179212">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+mk-seed&nbsp;&nbsp;</td>
+<td class="lambda-list">
+<em>&amp;optional</em> seed</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Generates a random seed value, prints and returns it. Useful for exploring different results of random processes, but then keeping a found solution. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+seed (int): optionally fixes generated seed. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+(rnd-sample 3 '(c4 d4 e4) <span class="keyword">
+:seed </span>
+(mk-seed)) 
+ ; 405621 rnd-sample 
+ =&gt; (c4 e4 d4) 
+ </p>
+<p>
+(rnd-sample 3 '(c4 d4 e4) <span class="keyword">
+:seed </span>
+(mk-seed 13)) 
+ ; 13 rnd-sample 
+ =&gt; (e4 d4 e4) 
+ 
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-03-27 17:01:28</div>
+- 2018-04-20 15:26:27</div>
 </body>
 </html>
