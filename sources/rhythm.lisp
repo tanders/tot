@@ -52,7 +52,7 @@
   With irregular meter
   ;;; (tuplet-rhythm (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) 'h)) '(3 4 5 6 5 4 3 2) :seed 1234)
 
-  BUG: seed argument not working as expected."
+  BUG: seed argument not working as expected -- it is not even used in this function!"
   (apply #'length-divide2 (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
          (mapcar #'(lambda (x) (/ length-dividend x)) subdivisions)
          lengths
@@ -875,11 +875,17 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
 
 (defun shift-meter-boundaries (lengths positions)
-  "Shift meter boundaries (sublist lengths) between bars in `lengths', by given number of positions forwards or backwards, resulting likely in uneven meter changes. Resulting meter changes may occur even within tuplets, though Opusmodus may not support notating the result. Anyway, such meter transformations can still be useful, e.g., to prepare music for inserting durational accents expressing syncopations, and then afterwards moving the meter boundaries back to their original positions (e.g., using `copy-time-signature' with the original sequence).  
+  "Shift meter boundaries (sublist lengths) between bars in `lengths', by given number of positions (number of notes or rests) forwards or backwards. Such meter transformations can be useful, e.g., to prepare music for inserting durational accents expressing syncopations, and then afterwards moving the meter boundaries back to their original positions (e.g., using `copy-time-signature' with the original sequence).  
+
+Note that resulting meter changes may occur even within tuplets, though Opusmodus may not support notating the result.  
 
   Args: 
   - length: list of OMN length values, must be nested
   - positions (lists of ints, length most be one shorter than number of bars/sublists in lengths): amount by how many note values the bar line should be moved to the left (negative number) or to the right (positive number). `positions' is circled through to meet the length of `lengths'.
+
+  Example:
+  (shift-meter-boundaries '((1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18) (1/16 1/16 1/16 1/16 1/16 1/16 1/16 -1/16) (-1/14 1/14 1/14 1/14 1/14 1/14 1/14) (q -q)) '(0 -1 1))
+
 "
   (reverse
    ;; Loop over two consecutive elements in list, but with processing each element twice, first as first and then the result as second element. In parallel, iterate over positions
