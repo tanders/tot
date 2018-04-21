@@ -160,7 +160,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
   "
   ;; (declare (optimize (debug 3)))
-  (if (not (or (every #'listp notation) flat))
+  (if (and (notevery #'listp notation) (not flat)) 
       ;; If notation is not (consistently) nested then set flat to T
       (edit-omn type notation fun :flat T :swallow swallow :section section :additional-args additional-args)      
       (labels (;; function section-to-binary-better is like built-in section-to-binary, but ensures that resulting 
@@ -211,8 +211,12 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 								    params)
 					      (list :swallow swallow))))
 				   (apply #'make-omn omn)))
-	    ;; notation is plain parameter list
-	    (span notation (process-param-seq notation))))))
+	    ;; notation must be plain parameter list
+	    (let ((pattern (if (some #'length-restp (flatten notation)) ; rests would be skipped in spanning
+			       (length-rest-invert notation)
+			       notation)))
+	      (span pattern (process-param-seq notation) :flat T))
+	    ))))
 
 
 ;;; TMP: 
