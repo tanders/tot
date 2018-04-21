@@ -116,14 +116,17 @@
   "Custom algorithm to create rhythmic phrases consisting of even note durations over a certain time. 
 
   Args:
-  - length (length value): rhythmic value to repeat
+  - length (length value or list of length values): rhythmic value(s) to repeat
   - total-duration (length value): duration of the generated phrase including the prefix and suffix length.
   - prefix (length value or length sequence): preceeding phrase
   - suffix (length value or length sequence): succeeding phrase
   - time-sig: time signature
 
-  Example:
-  ;;; (even-length-rhythm '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q)"  
+  Examples:
+  ;;; (even-length-rhythm '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q)
+
+  Lists can be specified specified for length, prefix and suffix
+  ;;; (even-length-rhythm '(3q c4 stacc 3e) :total-duration 'w_w_w :prefix '-3h :suffix '(q -q))"  
   (let* ((pre-and-suffix-dur (apply #'length-add 
                                     (length-rest-invert (append (tu:ensure-list prefix)
                                                                 (tu:ensure-list suffix)))))
@@ -205,11 +208,11 @@
   "Turn notes at specific positions into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
 
   Args:
-  - positions (list of ints): positions of notes to be turned into rests
+  - positions (list of ints): 1-based positions of notes to be turned into rests
   - sequence (list of lengths or OMN expression): music to process
   - flat (Boolean): whether positions count for sublists (nil) or the whole list (T)
   - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
-  - section (list of ints): positions of sublists to process. This argument is ignored if flat is T.
+  - section (list of ints): 0-based positions of sublists to process. This argument is ignored if flat is T.
 
   Example:
 
