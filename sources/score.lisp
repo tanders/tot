@@ -20,8 +20,11 @@
 
 ;; NOTE: just some dummy settings for now
 (defparameter *default-preview-score-header*
-  '(:title "Opus magnum"
-    :tempo 80)
+  `(:title "Opus magnum"
+    :tempo 80
+    :layout ((:bracket
+	      ,(violin-layout 'vln :flexible-clef t)
+	      ,(violoncello-layout 'vlc :flexible-clef t))))
   "Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like :title, :key-signature etc.")
 
 (defparameter *preview-score-return-value*
@@ -57,14 +60,13 @@
     
 Examples:
 
+   Example using the two default instrument names, predefined with `*default-preview-score-instruments*' and `*default-preview-score-header*'.
+
 ;;; (preview-score
 ;;;  '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
-;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
-;;;  :instruments '(:vln (:program 'violin :sound 'gm)
-;;; 	            :vlc (:program 'cello :sound 'gm))
-;;;  :header '(:title \"Opus magnum\"
-;;; 	       :tempo 80))
+;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
 
+  Example showing how to define your own instrument specifications. These specifications can either be directly handed to preview-score, as shown below, or you can overwrite `*default-preview-score-instruments*' and `*default-preview-score-header*' accordingly.
   NOTE: when specifying the score :layout as header argument, list instrument names as symbols in the Opusmodus package and *not* keywords as in the headerless score. See the example below.
 
 ;;; (preview-score
@@ -76,6 +78,14 @@ Examples:
 ;;;                                     (violoncello-layout 'vlc)))))
 
   The return value is controlled by {defparameter *preview-score-return-value*}.
+
+  Polyphonic parts can be expressed by simply using the same instrument name multiple times (again using default instrument names).
+
+;;; (preview-score
+;;;  '(:vln ((q g5) (q. c6 e d6 q e6 f6) (h. e6)) ; octave-doubling
+;;;    :vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
+;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+
   "
   ;; Using eval is problematic (https://stackoverflow.com/questions/2571401/why-exactly-is-eval-evil/),
   ;; but hard to avoid for a dynamically created def-score expression that requires splicing with ,@.
@@ -142,7 +152,7 @@ Examples:
 			     (list* (keyword-to-om-symbol part-symbol)
 				    :omn `(quote ,part-omn)
 				    (getf actual-instruments part-symbol))))
-		       (tu:plist->pairs score)))))
+		       (tu:plist->pairs (merge-equal-instrument-parts score))))))
     (eval full-score)
     (audition-musicxml-last-score)
     (case *preview-score-return-value*
