@@ -284,7 +284,7 @@ NOTE: A polyphonic score of only pitches or other parameters without lengths can
   Args:
   - score (headerless score): See {defun preview-score} for format description. 
   - fn: A function that expects and returns an OMN sequence or a sequence of parameter values (e.g., lengths, or pitches) as specified in the argument `parameter'. 
-  - part-args (plist): Alternating instrument keywords (same as in `score') followed by arguments list for `fn' for that instrument/part. If arguments is :skip, then that part is returned unchanged. 
+  - part-args (plist): Alternating instrument keywords (same as in `score') followed by arguments list for `fn' for that instrument/part. If arguments list is :skip for any instrument, then that part is returned unchanged. If `score' contains the same instrument multiple times for expressing polyphony, `part-args' can also specify arguments for these multiple parts with the same name separately.
   - parameter (omn parameter, e.g., :length or :pitch, default nil means processing full OMN expression): If `fn' expects only a single OMN parameter to process, then it can be set here. Otherwise, `fn' expects full OMN sequences. 
   - input-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' argument -- the parameter returned by `fn' can be set separately. If both `input-parameter' and `parameter' are nil, or `input-parameter' is set to :all, then `fn' expects full OMN sequences.
   - output-parameter (omn parameter): Same as `parameter', but the parameter is only set for `fn' results that are then inserted into the resulting score -- the parameter expected by `fn' can be set separately. If both `output-parameter' and `parameter' are nil, or `output-parameter' is set to :all, then `fn' returns full OMN sequences.
@@ -374,22 +374,31 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
   (assert (not (find 'quote (flatten shared-args)))
           (shared-args)
           "map-parts: Arg `shared-args' contains quoted expression. ~S.~%" shared-args)
-  ;;; TODO: not sure whether using a hash-table adds efficiency -- after all, I only need to access each element in plist score only once
   (let ((input-parameter (if input-parameter input-parameter parameter))
         (output-parameter (if output-parameter output-parameter parameter))
         (parts-hash (make-hash-table :test #'equal)))
-    ;; fill hash table, using leading keywords as keys
-    (loop for part in (tu:plist->pairs score)
-       do (setf (gethash (first part) parts-hash) part))
+    ;; Fill hash table, using instrument names as keys
+    ;; For supporting multiple parts with same name for polyphony:
+    ;; Stored data is plist: (:index <int> :omn <list-of-omn-seqs>), where index points to the current omn to use.
+    ;; ... Hm, hash table for efficiency, but then internal data structure with list is not very consequent, but for now sufficient.
+    (loop for (instr omn) in (tu:plist->pairs score)
+       do (if (gethash instr parts-hash)
+	      ;; some omn seq(s) for this instrument exists already -- add the current one
+	      (setf (gethash instr parts-hash)
+		    (list :current 0 :omns (append (getf (gethash instr parts-hash) :omns) (list omn))))
+	      ;; new instrument entry
+	      (setf (gethash instr parts-hash)
+		    (list :current 0 :omns (list omn)))))
     (tu:pairs->plist 
      (loop 
-	for instrument-arg-pair in (tu:plist->pairs part-args) 
-	for instrument = (first instrument-arg-pair)
-	for part = (gethash instrument parts-hash)
-	for part-omn = (second part)
-	for fn-args = (second instrument-arg-pair) 
+	for (instrument fn-args) in (tu:plist->pairs part-args) 
+	for part-omn = (let* ((data (gethash instrument parts-hash))
+			  (idx (getf data :current)))
+		     (setf (gethash instrument parts-hash)
+			   (tu:update-property data :current (1+ idx))) 
+		     (nth idx (getf data :omns)))
 	collect (if (equal fn-args :skip)
-		    part ; no processing
+		    (list instrument part-omn) ; no processing
 		    (cons instrument
 			  (let* ((seq (if (or (not input-parameter)
 					      (eql :all input-parameter))
@@ -416,6 +425,7 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
 				 )))))
 	  ))))
 
+  
 ;; testing / generating examples
 
 #|
@@ -1001,8 +1011,11 @@ BUG: Does not yet work with scores that express polyphony with multiple instance
 |#
 
 
+;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return
 (defun get-part-omn (instrument score)
-  "Returns the part (OMN expression) of `instrument' in `score', a headerless score (see {defun preview-score} for its format)."
+  "Returns the part (OMN expression) of `instrument' in `score', a headerless score (see {defun preview-score} for its format).
+
+BUG: does not yet allow access to higher position of equally named parts."
   (getf score instrument))
 
 #|
@@ -1025,6 +1038,7 @@ BUG: Does not yet work with scores that express polyphony with multiple instance
 |#
 
 
+;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return
 (defun replace-instruments (new old score)
   "Replaces old instruments by new instruments in a score.
 
@@ -1045,6 +1059,7 @@ BUG: Does not yet work with scores that express polyphony with multiple instance
           (matrix-transpose (list new old))
           :initial-value score))
 
+;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return
 (defun replace-part-omn (instrument new-part score)
   "Replaces the part (OMN expression) of `instrument' in `score' with `new-part'.
 
@@ -1068,6 +1083,7 @@ BUG: Does not yet work with scores that express polyphony with multiple instance
 
 
 
+;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return
 (defun split-part (instrument orig-score score-to-insert)
   "Replaces part of `instrument' in `orig-score' with `score-to-insert'.
 
@@ -1131,6 +1147,7 @@ Split divisi strings into parts
 
 |#
 
+;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return
 (defun remove-part (instrument score)
   "Removes `instrument' and its OMN expression from `score'.
 
@@ -1162,6 +1179,7 @@ Split divisi strings into parts
   :vlc (h c3)))
 |#
 
+;;; TODO: add format specifying which 0-based number of equally-named parts to return
 (defun remove-parts  (instruments score)
   "Removes all `instruments' and their OMN expressions from `score'.
 
@@ -1184,6 +1202,7 @@ Split divisi strings into parts
   :vlc (h c3)))
 |#
 
+;;; TODO: add format specifying which 0-based number of equally-named parts to return
 (defun extract-parts (instruments score)
  "Extracts all `instruments' and their OMN expressions from `score'. 
 
@@ -1208,6 +1227,7 @@ Split divisi strings into parts
 |#
 
 
+;;; TODO: add format specifying which 0-based number of equally-named parts to return
 (defun reorder-parts (instruments-in-order score)
   "Changes the order of instruments in `score' to the order given in `instruments-in-order'. Only the instruments included in `instruments-in-order' are parts of the resulting score."
   (mappend #'(lambda (instr)
