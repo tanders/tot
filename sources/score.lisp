@@ -772,6 +772,63 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 |#
 
 
+
+
+(defun merge-equal-instrument-parts (score)
+  "If `score' contains multiple instances of the same instrument, then those multiple voices are merged into a polyphonic line (with the time signature taken from the first voice).
+
+  Example:
+  (merge-equal-instrument-parts 
+    '(:rh ((q c4 d4 e4 f4))
+      :rh ((q c5 b4 g4 d4))
+      :lh ((h c3 g3))))
+  => (:RH ((Q C4C5 D4B4 E4G4 D4F4)) :LH ((H C3 G3)))"
+  (tu:pairs->plist
+   (let ((paired-score (tu:plist->pairs score))
+	 already-processed-instruments)
+     (loop 
+	for remainder-pairs on paired-score
+	for (instrument omn) = (first remainder-pairs)
+	unless (member instrument already-processed-instruments) 
+	collect (let ((other-omns (mapcar #'second 
+					  (remove-if-not #'(lambda (x)
+							     (eql (first x) instrument)) 
+							 (rest remainder-pairs)))))
+		  (list instrument (if other-omns
+				       (progn
+					 (setf already-processed-instruments (cons instrument already-processed-instruments))
+					 (apply #'merge-voices (cons omn other-omns)))
+				       omn)))))))
+
+#| ; tests
+
+(setf paired-list (tu:plist->pairs '(:a 1 :b 1 :a 1 :c 1)))
+
+;;; BUG: must only look at rest of list
+(let (merged)
+  (loop 
+     for remainder-list on paired-list
+     for (key value) = (first remainder-list)
+     unless (member key merged) 
+       collect (let ((other-values (mapcar #'second 
+					   (remove-if-not #'(lambda (x)
+							      (eql (first x) key)) 
+							  (rest remainder-list)))))
+		(list key (if other-values
+			      (progn
+				(setf merged (cons key merged))
+				(apply #'+ (cons value other-values)))
+			      value)))))
+
+       
+
+
+
+|#
+
+
+
+
 ;; source: https://opusmodus.com/forums/topic/894-merge-voices-on-barbeat/?tab=comments#comment-2727
 (defun merge-voices2 (seq insert bar/beat)
   "Merges multiple monophonic lines resulting in a polyphonic part. 
