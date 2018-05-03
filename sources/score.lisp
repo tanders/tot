@@ -698,6 +698,8 @@ length-expansion-variant
 ;;;                  :vlc ,(gen-retrograde material :flatten T)))
 
 BUG: If one part misses hierarchic nesting in contrast to others, then this lating nesting is preserved, which can lead to inconsistent nesting (some sections of a part being nested, others are not).
+
+BUG: Does not yet work with scores that express polyphony with multiple instances of the same instrument.
 "
   (reduce #'_append-two-parts scores))
   
