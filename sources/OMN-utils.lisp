@@ -299,6 +299,28 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (disassemble-omn '((q f jet-up+fermata+comma) (h 0<mp>0 wind-flz+fermata+comma) (q sfffp wind-i+tie q p<ff)))
 |#
 
+
+(defun map-position-in-bar (position type sequence fun &key (section nil))
+  "Transforms in the bars of `sequence' the parameter of `type' (e.g., :length) at `position' with `fun'. 
+
+  Example:
+  Apply the articulation tenuto to every first note in all bars except the last bar.
+  (map-position-in-bar 0 :articulation 
+                       '((q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
+                       #'(lambda (ignore) 'ten)
+                       :section '(0 1))
+
+  NOTE: Currently, rests are simply not counted when estimating the position of a parameter other then :length."
+  (edit-omn type sequence 
+            #'(lambda (params)
+		(when params ; skip in case a bar only contains a rest and some other param except :length is processed
+		  (tu:replace-element (funcall fun (nth position params))
+				      position params)))
+            :flat nil
+            :section section
+	    :swallow nil))
+
+
 (defun total-duration (sequence)
   "Return the total duration (sum of all note and rest values) of `sequence'."
   (reduce #'+ (mapcar #'abs (flatten (omn :length sequence))) :initial-value 0))
