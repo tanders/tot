@@ -10,15 +10,23 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun pcs->chord (pcs)
+(defun pc->pitch (pc octave)
+  "Converts the pitch class `pc' into an OMN pitch in the given `octave'.
+
+  Example:
+  (pc->pitch 1 4)
+  => cs4"
+  (midi-to-pitch (+ pc (* 12 (1+ octave)))))
+
+(defun pcs->chord (pcs &optional (octave 4))
   "Expects a list of pitch class integers and returns an Opusmodus chord symbol.
 
   Example:
   (pcs->chord '(0 4 7))
   => c4e4g4"
   (first (chordize
-          (midi-to-pitch (loop for pc in pcs
-                           collect (+ pc 60))))))
+          (loop for pc in pcs
+	     collect (pc->pitch pc octave)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
