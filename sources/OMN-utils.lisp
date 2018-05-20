@@ -90,7 +90,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 ;;; TODO: add support for processing ties properly using omn-merge-ties. e.g., see
 ;;; https://opusmodus.com/forums/topic/989-length-legato-opposite-function/
 (defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
-  "Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
+  "Use function `fun', defined for transforming lists of individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
   Args:
   - type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
@@ -549,3 +549,12 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
   "
   (print (if seed seed (rnd-range 1 999999))))
 
+(defun ensure-double-list (x)
+  "Ensures that `x' is a duble-wrapped list. If not, a list (or two) are wrapped around it. 
+  
+  As a precaution, if `x' is inconsistently nested, then the result is a flattened version of it wth a double list wrapped around."
+  (if (listp x)
+    (if (every #'listp x)
+      x
+      (list (flatten x)))
+    (list (list x))))
