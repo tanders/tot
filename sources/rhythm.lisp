@@ -708,6 +708,100 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Karnatic rhythmical techniques
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun gen-matras (gati yati yati-number &key prefix suffix)
+  "Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `yati' the number of matras per 'bar' (sublist) and `yati-number' the resulting number of sublists.
+
+  Args:
+  - gati (int)
+  - yati (int)
+  - yat-number (int)
+  - prefix (length value or length sequence, possibly nested): preceeding phrase
+  - suffix (length value or length sequence, possibly nested): succeeding phrase
+
+  Examples:
+  gati 5 (quintuplets), yati 4
+  (gen-matras 5 4 3)
+  gati 5 (quintuplets), yati 4, but preceeded by a quarter note rest.
+  (gen-matras 5 4 3 :prefix '-q)
+
+  See Reina (2016) for details on the terms matras, gati and yati.
+  
+  Reference
+  Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge."
+  (append 
+   (when prefix (ensure-double-list prefix))
+   (gen-repeat yati-number (list (gen-repeat yati (/ 1/4 gati))))
+   (when suffix (ensure-double-list suffix))   
+   ))
+
+
+(defun accented-yati-phrase (gati pala-lengths gap &rest args &key (type '(:srotovahayati :at-end)) &allow-other-keys)
+  "Generates the matras sequence for a yati phrase, see Reina (2016, p. 205ff) for details. Resulting sublists are jathis for potential post-processing (e.g., adding an accent on their first notes) before redefining the metric structure (usually to follow the tala, e.g., with `omn-to-time-signature'). 
+
+  NOTE: In contrast to Karnatic music, resulting accents are expressed by durational accents by this function. Hence the word `accented' in the  function name.
+  
+  Args:
+  - gati (OMN length): beat subdivision 
+  - pala-lengths (list of ints): number of matras per pala 
+  - gap (OMN length, typically a rest): length of gaps between palas (always constant). For mridangamyati phrases, when you need different gap lengths, simply append two calls to the present function.
+  - type (list of two keywords): specifies first the type of the yati phrase (:srotovahayati, where matras are added or :gopuchayati, where matras are removed over time). Secondly, it sets at which side the pala matras are added or removed  (:at-end :at-front). There are four combinations in total. You can compose mridangamyati and damaruyati yati phrases by combining the results of two calls of this function. Note that inserting matras in the middle is currently not supported.
+  Additionally, all `durational-accent' key args are supported.
+
+  Examples:
+  (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-end) :divide-prob 0.3 :merge-prob 0.7 :seed 1)
+  (accented-yati-phrase '3q '(4 7 10 13) '-3e :type '(:gopuchayati :at-front) :divide-prob 0.7 :merge-prob 0.5 :seed 3)
+
+  Reference
+  Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+  "
+  (let* ((gati-ratio (omn-encode gati))
+         (longest-pala-jathis (cons (first pala-lengths) (tu:x->dx pala-lengths)))
+         (longest-pala-time-sigs (length->time-signature
+                                  (loop for jathi in longest-pala-jathis
+				     collect (* jathi gati-ratio))))
+         (longest-pala-lengths (apply #'max pala-lengths))
+         (longest-pala-matras 
+          (omn :length (even-length-rhythm gati 
+                                           :total-duration (* gati-ratio longest-pala-lengths) 
+                                           :time-sig longest-pala-time-sigs)))
+         (longest-pala (apply #'durational-accent longest-pala-matras args)))
+    (cond 
+      ((equal type '(:srotovahayati :at-end))          ; grows at end
+       (reverse 
+        (loop for palas on (reverse longest-pala)
+	   if (rest palas)
+	   append (append palas `((,gap)))
+	   else append  palas)))
+      ((equal type '(:srotovahayati :at-front))        ; grows at front
+       (tu:one-level-flat 
+        (reverse 
+         (loop for palas on longest-pala
+	    unless (equal palas longest-pala)
+	    collect (append palas `((,gap)))
+	    else collect palas))))
+      ((equal type '(:gopuchayati :at-end))            ; reduced at end
+       (loop for palas on (reverse longest-pala)
+	  if (rest palas)
+	  append (append (reverse palas) `((,gap)))
+	  else append (reverse palas)))
+      ((equal type '(:gopuchayati :at-front))          ; reduced at front
+       (loop for palas on longest-pala
+	  if (rest palas)
+	  append (append palas `((,gap)))
+	  else append  palas))
+      (T (error "Yati phrase type note supported: ~A. Note that the order of keywords must not be swapped. The type is a pair like the following example: (:srotovahayati :at-end)." type)))))
+
+;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-front))
+
+
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
