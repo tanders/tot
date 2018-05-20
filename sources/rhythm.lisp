@@ -585,8 +585,9 @@ Example:
  :divide '(2 3) :n 2)
 
 (_durational-accent-merge
- (_durational-accent-divide  (gen-repeat 4 '((q q q))) :divide '(2 3) :n 2)
+ (_durational-accent-divide  (gen-repeat 4 '((q q q))) :divide '(2 3) :n 2 :grace-n 2)
  :n 2)
+
 |#
 
 
@@ -599,7 +600,7 @@ Example:
 ;;   - leave untouched: first note of bar if preceded by shorter notes and last note of bar is suceeded by longer note
 (defun durational-accent (lengths 
 			  &rest args
-			  &key (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) &allow-other-keys)
+			  &key (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) (format :omn) &allow-other-keys)
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar (see divide-related args) or merging notes at the beginning of a bar (see merge-related args). Subdivided notes can be partially tied together for rhythmic variety (see tie-related args), and durational accents can also be expressed with grace notes (see grace-related args). 
 
 While `durational-accent' only supports accents of the first beat of each bar, you can easily realise other accent patterns by temporarily rebarring the music (e.g., with `omn-to-time-signature' and perhaps `length->time-signature'), and then afterwards align the result of `durational-accent' again with the original time signatures (e.g., with `copy-time-signature').
@@ -620,6 +621,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   - grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
   - set (length or list of lengths): only specified lengths are subdivided. 
   - ignore (length or list of lengths): specified lengths are *not* subdivided. 
+  - format (either :omn or :length): set the output format. In :length format, grace notes are represented explicitly as acciaccatura and ties are represented explicitly, in length format they have simply the duration 0.
   - seed (integer): random seed.
 
   Examples (evaluate multiple times to see range of solutions):
@@ -652,11 +654,13 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   If you want your final rhythm to contain rests you best add these to your rhythmic material before processing it with this function, because turning notes into rests afterwards can contradict your durational accents."
   (do-verbose ("")
     (rnd-seed seed)
-    (omn :length
-	 (omn-merge-ties
-	  (_durational-accent-merge 
-	   (apply #'_durational-accent-divide (omn :length lengths) :n divide-n :seed (seed) :allow-other-keys T args)
-	   :n merge-n :prob merge-prob :seed (seed))))
+    (let ((result (omn-merge-ties
+		   (_durational-accent-merge 
+		    (apply #'_durational-accent-divide (omn :length lengths) :n divide-n :seed (seed) :allow-other-keys T args)
+		    :n merge-n :prob merge-prob :seed (seed)))))
+      (case format
+	(:omn result)
+	(:length (omn :length result))))
     #|
     (_durational-accent-merge 
      (apply #'_durational-accent-divide lengths :n divide-n :seed (seed) :allow-other-keys T args)
@@ -971,6 +975,8 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 |#
 
 
+;;; TODO: add support for arbitrary OMN sequences, not just lengths
+;;; TODO: when shifting bar lines to the left (positions negative), allow for adding corresponding rest at the beginning with extra arg, so that the time signature of the first bar does not change.
 (defun shift-meter-boundaries (lengths positions)
   "Shift meter boundaries (sublist lengths) between bars in `lengths', by given number of positions (number of notes or rests) forwards or backwards. Such meter transformations can be useful, e.g., to prepare music for inserting durational accents expressing syncopations, and then afterwards moving the meter boundaries back to their original positions (e.g., using `copy-time-signature' with the original sequence).  
 
