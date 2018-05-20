@@ -420,8 +420,17 @@ Homophonic texture created by random pitch variants (retrograde, inversion etc.)
 			     (if (or (not output-parameter)
 				     (eql :all output-parameter))
 				 result
+				 (omn-replace :pitch (span part-omn result) part-omn)
+				 #|
 				 (copy-time-signature part-omn
-						      (omn-replace output-parameter (flatten result) (flatten part-omn)))
+						      (progn
+							;; (break)
+							;; ? BUG: I should not flatten part-omn, it can squash articulations like acc etc.
+							;; However, then I need to perhaps format result to follow spanning of part-omn
+;;;         result = ((d5 d5 d5 d5) (d5 d5 d5 d5) (d5 d5 d5) (d5 d5 d5 d5 d5 d5 ...) (d5))
+;;;         part-omn = ((-q 5w.. c4 5q 5q 5q) (5w.. c4 5q 5q 5q) (q c4 c4 c4) (q c4 c4 5q 5q 5q ...) (h. c4))
+							(omn-replace output-parameter (flatten result) (flatten part-omn))))
+				 |#
 				 )))))
 	  ))))
 
