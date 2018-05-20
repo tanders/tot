@@ -152,6 +152,25 @@
   (preview-score (cluster-engine-score score)))
 
 
+
+(defun chords->domain (transpositions chords &key preview?)
+  "Translates `chords' (list of OMN chords) and `transpositions' (list of ints) into a domain of chords for Cluster Engine (list of lists of MIDI note numbers), where every given spectrum is contained in all given transpositions. 
+
+  If `preview?' is T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus.
+
+  Example:
+  (chords->domain '(0 2 4) '(c4e4g4 b3d4g4))"
+  (let ((result (loop for transposition in transpositions
+                  append (pitch-transpose transposition chords))))
+    (if preview?
+      result
+      (mclist (pitch-to-midi result)))))
+
+; (chords->domain (gen-integer 0 11) (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 15) 0)) :preview? T)
+; (chords->domain (gen-integer 0 11) (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 11) 0)) :preview? T)
+
+
+
 ;;; TODO:
 ;;; - BUG: Ties in input score can be ignored. Tones tied together in input score can turn out with different pitches in result.
 ;;; - ? Arg: split-score? Add support to split score at harmonic changes (instead of shared rests).
