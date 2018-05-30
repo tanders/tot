@@ -128,6 +128,30 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Selecting chords
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun spectra-transpositions-fitting-in-scale (spectra scale)
+  "Function for generating a chord/spectral domain. Returns all transpositions of the given spectral that fit in the given scale (i.e., all their pitch classes are contained in the scale).
+
+  Args:
+  spectra (OMN chords): a list of untransposed spectra  
+  scale (OMN pitch list)  
+  "
+  (let ((all-spectra (loop for transposition in (gen-integer 0 11)
+                       append (pitch-transpose transposition spectra)))
+        (scale-pcs (mapcar #'pitch->pc scale)))
+    (loop for spectrum in all-spectra 
+      if (every #'(lambda (pc) (member pc scale-pcs))
+                (mapcar #'pitch->pc (melodize spectrum)))
+      collect spectrum)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Process pitches
@@ -169,13 +193,13 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 
   Examples:
-  ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)))
+  ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (fenv:linear-fenv (0 0) (1 2)))
   ;;; => (c4 cs4 gs4 a4)
 
-  ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)) :ambitus '(d4 a4))
+  ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (fenv:linear-fenv (0 0) (1 2)) :ambitus '(d4 a4))
   ;;; => (d4 eb4 gs4 a4)
 
-  ;;; (fenv-transpose-pitch '((q c4 e c4 g4) (h g4)) (linear-fenv (0 0) (1 2)))
+  ;;; (fenv-transpose-pitch '((q c4 e c4 g4) (h g4)) (fenv:linear-fenv (0 0) (1 2)))
   ;;; => ((q c4 e cs4 gs4) (h a4))
 "
   (let* ((omn? (omn-formp sequence))
