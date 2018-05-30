@@ -814,7 +814,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
           (omn :length (even-length-rhythm gati 
                                            :total-duration (* gati-ratio longest-pala-lengths) 
                                            :time-sig longest-pala-time-sigs)))
-         (longest-pala (apply #'durational-accent longest-pala-matras args)))
+         (longest-pala (apply #'durational-accent longest-pala-matras (tu:remove-property :type args))))
     (cond 
       ((equal type '(:srotovahayati :at-end))          ; grows at end
        (reverse 
@@ -843,8 +843,19 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
 ;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-front))
 
+#|
+;;; TODO:
+(defun change-gati (sequence in-gati out-gati)
+  "Changes the duration of notes in `sequence' to fit into the given gati without changing their jathi."
+  )
 
+;;; TODO:
+(defun change-jathi (sequence jathi)
+  "Changes the grouping of notes in `sequence' to follow the given jathi but adding removing notes.
 
+The sequence is supposed to be arranged such that each sublist is one jathi."
+  )
+|#
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
