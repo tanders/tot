@@ -51,7 +51,7 @@
     - name (symbol): The score name.
     - instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn. This list can contain more instruments than actually contained in score (e.g., settings for a full orchestra), but only the instruments actually contained in `score' are actually given to the internal `def-score' call. 
     - header (plist): The format is the same as the header settings for `def-score' with keywords like :title, :composer, :key-signature etc. 
-    
+      Note: any time signature sequence given in the `header' that is not long enough for the full score is automatically cycled as a sequence to the required length (i.e., not only the last time signature but the whole sequence is repeated). 
 
     Score format: 
     ;;; (<part1-name-keyword> <part1-OMN>
@@ -95,8 +95,21 @@ Examples:
 	 ;; only use instruments actually in score
 	 (actual-instruments (mappend #'(lambda (p) (list p (getf instruments p)))
 				      score-instruments))
-	 (full-header (append (tu:update-property
-			       header :layout
+	 #| ;;; TMP: not yet working, hence commented
+	 (time-sig-lengths (time-signature-length (getf header :time-signature)))
+	 (max-part-dur (apply #'max (tu:at-odd-position 
+				     (map-parts-equally score
+							#'total-duration
+							'(_)))))
+	 (time-signature (length->time-signature
+			  (length-span (/ max-part-dur (apply #'+ time-sig-lengths))				       
+				       time-sig-lengths)))
+	 |#
+	 (full-header (append (tu:update-properties  
+			       header
+			       ;;; TMP: not yet working, hence commented
+			       ;; :time-signature (list time-signature)
+			       :layout
 			       ;; collect only layouts of instruments actually present in score
 			       (labels ((collect-present-layouts (layouts)
 					  (tu:mappend  ;; all return values listed -- nils removed by append
@@ -142,6 +155,7 @@ Examples:
 				     ;; By default, use implicit time signature of 1st part
 				     :time-signature (om:get-time-signature (second score))
 				     :tempo 70))))
+	 ;; (break)
 	 (full-score 
 	  `(def-score ,name 
 	       ;; header args must be quoted...
