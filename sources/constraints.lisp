@@ -6,7 +6,7 @@
 
 ;; articulation to display a score that represents no solution
 (add-text-attributes
- '(no-solution "no solution"))  
+ '(no-solution "no solution")) 
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -152,23 +152,20 @@
   (preview-score (cluster-engine-score score)))
 
 
-
-(defun chords->domain (transpositions chords &key preview?)
+(defun chords->domain (chords &key (transpositions '(0)) preview?)
   "Translates `chords' (list of OMN chords) and `transpositions' (list of ints) into a domain of chords for Cluster Engine (list of lists of MIDI note numbers), where every given spectrum is contained in all given transpositions. 
 
   If `preview?' is T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus.
 
   Example:
-  (chords->domain '(0 2 4) '(c4e4g4 b3d4g4))"
+  (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4))"
   (let ((result (loop for transposition in transpositions
                   append (pitch-transpose transposition chords))))
     (if preview?
       result
       (mclist (pitch-to-midi result)))))
 
-; (chords->domain (gen-integer 0 11) (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 15) 0)) :preview? T)
-; (chords->domain (gen-integer 0 11) (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 11) 0)) :preview? T)
-
+; (chords->domain (list (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 15) 0))) :transpositions (gen-integer 0 11) :preview? T)
 
 
 ;;; TODO:
@@ -179,7 +176,7 @@
 ;;; OK - Move this function into a new file constraints.lisp into my library tot
 ;; ... solution can be repeating input score
 (defun revise-score-harmonically (score harmonies scales
-				  ; &optional (scales nil) ;; making scales optional would be nice, but it is not this easy...
+					; &optional (scales nil) ;; making scales optional would be nice, but it is not this easy...
 				  &key
 				    (constrain-pitch-profiles? T) 
 				    (constrain-pitch-intervals? T)
