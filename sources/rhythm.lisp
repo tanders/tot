@@ -955,14 +955,22 @@ While `durational-accent' only supports accents of the first beat of each bar, y
                           (mapcar #'disassemble-articulations 
                                   (omn :articulation (flatten-omn sequence)))))))))
 
-(defun total-duration (sequence)
-  "Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests.
+(defun total-duration (sequence &optional float?)
+  "Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests. 
+
+  If `float?' is true the result is a float.
 
   Example:
   ;;; (total-duration '((h c4 q) (q h tie) (h.)))
   ;;; => 9/4"
-  (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence)))))
+  (let ((result (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence))))))
+    (if float?
+      (* result 1.0)
+      result)))
 
+(defun bpm->duration (beats tempo)
+  "Converts a duration in number of beats and the corresponding tempo in BPM into a duration in seconds."
+  (* (* (/ 1 tempo) beats) 60.0))
 
 
 (defun isolate-time-signatures (ts-forms)
