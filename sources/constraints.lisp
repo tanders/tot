@@ -439,19 +439,26 @@ TODO: demonstrate how default rules are overwritten.
 	    (pprint csp))
 	  (if unprocessed-cluster-engine-result?
 	      (apply #'cr:cluster-engine csp)
-		;; reduce total duration of each part in score segment to duration of input score
-		(map-parts-equally 
-		 (copy-cluster-engine-pitches-to-score unified-score (apply #'cr:cluster-engine csp))
-		 #'(lambda (dur part)
-		     ;; (break)
-		     (if length-adjust?
-			 ;; length-adjust does only work for flat list
-			 ;; (length-adjust dur part :flat T)
-			 ;; TMP: 
-			 (flattened-length-adjust dur part)
-			 part))
-		 `(,score-dur _)	       
-		 ))))))
+	      (let ((result
+		     (replace-part-omn :chords harmonies
+				       ;; reduce total duration of each part in score segment to duration of input score
+				       (map-parts-equally 
+					(copy-cluster-engine-pitches-to-score unified-score (apply #'cr:cluster-engine csp))
+					#'(lambda (dur part)
+					    ;; (break)
+					    (if length-adjust?
+						;; length-adjust does only work for flat list
+						;; (length-adjust dur part :flat T)
+						;; TMP: 
+						(flattened-length-adjust dur part)
+						part))
+					`(,score-dur _)	       
+					))))
+		(if scales
+		    (replace-part-omn :scales scales result)
+		    result)
+		)
+)))))
 
 
 
