@@ -300,6 +300,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 |#
 
 
+;;; TODO: take rests into account. Tmp workaround: if bar starts with a rest then simply skip processing it
 (defun map-position-in-bar (position type sequence fun &key (section nil))
   "Transforms in the bars of `sequence' the parameter of `type' (e.g., :length) at `position' with `fun'. 
 
@@ -310,7 +311,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
                        #'(lambda (ignore) 'ten)
                        :section '(0 1))
 
-  NOTE: Currently, rests are simply not counted when estimating the position of a parameter other then :length."
+  NOTE: Currently, rests are simply not counted when estimating the position of a parameter other then :length. Potential workaround: use argument `section'."
   (edit-omn type sequence 
             #'(lambda (params)
 		(when params ; skip in case a bar only contains a rest and some other param except :length is processed
