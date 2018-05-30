@@ -24,7 +24,8 @@
     :tempo 80
     :layout ((:bracket
 	      ,(violin-layout 'vln :flexible-clef t)
-	      ,(violoncello-layout 'vlc :flexible-clef t))))
+	      ,(violoncello-layout 'vlc :flexible-clef t)))
+    :time-signature ((4 4 1)))
   "Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like :title, :key-signature etc.")
 
 (defparameter *preview-score-return-value*
