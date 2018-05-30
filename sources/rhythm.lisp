@@ -590,6 +590,32 @@ Example:
 
 |#
 
+(defun _durational-accent-whole-note (lengths &key (whole-note-prob 0.1) (seed nil))
+  "Adds quasi durational accents on first notes of bars (and simplifies the resulting music) by merging all notes of some bars into a single note taken the whole duration of that bar."
+  #|
+  (assert (and (listp lengths) (every #'listp lengths)) 
+  (lengths)
+  "Given `lengths' ~A is not a sequence of bars (a list of lists).~%" lengths)
+  |#
+  (rnd-seed seed)
+  (mapcar 
+   #'(lambda (bar) 
+       (let* ((whether (= 1 (rnd1 :low 0 :high 1 :prob whole-note-prob :seed (seed))))
+	      )
+	 ;; (break)
+	 (if (and whether		  
+		  ;; NOTE: only merges if there is no rest among notes of bar.
+		  (every #'length-notep (remove 'tie bar)))
+	     (length-merge bar)
+	     ;; otherwise leave bar unchanged
+	     bar)))
+   lengths))
+
+
+#|
+(_durational-accent-whole-note (gen-repeat 4 '((q q q))) :whole-note-prob 0.2)
+(_durational-accent-whole-note (gen-repeat 4 '((q q q))) :whole-note-prob 1)
+|#
 
 ;;; TODO:
 ;;; - [Postponed] All args should support lists, and additionally support args like section: use edit-omn for getting that.
@@ -599,8 +625,13 @@ Example:
 ;; - ??? extra function to turn notes into rests -- 
 ;;   - leave untouched: first note of bar if preceded by shorter notes and last note of bar is suceeded by longer note
 (defun durational-accent (lengths 
-			  &rest args
-			  &key (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) (format :omn) &allow-other-keys)
+			  &key (divide 2) (divide-n 1) (divide-prob 0.5)
+			    (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil)
+			    (grace-n 0) (grace-length 1/8) (grace-prob 0.5)
+			    (merge-n 2) (merge-prob 0.5)
+			    (whole-note-prob 0.1)
+			    (set nil) (ignore nil)
+			    (seed nil) (format :omn))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar (see divide-related args) or merging notes at the beginning of a bar (see merge-related args). Subdivided notes can be partially tied together for rhythmic variety (see tie-related args), and durational accents can also be expressed with grace notes (see grace-related args). 
 
 While `durational-accent' only supports accents of the first beat of each bar, you can easily realise other accent patterns by temporarily rebarring the music (e.g., with `omn-to-time-signature' and perhaps `length->time-signature'), and then afterwards align the result of `durational-accent' again with the original time signatures (e.g., with `copy-time-signature').
@@ -615,7 +646,8 @@ While `durational-accent' only supports accents of the first beat of each bar, y
     NOTE: If tie-previous-beat? is T, then you may want the argument divide to be 3 or larger, and tie-n to be only 1 (or slightly larger for large values of divide), because otherwise you also turn the preceeding note into a durational accent.
   - tie-prob: probability value controlling whether subdivided notes are tied. 
   - merge-n (integer): number of notes at beginning of bars that are potentially subdivided.
-  - merge-prob (default 0.5): probability value controlling whether grace notes are inserted.
+  - merge-prob (default 0.5): probability value controlling whether notes at the beginning of a bar are merged.
+  - whole-note-prob: probability value controlling whether all notes of a bar are merged to form quasi a whole note spanning that whole bar.
   - grace-n (integer): number of grace notes potentially inserted before first notes of bars.
   - grace-length (length value, default 1/8): note value of inserted grace notes.
   - grace-prob (default 0.5): probability value controlling whether grace notes are inserted.
@@ -655,9 +687,15 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   (do-verbose ("")
     (rnd-seed seed)
     (let ((result (omn-merge-ties
-		   (_durational-accent-merge 
-		    (apply #'_durational-accent-divide (omn :length lengths) :n divide-n :seed (seed) :allow-other-keys T args)
-		    :n merge-n :prob merge-prob :seed (seed)))))
+		   (_durational-accent-whole-note
+		    (_durational-accent-merge 
+		     (_durational-accent-divide (omn :length lengths) :divide divide :n divide-n :divide-prob divide-prob
+						:tie-n tie-n :tie-prob tie-prob :tie-previous-beat? tie-previous-beat?
+						:grace-n grace-n :grace-length grace-length :grace-prob grace-prob
+						:set set :ignore ignore
+						:seed (seed))
+		     :n merge-n :prob merge-prob :seed (seed))
+		    :whole-note-prob whole-note-prob :seed (seed)))))
       (case format
 	(:omn result)
 	(:length (omn :length result))))
@@ -681,6 +719,8 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 |#
 
 #|
+(durational-accent (gen-repeat 4 '((q q q))) :whole-note-prob 1 :seed 132)
+
 (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
 
 (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3)
