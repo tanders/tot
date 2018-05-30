@@ -28,6 +28,10 @@
           (loop for pc in pcs
 	     collect (pc->pitch pc octave)))))
 
+(defun pitch->pc (pitch)
+  "Converts the OMN pitch `pitch' into a pitch class integer"
+  (mod (pitch-to-midi pitch) 12))
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
