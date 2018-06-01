@@ -168,6 +168,54 @@
 ; (chords->domain (list (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 15) 0))) :transpositions (gen-integer 0 11) :preview? T)
 
 
+;; TODO:
+;; - ?? consider alternative to 'app
+;; - !! split notation of chords and scales at c4 to notate on two different staffs.
+;;   Hm -- why not doing this in revise-score-harmonically as well -- only slightly widens score format by two staffs.
+;;   OLD: can be done in preview score, but best if scales are not already transformed into gracenotes before
+(defmethod _chords-to-gracenotes ((chord symbol) &optional (grace-length 'e))
+  "[Aux] Turns a chord into a a sequence of grace notes.
+
+  Args
+  grace-length (OMN length): the notated length assigned to the grace notes.
+
+  Example:
+  (_chords-to-gracenotes 'd2a2d3fs3bb3c4d4e4fs4gs4bb4c5)
+  (_chords-to-gracenotes 'c4)"
+  (let ((chord-ps  (melodize chord)))
+    (cons 'app (loop for pitch in chord-ps
+                 append (list grace-length pitch)))))
+
+(defun chords-to-gracenotes (sequence &optional (root? T))
+  "For notating underlying scales as sequence of grace notes.
+
+  Args: 
+  root (OMN pitch): can be overwritten in case scales are notated on separate staffs and the treble clef portion does not contain the actual root."
+ (copy-time-signature 
+  sequence
+   (loop for (len pitch vel art) in (single-events (flatten sequence))
+      append (append (list (_chords-to-gracenotes pitch)) 
+		     (list len)
+		     (if root?
+			 (list (first (melodize pitch)))
+			 ;; constant placeholder pitch in case root is not shown
+			 (list 'c4))
+		     (when root? (list vel)) 
+		     (cond ((and art root?) (list art))
+			   ;; root note place holders to ignore are marked with a "o" like harmonics 
+			   ((not root?) (list 'harm))
+			   (T nil))))
+  ))
+
+#|
+;; test
+(chords-to-gracenotes '((h. d2a2d3fs3bb3c4d4e4fs4gs4bb4c5)
+                        (h d2a2d3fs3bb3c4d4e4fs4gs4bb4c5)
+                        (h. d2a2d3fs3bb3c4d4e4fs4gs4bb4c5)
+                        (h. d2a2d3fs3bb3c4d4e4fs4gs4bb4c5))
+		      nil)
+|#
+
 ;;; TODO:
 ;;; - BUG: Ties in input score can be ignored. Tones tied together in input score can turn out with different pitches in result.
 ;;; - ? Arg: split-score? Add support to split score at harmonic changes (instead of shared rests).
@@ -223,7 +271,9 @@
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
  - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
 
-Example:
+For better readability and exportability to notation software, the underlying harmony is output in the score as up to four instruments (if scales is not nil): :chord-treble, :chord-bass, :scales-treble, :scales-bass, i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an "o"). 
+  
+Examples:
 
 Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
 
@@ -439,26 +489,29 @@ TODO: demonstrate how default rules are overwritten.
 	    (pprint csp))
 	  (if unprocessed-cluster-engine-result?
 	      (apply #'cr:cluster-engine csp)
-	      (let ((result
-		     (replace-part-omn :chords harmonies
-				       ;; reduce total duration of each part in score segment to duration of input score
-				       (map-parts-equally 
-					(copy-cluster-engine-pitches-to-score unified-score (apply #'cr:cluster-engine csp))
-					#'(lambda (dur part)
-					    ;; (break)
-					    (if length-adjust?
-						;; length-adjust does only work for flat list
-						;; (length-adjust dur part :flat T)
-						;; TMP: 
-						(flattened-length-adjust dur part)
-						part))
-					`(,score-dur _)	       
-					))))
-		(if scales
-		    (replace-part-omn :scales scales result)
-		    result)
-		)
-)))))
+	      (let ((result-score
+		     (remove-parts '(:chords :scales)
+				   ;; reduce total duration of each part in score segment to duration of input score
+				   (map-parts-equally 
+				    (copy-cluster-engine-pitches-to-score unified-score (apply #'cr:cluster-engine csp))
+				    #'(lambda (dur part)
+					;; (break)
+					(if length-adjust?
+					    ;; length-adjust does only work for flat 						;; (length-adjust dur part :flat T)
+					    ;; TMP: 
+					    (flattened-length-adjust dur part)
+					    part))
+				    `(,score-dur _)	       
+				    ))))
+		(mix-scores result-score
+			    `(;; ambitus-filter used to split into treble and bass staffs of notation for better readability 
+			      :chords-bass ,(ambitus-filter '(c-1 b3) harmonies)
+			      :chords-treble ,(ambitus-filter '(c4 g9) harmonies)
+			      ,@(when scales
+				  (list :scales-bass (chords-to-gracenotes (ambitus-filter '(c-1 b3) scales))
+					:scales-treble (chords-to-gracenotes (ambitus-filter '(c4 g9) scales) nil)))
+			      ))
+		))))))
 
 
 
