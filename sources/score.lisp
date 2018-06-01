@@ -111,6 +111,7 @@ Examples:
 			       ;; :time-signature (list time-signature)
 			       :layout
 			       ;; collect only layouts of instruments actually present in score
+			       ;;; TODO: remove also unused parts in brace etc groups
 			       (labels ((collect-present-layouts (layouts)
 					  (tu:mappend  ;; all return values listed -- nils removed by append
 					   #'(lambda (spec)
@@ -168,6 +169,7 @@ Examples:
 				    :omn `(quote ,part-omn)
 				    (getf actual-instruments part-symbol))))
 		       (tu:plist->pairs (merge-equal-instrument-parts score))))))
+    ;; (break)
     (eval full-score)
     (audition-musicxml-last-score)
     (case *preview-score-return-value*
