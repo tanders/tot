@@ -95,7 +95,7 @@
 
 
 
-
+;;; TODO: revise to allow for seqs-of-seqs only nested once
 (defun alternate-omns (ids seqs-of-seqs &key (append? nil))
   "This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level.
 
@@ -173,7 +173,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 "
   (let ((omn-no (length seqs-of-seqs)))
     (assert (every #'(lambda (x) (and (integerp x) (< x omn-no))) ids)
-            (ids) "alternate-omns: must be a list of integers between 0 and (1- (length seqs-of-seqs)): ~A" ids)    
+            (ids) "alternate-omns: ids must be a list of integers between 0 and (1- (length seqs-of-seqs)): ~A" ids)    
     ;; (assert (and (every #'listp seqs-of-seqs)
     ;;              (every #'(lambda (x) (every #'listp x)) seqs-of-seqs)
     ;;              (every #'(lambda (omn) 
@@ -186,8 +186,8 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
       (loop 
         for i from 0 to (1- omn-no)
         for my-omn in seqs-of-seqs
-        ;; span (circular repeat if necessary) omn sublists to number of occurences in specs
-        ;; and fill hash table with that as side effect
+	 ;; span (circular repeat if necessary) omn sublists to number of occurences in specs
+	 ;; and fill hash table with that as side effect
         do (setf (gethash i hash) (circle-repeat my-omn (count i ids))))    
       (_alternate-omns-aux ids hash append?))))
 
@@ -264,8 +264,168 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 |#
 
 
+(defun alternate-fenvs (ids ns fenv-lists &key (interpolation :steps))
+  "Alternate between fenvs and sample the fenvs; the result is a list of lists of numbers (fenv values). For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
+
+  Args: 
+  - ids (list of 0-based integers): indicating the position of fenvs.
+  - ns (list of integers): indicates number of samples per fenv. `ids' and `ns' should have the same length.
+  - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
+    Remember that fenvs can be specified as a number sequence as well. 
+  - interpolation (either :steps or :linear): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
+
+Examples:
+Using lists of integers, internally translated into fenvs. The result here is rather similar to the input, but with lists of different lengths. 
+;;; (alternate-fenvs '(0 1 0) '(3 3 4) 
+;;; 		 '((1 2 3 4)
+;;; 		   (10 8 6 4)))
+;;; => ((1 3 4) (10 6 4) (1 2 3 4))
+
+For ns greater than the length of the number lists representing the fenvs, the interpolation method makes a difference.
+;;; (alternate-fenvs '(0 1 0) '(6 8 6) 
+;;; 		 '((1 3 2)
+;;; 		   (10 4)))
+;;; => ((1 1 3 3 2 2) (10 10 10 10 4 4 4 4) (1 1 3 3 2 2))
+
+;;; (alternate-fenvs '(0 1 0) '(6 8 6) 
+;;; 		 '((1 3 2)
+;;; 		   (10 4))
+;;; 		 :interpolation :linear)
+;;; => ((1 9/5 13/5 14/5 12/5 2) (10 64/7 58/7 52/7 46/7 40/7 34/7 4) (1 9/5 13/5 14/5 12/5 2))
 
 
+When specifying fenvs directly, the full range of fenvs are available.
+;;; (alternate-fenvs '(0 1 0) '(3 3 4) 
+;;; 		 (list (fenv:sin-fenv (0 1) (1 0))
+;;; 		       (fenv:sin-fenv (0 0) (1 1))))
+
+For examples with nested lists of fenvs in `fenv-lists' compare the use of (double) nested OMN sequences in `alternate-omns' above. 
+"
+  (let ((omn-no (length fenv-lists))
+	(full-fenv-lists (if (every #'fenv:fenv? fenv-lists)
+			     ;; flat list of fenvs
+			     (mclist fenv-lists)
+			     ;; assume elements in fenv-lists are lists -- test only first list for efficiency
+			     (let ((first-list (first fenv-lists)))
+			       (cond
+				 ;; nested list of fenvs
+				 ((every #'fenv:fenv? first-list) fenv-lists)
+				 ;; flat list of number seqs
+				 ((every #'numberp first-list) 								  
+				  (mapcar #'(lambda (fenv) (list (fenv:list->fenv fenv :type interpolation))) fenv-lists))
+				 ;; nested list of number seqs
+				 (T (mapcar #'(lambda (fenvs)
+						(mapcar #'(lambda (fenv) (fenv:list->fenv fenv :type interpolation)) fenvs))
+					    fenv-lists)))))))
+    (assert (every #'(lambda (x) (and (integerp x) (< x omn-no))) ids)
+            (ids) "alternate-fenvs: ids must be a list of integers between 0 and (1- (length seqs-of-seqs)): ~A" ids)    
+    (let ((hash (make-hash-table)))
+      (loop 
+        for i from 0 to (1- omn-no)
+        for my-fenv in full-fenv-lists
+        do (setf (gethash i hash) (circle-repeat my-fenv (count i ids))))
+      (loop 
+	 for id in ids
+	 for n in ns
+	 collect (fenv:fenv->list (pop (gethash id hash)) n)))))
+
+
+
+
+
+
+;; TODO: not tail recursive
+(defun _map-sublist-subseqs (no-of-sublists sequence fn)
+  "aux
+  fn is a function expecting a list of sublists of sequence"
+  (when (and no-of-sublists sequence)
+    (let ((n (first no-of-sublists)))
+      (cons (funcall fn (first-n n sequence))
+	    (_map-sublist-subseqs (rest no-of-sublists) (subseq sequence n) fn)))))
+#|  ; test
+(_map-sublist-subseqs '(2 1 2 1) (gen-repeat 3 '((h) (q q)))
+		     #'(lambda (sublists) (count-notes sublists)))
+|#
+
+;;; TODO: add more examples to doc?
+(defun alternate-subseq-fenvs (ids no-of-sublists fenv-lists parameter sequence
+			       &key (min-vel 'pp) (max-vel 'ff)
+				 (articulation-map nil)
+				 (interpolation :steps))
+  "This function adds (or replaces) a given `parameter' to (of) an OMN `sequence', where this new parameter sequence follows a concatenation of fenvs. Like `alternate-omns' and possibly in combination with that function, the present function is useful for switching between different musical characteristics, while having some kind of development within each characteristic. It is a powerful function for organising musical form on a higher level. 
+
+  For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
+
+  Args: 
+  - ids (list of 0-based integers): indicating order of positions of fenvs to choose from `fenv-lists'.
+  - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. If a list, `no-of-sublists' should have the same length as `ids'. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
+  - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
+  - parameter (keyword): the parameter the fenvs overwrite in `sequence', can be :length, :pitch, :velocity or :articulation. As fenv values are always numeric, they have to be translated into the corresponding parameter. Fenvs values for length values must be ratios; fenv values for pitches are MIDI note numbers; fenv values for velocities depend on `min-vel' and `max-vel'; and articulations are the rounded position of elements in the `articulation-map'.
+  - sequence: OMN sequence to transform, must be nested.
+  - min-vel/max-vel (OMN velocity symbol like 'p or 'ff): in case `parameter' is :velocity, these args set the minimum and maximum velocity in the result.
+  - articulation-map (list of OMN articulation symbols): in case `parameter' is :articulation, this arg specifies the articulations that rounded fenv values mean. For example, if `articulation-map' is '(stacc ten) then the fenv value 0 results in a staccato and 1 in a tenuto.
+  - interpolation (either :steps or :linear): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
+
+Examples:
+
+Lists of integers can be used instead of fenvs for convenience. 
+;;; (alternate-subseq-fenvs '(0 1 1 0)
+;;; 			'(2 1 2 1)
+;;; 			;; two envelopes, defined as linearly interpolated number lists
+;;; 			'((72 48) (60 84))
+;;; 			:pitch
+;;; 			(gen-repeat 3 '((h h) (q q q q)))
+;;; 			:interpolation :linear)
+
+
+When specifying fenvs directly, the full range of fenvs and their transformations are available.
+;;; (alternate-subseq-fenvs '(0 1 1 0)
+;;; 			'(2 1 2 1)
+;;; 			(list (fenv:sin-fenv (0 72) (1 48))
+;;; 			      (fenv:sin-fenv (0 60) (1 84)))
+;;; 			:pitch
+;;; 			(gen-repeat 3 '((h h) (q q q q))))
+"
+  (let* ((full-no-of-sublists (if (listp no-of-sublists)
+				  no-of-sublists
+				  (gen-repeat (length ids) no-of-sublists)))
+	 (art-map-length (length articulation-map))
+	 (fenv-ns (_map-sublist-subseqs full-no-of-sublists sequence
+				       #'(lambda (sublists) (count-notes sublists))))
+	 (fenv-vals (flatten (alternate-fenvs ids fenv-ns fenv-lists :interpolation interpolation)))
+	 ;; fenv vals translated into OMN params
+	 (fenv-params (case parameter
+			(:length
+			 (assert (every #'ratiop fenv-vals)
+				 (fenv-vals)
+				 "alternate-subseq-fenvs: in order to translate fenv values into OMN length values, you can only use integers and fractions to define the fenvs, not floats, and you cannot use fenvs resulting in floats (e.g., sin-fenv is not possible):  ~A " fenv-vals)
+			 fenv-vals)
+		        (:pitch (midi-to-pitch (mapcar #'round fenv-vals)))
+			(:velocity (velocity-to-dynamic (vector-to-velocity min-vel max-vel fenv-vals)))
+			(:articulation (mapcar #'(lambda (val)
+						   (let ((rnd-val (round val)))
+						     (assert (< -1 rnd-val art-map-length)
+							     (rnd-val)
+							     "alternate-fenvs-for-subseqs: when generating articulations, all fenv values must be within the range of the length of the articulation-map. Current fenv value: ~A, articulation-map: ~A" rnd-val articulation-map)
+						     (nth rnd-val articulation-map)))
+					       fenv-vals))))
+	 )
+    (omn-replace parameter (span (omn :length sequence) fenv-params) sequence)
+    ))
+
+#|
+;;; TODO: consider allowing for OMN expressions to be translated into fenvs for multiple parameters: Have another function calling this one that expects OMN seqs as fenvs, and a list of parameters to extract from those.
+;; params min-vel, max-vel and articulation-map extracted from omn-fenvs
+(defun alternate-omn-fenvs (ids no-of-sublists omn-fenv-lists parameters sequence
+			    &key (interpolation :steps))
+
+    )
+
+
+|#
+
+
+#| ; unfinished
 ;;; TODO:
 ;; - allow for keywords in arg-seqs (automatically "multiply" them
 ;; - add example where 
@@ -276,7 +436,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 
   
   )
-
+|#
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
