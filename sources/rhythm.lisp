@@ -184,6 +184,170 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;; TODO: Consider controlling how many consecutive whole notes at most are tied? Hm, I can do this with arg tie-prob and a fixed seed...
+;;; Todo: ?? consider supporting full OMN seqs, but then overwriting pitch of note tied over to pitch of preceeding note
+(defun tie-whole-notes (lengths tie-prob &key (seed nil))
+  "Every bar with only a single note in it is potentially tied over to the next bar, and that way can increase the degree of rhythmic contrast in a rhythmic sequence. 
+
+  NOTE: this function is intended for processing note length values only, as ties are otherwise also affected by pitches. If given a full OMN sequence, then nevertheless only the transformed rhythm is returned.
+
+  Args:
+  - sequence (nested OMN length sequence): input rhythm to process.
+  - tie-prob (number or list of numbers): Probability whether 'whole' notes are tied or note. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
+  - seed (integer): random seed for probability.
+
+  Examples:
+
+  Enforce tie at end of every bar with only a single note by setting the probability to 1 (except the last -- there is never a tied added at the end of the last bar). 
+  (tie-whole-notes '((h) (q q) (h) (h)) 1)
+
+  Whether or not a tie is added is randomised and should be rather evenly distributed (probability is 0.7).
+  (tie-whole-notes '((h) (q q) (h) (h)) 0.7)
+
+  The tie probability is controlled for individual 'whole' notes in the sequence. Note that the probabilities are only given for the actual 'whole' notes, not intermediate bars.
+  (tie-whole-notes '((h) (q q) (h) (h)) '(0 1))
+"
+  (rnd-seed seed)
+  (let* ((ensured-lengths (omn :length lengths))
+	 (list-lengths (mapcar #'length ensured-lengths))
+	 (tie-probs (circle-repeat tie-prob (count-if #'(lambda (l) (= 1 l)) list-lengths))))
+    (append 
+     (loop
+	for bar in (butlast ensured-lengths)
+	for l in list-lengths
+	if (and (= 1 l)
+		;; only pop element from tie-probs in case of whole note
+		(= 1 (rnd1 :low 0 :high 1 :prob (pop tie-probs) :seed (seed))))
+	collect (append bar '(tie))
+	else collect bar)
+     (last ensured-lengths))))
+
+;;; TODO: revise/generalise:
+;; - allow for rests at beginning and end and perhaps in the middle
+;; - set number of consecutive tones to be turned into rests
+;; - support args like :section
+(defun start-with-rest (lengths)
+  "Turns the first note in lengths into a rest"
+  (note-rest-series '(1 100) lengths))
+
+; (start-with-rest (gen-karnatic-cell 4 4 '(1 2 3) :min-number 2))
+ 
+;; TODO: rhythmic contrast: consider doubling the duration of some bars and then splitting them in two
+
+
+;;; TODO: Can this function be refined?
+;;; TODO: Rename -- more clear and ideally shorter name.
+;;; TODO: support OMN sequence, and support args like section etc.
+;;; TMP function name -- idea draft
+;; For now only for flat list of length values, later generalise with `edit-omn'
+(defun rhythmic-contrast_divide (lengths &key (divide 2) (section nil))
+  (let ((shortest (apply #'min (omn-encode lengths))))
+    ;; assuming that there are less than 100 notes to subdivide...
+    (length-divide 100 divide lengths :set shortest)))
+
+; (rhythmic-contrast_divide (gen-karnatic-cell 4 4 2 :min-number 2))
+
+#|
+;;; TODO: unfinished
+;;; TODO:
+;; - Fix bug: if :merge-prob is 1, merging should always happen
+;; - Consider whether/how to merge across multiple bars (e.g., increasing whole-note-prob, and then allow for whole note simply to be "followed" by a tie.
+(durational-accent (gen-karnatic-cell 4 4 '(2 2 2) :min-number 2)
+ :merge-prob 1 :merge-n 2
+ :divide-prob 0 :tie-prob 0 :grace-prob 0 :whole-note-prob 0)
+|#
+
+
+
+#|
+;;; Hm: I want to subdivide all notes of a given duration
+
+;; (length-divide 10 2 (gen-karnatic-cell 4 4 '(2 2 2) :min-number 2) :set 1/16)
+
+;; increasing contrast: subdividing shorter notes
+(durational-accent (gen-karnatic-cell 4 4 '(2 2 2) :min-number 2)
+		   :tie-prob 0 :grace-prob 0 :merge-prob 0 :whole-note-prob 0)
+|#
+
+
+
+;;
+;; map-tuplet
+;;
+
+(defun _partition-args (keywords arglist)
+  "[Aux for map-tuplet] Partition the argument list around the first argument that is in KEYWORDS."
+  (let ((first-key (position-if #'(lambda (elt) (member elt keywords))
+                                arglist)))
+    (print first-key)
+    (if first-key
+      (values (subseq arglist 0 first-key)
+              (subseq arglist first-key))
+      ;; no keyword given
+      (values arglist
+              nil))))
+
+(defun _map-tuplet-internal (fn lengths more-args &key (type :extend))
+  "[Aux for map-tuplet] Defines actual function."
+  (let ((time-sigs (get-time-signature lengths))
+        (tuplets (split-lengths lengths :type type)))
+    (omn :length 
+         (omn-to-time-signature (apply #'mapcar fn tuplets
+                                       (mapcar #'(lambda (args)
+                                                   (circle-repeat args (length tuplets))) 
+                                               more-args)) 
+                                time-sigs))))
+
+(defun map-tuplet (fn lengths &rest arglist)
+  "A function for varying tuplet groups one by one: map-tuplet applies fn to each tuplet length group in lengths.
+
+  Args:
+  fn: a function expecting a length list, and potentially more arguments if further args are given
+  lengths: a (possibly nested) lengths list.
+  args -- arguments that are part of arg-list before keyword args: more argument lists to map in parallel. 
+  type -- a keyword arg that is part of arglist. :extend, :denominator or :tuplet. The default is :extend (inherited from split-lengths).
+
+
+Examples:
+
+;;; (setf rhy '((-1/6 1/6 1/6 -1/8 1/8 1/8 1/8) (-1/10 1/10 1/10 1/10 1/10 -1/12 1/12 1/12 1/12 1/12 1/12) (-1/10 1/10 1/10 1/10 1/10 -1/8 1/8 1/8 1/8) (-1/6 1/6 1/6 -1/4 1/4)))
+
+In this first example, all tuplet groups in rhy are rotated by one. 
+
+;;; (map-tuplet #'(lambda (ls) (gen-rotate 1 ls)) rhy)
+
+
+Additional arguments can be given to fn by specifying further argument lists to map-tuplet. If an argument list is shorter than the number of tuplet groups in lengths then it is circled through. In this example, tuplet groups are rotated by 1 or 2 alternating.   
+
+;;; (map-tuplet #'(lambda (ls n) (gen-rotate n ls))
+;;;             rhy
+;;;             '(1 2))
+
+"
+  ;; function uses aux _map-tuplet-internal in order to process both &rest and &key args
+  (multiple-value-bind (args options)
+      (_partition-args '(:type) arglist)
+    (append args options)
+    (apply #'_map-tuplet-internal fn lengths args options)))
+
+
+#|
+(setf rhy '((-1/6 1/6 1/6 -1/8 1/8 1/8 1/8) (-1/10 1/10 1/10 1/10 1/10 -1/12 1/12 1/12 1/12 1/12 1/12) (-1/10 1/10 1/10 1/10 1/10 -1/8 1/8 1/8 1/8) (-1/6 1/6 1/6 -1/4 1/4)))
+
+;; all tuplets rotated by 1
+(map-tuplet #'(lambda (ls) (gen-rotate 1 ls)) 
+            rhy)
+
+;; tuplets rotated by 1 or 2 alternating
+(map-tuplet #'(lambda (ls n) (gen-rotate n ls))
+            rhy
+            '(1 2))
+|#
+
+
+
+
+;;;
 
 (defun length-divide-ext (count divide length &rest args &key seed)
   "Same as length-divide, but arg divide is list of ints (elements circled through).
@@ -289,8 +453,8 @@ Example:
 |#
 
 
-(defun cut-holes-aux (lengths binary-list)
-  "Expects a list of lengths and a matching binary list. Every length at a position of a 1 in the binary list is left untouched, while every length at a 0 is turned into a rest. 
+(defun _cut-holes (lengths binary-list)
+  "[Aux] Expects a list of lengths and a matching binary list. Every length at a position of a 1 in the binary list is left untouched, while every length at a 0 is turned into a rest. 
 
   If binary-list is shorter than lengths it is repeated in a circular fashion.
 
@@ -302,7 +466,7 @@ Example:
           lengths
           (circle-repeat (flatten binary-list) (length lengths))))
 
-;; (cut-holes-aux '(1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16) '(1 1 1 0 1 1 1))
+;; (_cut-holes '(1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16 1/16) '(1 1 1 0 1 1 1))
 
 (defun cut-holes (sequence binary-list &key (swallow nil))
   "Turns notes in `sequence' into rests if `binary-list' contains a 0 at the matching position. Notes are left untouched if there is a 1 at the matching position.
@@ -315,7 +479,7 @@ Example:
 
   See also: note-rest-series"
   (edit-omn :length sequence
-	    #'(lambda (ls) (cut-holes-aux ls binary-list))
+	    #'(lambda (ls) (_cut-holes ls binary-list))
 	    :flat T
 	    :swallow swallow
 	      ;; - section (list of ints): positions of sublists to process. This argument is ignored if flat is T.
@@ -335,7 +499,7 @@ Example:
 
 #| ;; old
 ;; Better use length-rest-series or note-rest-series instead
-(defun cut-holes-aux (lengths binary-list)
+(defun _cut-holes (lengths binary-list)
   "Expects a neste listed of lengths and a matching nested binary list. Every length at a position of a 1 is left untouched, while every length at a 0 is turned into a rest.
   NOTE: For now, a flattened list is return, and OMN expressions are not supported.
 
@@ -579,6 +743,7 @@ Example:
      lengths)))
 
 
+
 #|
 (_durational-accent-divide 
  (_durational-accent-merge (gen-repeat 4 '((q q q))) :n 2)
@@ -624,6 +789,7 @@ Example:
 ;;
 ;; - ??? extra function to turn notes into rests -- 
 ;;   - leave untouched: first note of bar if preceded by shorter notes and last note of bar is suceeded by longer note
+;;; BUG: ? With merge-prob set to 1, merging is still not guarenteed
 (defun durational-accent (lengths 
 			  &key (divide 2) (divide-n 1) (divide-prob 0.5)
 			    (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil)
@@ -1050,6 +1216,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 The sequence is supposed to be arranged such that each sublist is one jathi."
   )
 |#
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
