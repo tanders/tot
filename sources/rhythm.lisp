@@ -1034,6 +1034,34 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 |#
 
 
+(defun metric-shift (l lengths)
+  "Appends `l' (a length or omn) before `lengths' (a list of lengths or omn), but maintains the metric structure, i.e., the function shifts `lengths' metrically 'to the right' by `l'.
+  Returns an OMN form if lengths is an OMN form, otherwise a length form.
+  
+  Examples:
+;;; (metric-shift '-h '((q q q q) (q q q q)))
+
+;;; (metric-shift '(h g4 e) '((q c4 q d4 q e4 q f4) (q c4 q d4 q e4 q f4)))
+
+BUG: If `lengths' is only a list of length values and not a full OMN sequence, then other parameters in `l' are ignored.
+  
+;;; (metric-shift '(h d4) '((q q q q) (q q q q)))
+
+
+  Related: assemble-seq (but that does not shift across bars)"
+  (let* ((time-sigs (get-time-signature lengths))
+         (result (omn-to-time-signature (cons l (flatten lengths)) time-sigs)))
+    (if (omn-formp lengths)
+        result
+      (omn :length result))))
+
+; (metric-shift '-h '((q q q q) (q q q q)))
+; (metric-shift '(h g4) '((q c4 q d4 q e4 q f4) (q c4 q d4 q e4 q f4)))
+;;; BUG: does ignore pitch of l
+; (metric-shift '(h d4) '(q q q q q q q q))
+
+
+
 ;;; TODO: add support for arbitrary OMN sequences, not just lengths
 ;;; TODO: when shifting bar lines to the left (positions negative), allow for adding corresponding rest at the beginning with extra arg, so that the time signature of the first bar does not change.
 (defun shift-meter-boundaries (lengths positions)
