@@ -10,6 +10,109 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
+(defun map-omn (fn omn-expr)
+  "Variant of mapcar for omn expressions, intended for creating variations of omn-expr. Applies function fn to every note in omn-expr (a flat OMN list). fn must exect four arguments (a length, pitch, velocity and articution) and returns a list of four values (a length, pitch, velocity and articution).
+
+  NOTE: This was one of my first Opusmodus function definitions, and while it works it is not as refined as some later functions :)
+
+  Args:
+  fn: a function expecting four arguments (a length, pitch, velocity and articulation) and returning a list of four values (a length, pitch, velocity and articulation).
+  omn-expr: an OMN expression
+
+
+  Example:
+
+;;; (map-omn #'(lambda (length pitch velocity articulation)
+;;;              (list length 
+;;;                    pitch 
+;;;                    ;; replace tasto dynamics by fff
+;;;                    (if (equal articulation 'tasto)
+;;;                      'fff
+;;;                      velocity)
+;;;                    articulation))
+;;;          '(e. c4 pppp tasto d4 ponte e4))
+;;; => (e. c4 fff tasto d4 pppp ponte e4)
+
+;;; (map-omn #'(lambda (length pitch velocity articulation)
+;;;              (list length 
+;;;                          (if (member 'slap (disassemble-articulations articulation))
+;;;                            'c4
+;;;                            pitch)
+;;;                          velocity
+;;;                          articulation))
+;;;          '((q b4 f slap+stacc -h q bb4 slap+stacc -h) (q gs4 slap+stacc -h) (q bb4 slap+stacc c5 mp ord d5 q. f5 e eb5 q d5) (-q c5 g4 h fs4 q eb5 stacc) (q c5 f slap+stacc -h q. g4 mp ord e f5 q e5) (q f5 cs5 f4 h d5 -q)))
+
+
+  BUG: does not work if omn-expr contains rest.
+  Problem: omn does not provide any values for rests.
+  Possible solution: couple note durations with their respective params, but leave rests without. Then skip rests in the processing unchanged. 
+  BTW: This process looses articulations on rests, like fermata."
+  ;;; TMP
+  ; (format T "map-omn ~A~%" omn-expr)
+  (if (listp (first omn-expr))
+    (mapcar #'(lambda (omn) (map-omn fn omn)) omn-expr)
+    (destructuring-bind (lengths pitches velocities articulations)
+                        (ta-utils:mat-trans 
+                         (funcall #'mapcar fn
+                                  (omn :length omn-expr)
+                                  (omn :pitch omn-expr)
+                                  (omn :velocity omn-expr)
+                                  (omn :articulation omn-expr)))
+      (make-omn :length lengths
+                :pitch pitches 
+                :velocity velocities
+                :articulation articulations))))
+
+#|
+
+(map-omn #'(lambda (length pitch velocity articulation)
+             (list length 
+                   pitch 
+                   ;; replace tasto dynamics by fff
+                   (if (equal articulation 'tasto)
+                     'fff
+                     velocity)
+                   articulation))
+         '(e. c4 pppp tasto d4 ponte e4))
+         
+; => (e. c4 fff tasto d4 pppp ponte e4)
+
+(map-omn #'(lambda (length pitch velocity articulation)
+             (list length 
+                         (if (member 'slap (disassemble-articulations articulation))
+                           'c4
+                           pitch)
+                         velocity
+                         articulation))
+         '((q b4 f slap+stacc -h q bb4 slap+stacc -h) (q gs4 slap+stacc -h) (q bb4 slap+stacc c5 mp ord d5 q. f5 e eb5 q d5) (-q c5 g4 h fs4 q eb5 stacc) (q c5 f slap+stacc -h q. g4 mp ord e f5 q e5) (q f5 cs5 f4 h d5 -q)))
+
+(map-omn #'(lambda (length pitch velocity articulation)
+             (list length 
+                         (if (member 'slap (disassemble-articulations articulation))
+                           'c4
+                           pitch)
+                         velocity
+                         articulation))
+         '(q b4 f slap+stacc -h q bb4 slap+stacc -h))
+
+(setf omn-expr '(q b4 f slap+stacc -h q bb4 slap+stacc -h))
+(setf fn #'(lambda (length pitch velocity articulation)
+             (list length 
+                         (if (member 'slap (disassemble-articulations articulation))
+                           'c4
+                           pitch)
+                         velocity
+                         articulation)))
+
+(omn nil omn-expr)
+
+(disassemble-omn omn-expr)
+
+|#
+
+
+
 (defun copy-time-signature (music-with-time-signature music-to-rebar)
   "Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'."
   ;; only rebar if music-with-time-signature is nested 
