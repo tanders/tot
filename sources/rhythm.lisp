@@ -758,31 +758,225 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun gen-matras (gati yati yati-number &key prefix suffix)
-  "Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `yati' the number of matras per 'bar' (sublist) and `yati-number' the resulting number of sublists.
+;; List of all possible combinations of note subdivisions in a group of n notes.
+;; These are sorted into potentially accented (starting with a durational accent and/or leading to an accent if the next following note is longer, even though that is not really a karnatic concept) and non-accented
+(let* ((accented-3 ; tisra 
+	(apply #'vector '((3) (2 1) (1 1 1))))
+       (unaccented-3 ; tisra 
+	(apply #'vector '((1 2))))
+       (both-3 (vector accented-3 unaccented-3))
+       (accented-4 ; chatusra 
+	(apply #'vector '((4) (3 1) (2 2) (2 1 1) (1 1 1 1))))
+       (unaccented-4 ; chatusra 
+	(apply #'vector '((1 3) (1 2 1) (1 1 2))))
+       (both-4 (vector accented-4 unaccented-4))
+       (accented-5; khanda 
+	(apply #'vector '((5) (4 1) (3 2) (3 1 1) (2 2 1) (2 1 1 1) (1 1 1 1 1))))
+       (unaccented-5 ; kanda 
+	(apply #'vector
+	       '((2 3) (1 4)
+		 (2 1 2) (1 3 1) (1 2 2) (1 1 3)
+		 (1 2 1 1) (1 1 2 1) (1 1 1 2))))
+       (both-5 (vector accented-5 unaccented-5))
+       (accented-6 ; tisra 
+	(apply #'vector
+	       '((6) (5 1) (4 2) (3 3) (4 1 1) (3 2 1) (2 2 2) (3 1 1 1) (2 2 1 1) (2 1 1 1 1) (1 1 1 1 1 1))))
+       (unaccented-6 ; tisra
+	(apply #'vector
+	       '((2 4) (1 5)
+		 (3 1 2) ; this one is borderline
+		 (2 3 1) (2 1 3) (1 4 1) (1 3 2) (1 2 3) (1 1 4) 
+		 (2 1 2 1) (2 1 1 2)
+		 (1 3 1 1)
+		 (1 2 2 1) (1 2 1 2) 
+		 (1 1 3 1) (1 1 2 2) (1 1 1 3)
+		 (1 2 1 1 1) (1 1 2 1 1) (1 1 1 2 1) (1 1 1 1 2)
+		 )))
+       (both-6 (vector accented-6 unaccented-6))
+       #|
+;;; TODO: see (Reina, 2016, p. 24)
+       (defconstant accented-7 ; misra
+       )
+       
+       (defconstant unaccented-7 ; misra
+       )
+       (both-7 (vector accented-7 unaccented-7))
+
+       |#
+       )
+  ;; TODO:
+  ;; - ? Args prefix and suffix
+  ;; - ?? More generic filter function called filter expecting a Boolean function -- add it when you really need it.
+  ;; - I can in principle also have very many possible transformations, e.g., turning some notes into rests (e.g., the first n of a cell), or adding some tie (e.g., tie to the very beginning of the cell), though these might be less effecting
+;;;   => Do that with separate functions
+    (defun gen-karnatic-cell (gati jathi position
+			      &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
+				(include-length nil) (exclude-length nil) (seed nil))
+      "Returns a karnatic rhythmic cell (list of rhythmic values) or a list of such cells (if `position' is a list). The shape of the resulting cell(s) can be controlled in many ways, allowing to generate, e.g., rhythms that are similar even if they are in different gatis or jathis.
+
+  See Reina (2016) for details on terms like gati, jathi and matra.
+
+  Args:
+  - gati (integer or list of them): gati for the cell(s) to generate.
+  - yati (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
+  - position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
+    If `position' is '? then the position is randomised.
+  - accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
+    Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
+  - max-number/min-number (integer or list of them): max/min number of notes in the cell(s).
+  - first-length (ratio or OMN length, or list of either): length of the first note in cell(s).
+  - include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
+  - seed (integer): the seed to use for the randomised position, is position is '?.
+
+  Examples:
+
+  The first position is always a single note per cell (if no other filtering is selected)
+  (gen-karnatic-cell 4 4 0)
+
+  Generating multiple cells, and showing the order of cells in this gati and jathi without filtering (only cells carrying poteentially a durational accent on the first note of the cell).
+  (gen-karnatic-cell 4 4 '(0 1 2 3 4))
+
+  Setting a different jathi.
+  (gen-karnatic-cell 4 5 '(0 1 2 3 4))
+
+  If position exceeds the range of possible cell, the last cell is chosen (which is always an even subdivision of the full cell length into `yati' matras.
+  (gen-karnatic-cell 4 4 100)
+
+  If position receives a list, also all other arguments can be lists (of the same length), e.g., different jathis. Note that equal positions in different jathis tend to result in similar cells.
+  (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
+
+  Filtering arguments can further shape the result. The meaning of the position argument changes accordingly, always depending on the remaining number of rhythmic options for cells. E.g., the minimum number of notes per cell can be set...
+  (gen-karnatic-cell 4 4 0 :min-number 2)
+ 
+  ... or the maximum number of notes. Note that the position is randomised here.
+  (gen-karnatic-cell 4 4 '? :max-number 3)
+
+  ... or the first note value in the cell can be set.
+  (gen-karnatic-cell 4 4 0 :first-length)
+
+  All these filter arguments also support lists for setting different values for each sublist.
+  (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
+
+  Again, an example with randomised positions, but here the seed is fixed.
+  (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
+
+  Filtering can remove all options for cells, in which case nil returned.
+  (gen-karnatic-cell 4 4 0 :min-number 5)
+
+
+  You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
+
+* Reference
+  Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+"
+      (rnd-seed seed)
+      (if (listp position)
+	  ;; generate sequence of cells (list of lists)
+	  (let ((n (length position)))
+	    (mapcar #'(lambda (gati jathi position accented? max-number min-number first-length include-length exclude-length)
+			(gen-karnatic-cell gati jathi position
+					   :accented? accented? :max-number max-number :min-number min-number
+					   :first-length first-length :include-length include-length :exclude-length exclude-length
+					   :seed (seed)))
+		    (circle-repeat gati n)
+		    (circle-repeat jathi n)
+		    position
+		    (circle-repeat accented? n)
+		    (circle-repeat max-number n)
+		    (circle-repeat min-number n)
+		    (circle-repeat first-length n)
+		    (circle-repeat include-length n)
+		    (circle-repeat exclude-length n)))
+	  ;; generate a single cell (list)
+	  (let* ((all-accented-and-unaccented (case jathi
+						(3 both-3)
+						(4 both-4)
+						(5 both-5)
+						(6 both-6)
+						;; (7 both-7)      
+						))
+		 (all-accented/unaccented-selected
+		  (cond ((or (eql accented? T)
+			     (eql accented? 1))
+			 (aref all-accented-and-unaccented 0))
+			((or (eql accented? nil)
+			     (eql accented? 0))
+			 (aref all-accented-and-unaccented 1))))
+		 (all-in-gati
+		  (map 'vector #'(lambda (seq)
+				   (mapcar #'(lambda (x) (/ x gati 4)) seq))
+		       all-accented/unaccented-selected))
+		 (all-filtered
+		  (tu:filter
+		   (let ((first-l (when first-length
+				    (omn-encode first-length)))
+			 (include-l (when include-length
+				      (omn-encode (tu:ensure-list include-length))))
+			 (exclude-l (when exclude-length
+				      (omn-encode (tu:ensure-list exclude-length)))))
+		     #'(lambda (seq)
+			 (and (if min-number
+				  (<= min-number (length seq))
+				  T)
+			      (if max-number
+				  (>= max-number (length seq))
+				  T)
+			      (if first-length
+				  (= (first seq) first-l)
+				  T)
+			      (if include-length
+				  (every #'(lambda (x) (member x seq)) include-l)
+				  T)
+			      (if exclude-length
+				  (notany #'(lambda (x) (member x seq)) exclude-l)
+				  T)
+			      )))
+		   all-in-gati))
+		 (last-possible-position (1- (length all-filtered)))
+		 )
+	    (if (= last-possible-position -1)
+		;; filtering removed all options
+		nil
+		;;
+		(let ((pos (if (eql position '?)
+			       (rnd1 :low 0 :high last-possible-position :seed (seed))
+			       (if (<= position last-possible-position)
+				   position
+				   last-possible-position))))
+		  (aref all-filtered pos)))
+	    ))))
+
+
+
+
+(defun gen-matras (gati jathi jathi-number &key prefix suffix)
+  "Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `jathi' the number of matras per 'bar' (sublist) and `jathi-number' the resulting number of sublists.
 
   Args:
   - gati (int)
-  - yati (int)
+  - jathi (int)
   - yat-number (int)
   - prefix (length value or length sequence, possibly nested): preceeding phrase
   - suffix (length value or length sequence, possibly nested): succeeding phrase
 
   Examples:
-  gati 5 (quintuplets), yati 4
+  gati 5 (quintuplets), jathi 4
   (gen-matras 5 4 3)
-  gati 5 (quintuplets), yati 4, but preceeded by a quarter note rest.
+  gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest.
   (gen-matras 5 4 3 :prefix '-q)
 
-  See Reina (2016) for details on the terms matras, gati and yati.
+  See Reina (2016) for details on the terms matras, gati and jathi.
   
   Reference
   Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge."
   (append 
    (when prefix (ensure-double-list prefix))
-   (gen-repeat yati-number (list (gen-repeat yati (/ 1/4 gati))))
+   (gen-repeat jathi-number (list (gen-repeat jathi (/ 1/4 gati))))
    (when suffix (ensure-double-list suffix))   
    ))
+
+
+
 
 
 (defun accented-yati-phrase (gati pala-lengths gap &rest args &key (type '(:srotovahayati :at-end)) &allow-other-keys)
