@@ -415,9 +415,9 @@ When specifying fenvs directly, the full range of fenvs and their transformation
     (omn-replace parameter (span (omn :length sequence) fenv-params) sequence)
     ))
 
-;;; TODO: document function
 ;;; TODO: consider whether to additionally have the option that y-values of the resulting fenv reflect the rhythm of the sequence.
 (defun omn->fenv (parameter sequence &key (type :steps))
+  ;;; TODO: document function
   "Translates one of the parameters of the OMN `sequence' into a fenv with 
 
   Args:
@@ -475,6 +475,7 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 ;;; TODO: parameters: ensure list, but only once in recursive function 
 (defun alternate-omn-fenvs (ids no-of-sublists omn-fenv-lists parameters sequence
 			    &key (interpolation :steps))
+  ;;; TODO: add doc
   (if parameters
       (alternate-omn-fenvs
        ids no-of-sublists omn-fenv-lists (rest parameters)
