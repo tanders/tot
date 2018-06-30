@@ -222,30 +222,30 @@
 	else collect bar)
      (last ensured-lengths))))
 
-;;; TODO: revise/generalise:
-;; - allow for rests at beginning and end and perhaps in the middle
-;; - set number of consecutive tones to be turned into rests
-;; - support args like :section
-(defun start-with-rest (lengths)
-  "Turns the first note in lengths into a rest"
-  (note-rest-series '(1 100) lengths))
 
-; (start-with-rest (gen-karnatic-cell 4 4 '(1 2 3) :min-number 2))
- 
-;; TODO: rhythmic contrast: consider doubling the duration of some bars and then splitting them in two
+(defun divide-shortest (sequence &key (divide 2) (count nil) (section nil))
+  "Increase rhythmic contrast by dividing the shortest notes in the given `sequence'.
+
+  Example:
+  (divide-shortest '(1/8 1/16 1/16))
+
+  Note that if sequence is a full OMN expression, then the added notes cause all other parameters to shift forward. Additional parameters are added at the end by circling.
+  (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)))
+  => ((E C4 T D4 E4 F4 E4) (E D4 T G4 C4 D4 E4) (Q F4))
+
+  (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)) :section '(1))
+   
+  This function is a simplified variant of `length-divide'. For more control use that function instead."  
+  (let ((shortest (apply #'min (flatten (omn :length sequence))))
+	(l (count-notes sequence)))
+    (length-divide (if count count l) divide sequence :set shortest
+		   :section section
+		   ;; :flat T
+		   ;; :span :pitch -- changes the meter. I don't want that.
+		   )))
 
 
-;;; TODO: Can this function be refined?
-;;; TODO: Rename -- more clear and ideally shorter name.
-;;; TODO: support OMN sequence, and support args like section etc.
-;;; TMP function name -- idea draft
-;; For now only for flat list of length values, later generalise with `edit-omn'
-(defun rhythmic-contrast_divide (lengths &key (divide 2) (section nil))
-  (let ((shortest (apply #'min (omn-encode lengths))))
-    ;; assuming that there are less than 100 notes to subdivide...
-    (length-divide 100 divide lengths :set shortest)))
-
-; (rhythmic-contrast_divide (gen-karnatic-cell 4 4 2 :min-number 2))
+; (divide-shortest (gen-karnatic-cell 4 4 2 :min-number 2))
 
 #|
 ;;; TODO: unfinished
@@ -367,9 +367,8 @@ Additional arguments can be given to fn by specifying further argument lists to 
           length))
 
 
-
 (defun note-rest-series (positions sequence &key (flat nil) (swallow nil) (section nil))
-  "Turn notes at specific positions into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
+  "Turn notes at specific positions (actually, distances between positions) into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
 
   Args:
   - positions (list of ints): 1-based positions of notes to be turned into rests
