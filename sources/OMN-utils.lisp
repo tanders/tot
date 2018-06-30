@@ -410,7 +410,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
   Example:
   Apply the articulation tenuto to every first note in all bars except the last bar.
   (map-position-in-bar 0 :articulation 
-                       '((q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
+                       '((-q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
                        #'(lambda (ignore) 'ten)
                        :section '(0 1))
 
