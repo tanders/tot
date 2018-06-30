@@ -388,6 +388,77 @@ Additional arguments can be given to fn by specifying further argument lists to 
 	    :section section
 	    :flat flat))
 
+;; - OK allow for rests at beginning and end and perhaps in the middle
+;; - OK set number of consecutive tones to be turned into rests
+;; - OK support args like :section
+(defun _position-to-rest (position lengths &key (n 1) (seed nil))
+  "[Aux] Processing plain list of lengths.
+"
+  (rnd-seed seed)
+  (let* ((l (length lengths))
+	 (pos (case position
+		(s (append (gen-repeat n '(1)) (list l)))
+		(? (cons (rnd1 :low 1 :high (- l (1- n)) :seed (seed))
+			 (append (gen-repeat (1- n) '(1)) (list l))))
+		(e (list l))
+		;; 1+: turn into zero-based position
+		(otherwise (cons (1+ position) (append (gen-repeat (1- n) '(1)) (list l))))
+		)))    
+    (note-rest-series pos lengths)))
+
+#|
+(_position-to-rest 's '(q q q q))
+(_position-to-rest 's '(q q q q) :n 2)
+(_position-to-rest 'e '(q q q q))
+(_position-to-rest '? '(q q q q) :n 2)
+(_position-to-rest '? '(q q q q) :n 2 :seed 1)
+(_position-to-rest 2 '(q q q q) :n 2)
+|#
+
+;;; TODO: args position and n should support lists
+(defun position-to-rest (position sequence &key (n 1) (flat nil) (swallow T) (section nil) (seed nil))
+  "Turn notes at the given position in the bar into rests.
+
+  Args:
+  - position (symbol or integer): position of the note to turn into a rest. If an integer, it denotes the 0-based position. Symbols have the following meaning: s - first note (start); e - last note (end); ? - randomly chosen position.  
+  - sequence (list of lengths or OMN expression): music to process.
+  - n (integer): how many consecutive notes to affect.
+  - flat (Boolean): whether positions count for sublists (nil) or the whole list (T)
+  - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
+  - section (list of ints): 0-based positions of sublists to process. This argument is ignored if flat is T.
+  - seed (integer): random seed for ? position.
+
+  Examples:
+
+  Processing a flat list of durations.
+;;; (position-to-rest 's '(q q q q) :n 2)
+
+  A sequence to be processed in following examples. 
+;;; (setf seq '((q c4 q d4 q e4 q d4) (h b3 q g4 q f4) (w e4)))
+
+  Create rests at the beginning of every bar.
+;;; (position-to-rest 's seq)
+  
+  Create rests at a random position in the first bar (section) with two consecutive rests.
+;;; (position-to-rest '? seq :section '(0) :n 2)
+
+  Create a rest at a random position in every bar.
+;;; (position-to-rest '? seq :seed 1)
+
+  Process the flattened sequence and create two consecutive rests starting from position 5, which happens to be in the second bar.
+;;; (position-to-rest 5 seq :n 2 :flat T)
+
+  If there already is a rest at the given position, then it is simply kept as such.
+;;; (position-to-rest 1 '(q -q q q) :n 2)
+"
+  (rnd-seed seed)
+  (edit-omn :length sequence 
+            #'(lambda (ls) (_position-to-rest position ls :n n :seed (seed)))
+            :swallow swallow
+	    :section section
+	    :flat flat))
+
+
 
 (defun _merge-rest-into-note (lengths)
   "[Aux def]
