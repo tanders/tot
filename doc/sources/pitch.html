@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179953">
+<a href="pitch.html#_g229852">
 chord-multiplication</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ chord1 chord2</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179957">
+<a href="pitch.html#_g229857">
 fenv-&gt;pitches</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ fenv n</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179958">
+<a href="pitch.html#_g229858">
 fenv-transpose-pitch</a>
 </td>
 <td class="summary">
@@ -73,15 +73,31 @@ sequence fenv <em>&amp;rest</em> args</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179952">
-pcs-&gt;chord</a>
+<a href="pitch.html#_g229849">
+pc-&gt;pitch</a>
 </td>
 <td class="summary">
-pcs</td>
+pc octave</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179959">
+<a href="pitch.html#_g229850">
+pcs-&gt;chord</a>
+</td>
+<td class="summary">
+pcs <em>&amp;optional</em> (octave 4)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g229851">
+pitch-&gt;pc</a>
+</td>
+<td class="summary">
+pitch</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g229859">
 pitch-retrograde-omn</a>
 </td>
 <td class="summary">
@@ -89,7 +105,7 @@ sequence <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179956">
+<a href="pitch.html#_g229856">
 pitches-&gt;fenv</a>
 </td>
 <td class="summary">
@@ -97,7 +113,15 @@ pitches</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179954">
+<a href="pitch.html#_g229855">
+spectra-transpositions-fitting-in-scale</a>
+</td>
+<td class="summary">
+spectra scale</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g229853">
 stretch-pitches</a>
 </td>
 <td class="summary">
@@ -105,7 +129,7 @@ pitches factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179955">
+<a href="pitch.html#_g229854">
 stretch-pitches2</a>
 </td>
 <td class="summary">
@@ -113,7 +137,7 @@ number chord factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g179960">
+<a href="pitch.html#_g229860">
 thomassen-accents</a>
 </td>
 <td class="summary">
@@ -122,7 +146,40 @@ sequence <em>&amp;optional</em> (format :omn)</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179952">
+<a id="_g229849">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+pc-&gt;pitch&nbsp;&nbsp;</td>
+<td class="lambda-list">
+pc octave</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Converts the pitch class `pc' into an OMN pitch in the given `octave'. 
+ </p>
+<p>
+Example: 
+ (pc-&gt;pitch 1 4) 
+ =&gt; cs4 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229850">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -135,7 +192,7 @@ sequence <em>&amp;optional</em> (format :omn)</td>
 <td class="symbol-name">
 pcs-&gt;chord&nbsp;&nbsp;</td>
 <td class="lambda-list">
-pcs</td>
+pcs <em>&amp;optional</em> (octave 4)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -155,7 +212,35 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179953">
+<a id="_g229851">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+pitch-&gt;pc&nbsp;&nbsp;</td>
+<td class="lambda-list">
+pitch</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Converts the OMN pitch `pitch' into a pitch class integer 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229852">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -199,7 +284,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179954">
+<a id="_g229853">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -264,7 +349,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179955">
+<a id="_g229854">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -327,7 +412,41 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179956">
+<a id="_g229855">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+spectra-transpositions-fitting-in-scale&nbsp;&nbsp;</td>
+<td class="lambda-list">
+spectra scale</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Function for generating a chord/spectral domain. Returns all transpositions of the given spectral that fit in the given scale (i.e., all their pitch classes are contained in the scale). 
+ </p>
+<p>
+Args: 
+ spectra (OMN chords): a list of untransposed spectra 
+ scale (OMN pitch list) 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229856">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -355,7 +474,7 @@ Translates a sequence of pitches into a fenv that linearily inerpolates between 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179957">
+<a id="_g229857">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -383,7 +502,7 @@ Translates a fenv into a sequence of pitches. Fenv values encode pitches by thei
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179958">
+<a id="_g229858">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -426,23 +545,23 @@ fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value 
 Examples: 
  </p>
 <pre>
-    (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2))) 
+    (fenv-transpose-pitch '(c4 c4 g4 g4) (fenv:linear-fenv (0 0) (1 2))) 
      =&gt; (c4 cs4 gs4 a4) </pre>
 <p>
 </p>
 <pre>
-    (fenv-transpose-pitch '(c4 c4 g4 g4) (linear-fenv (0 0) (1 2)) :ambitus '(d4 a4)) 
+    (fenv-transpose-pitch '(c4 c4 g4 g4) (fenv:linear-fenv (0 0) (1 2)) :ambitus '(d4 a4)) 
      =&gt; (d4 eb4 gs4 a4) </pre>
 <p>
 </p>
 <pre>
-    (fenv-transpose-pitch '((q c4 e c4 g4) (h g4)) (linear-fenv (0 0) (1 2))) 
+    (fenv-transpose-pitch '((q c4 e c4 g4) (h g4)) (fenv:linear-fenv (0 0) (1 2))) 
      =&gt; ((q c4 e cs4 gs4) (h a4)) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179959">
+<a id="_g229859">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -470,7 +589,7 @@ My version of pitch-retrograde that is working until the original is fixed for O
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179960">
+<a id="_g229860">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -542,6 +661,6 @@ References:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-05-03 13:15:08</div>
+- 2018-06-30 21:36:13</div>
 </body>
 </html>

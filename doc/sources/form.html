@@ -49,7 +49,23 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g179992">
+<a href="form.html#_g229897">
+alternate-fenvs</a>
+</td>
+<td class="summary">
+ids ns fenv-lists <em>&amp;key</em> (interpolation :steps)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229901">
+alternate-omn-fenvs</a>
+</td>
+<td class="summary">
+ids no-of-sublists omn-fenv-lists parameters sequence <em>&amp;key</em> (interpolation :steps)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229895">
 alternate-omns</a>
 </td>
 <td class="summary">
@@ -57,7 +73,15 @@ ids seqs-of-seqs <em>&amp;key</em> (append? nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g179991">
+<a href="form.html#_g229899">
+alternate-subseq-fenvs</a>
+</td>
+<td class="summary">
+ids no-of-sublists fenv-lists parameter sequence <em>&amp;key</em> (min-vel 'pp) (max-vel 'ff) (articulation-map nil) (interpolation :steps)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229894">
 condense</a>
 </td>
 <td class="summary">
@@ -65,7 +89,7 @@ sequence test <em>&amp;key</em> (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g179990">
+<a href="form.html#_g229893">
 developing-substitute</a>
 </td>
 <td class="summary">
@@ -73,15 +97,15 @@ map sequence otherwise</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g179994">
-map-segments</a>
+<a href="form.html#_g229900">
+omn-&gt;fenv</a>
 </td>
 <td class="summary">
-segments fun arg-seqs <em>&amp;key</em> (section nil) (constant-args nil)</td>
+parameter sequence <em>&amp;key</em> (type :steps)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g179995">
+<a href="form.html#_g229902">
 rotate-omn</a>
 </td>
 <td class="summary">
@@ -89,16 +113,24 @@ n sequence <em>&amp;key</em> (parameter :pitch) (flat t) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g179993">
+<a href="form.html#_g229896">
 _alternate-omns-aux</a>
 </td>
 <td class="summary">
 ids hash append?</td>
 </tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="form.html#_g229898">
+_map-sublist-subseqs</a>
+</td>
+<td class="summary">
+no-of-sublists sequence fn</td>
+</tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179990">
+<a id="_g229893">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -161,7 +193,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179991">
+<a id="_g229894">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -217,7 +249,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179992">
+<a id="_g229895">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -342,7 +374,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179993">
+<a id="_g229896">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -370,7 +402,7 @@ Aux def
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179994">
+<a id="_g229897">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -381,9 +413,289 @@ Aux def
 <tbody>
 <tr>
 <td class="symbol-name">
-map-segments&nbsp;&nbsp;</td>
+alternate-fenvs&nbsp;&nbsp;</td>
 <td class="lambda-list">
-segments fun arg-seqs <em>&amp;key</em> (section nil) (constant-args nil)</td>
+ids ns fenv-lists <em>&amp;key</em> (interpolation :steps)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Alternate between fenvs and sample the fenvs; the result is a list of lists of numbers (fenv values). For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+ids (list of 0-based integers): indicating the position of fenvs. 
+ </p>
+</li>
+<li>
+<p>
+ns (list of integers): indicates number of samples per fenv. `ids' and `ns' should have the same length. 
+ </p>
+</li>
+<li>
+<p>
+fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling. 
+ Remember that fenvs can be specified as a number sequence as well. 
+ </p>
+</li>
+<li>
+<p>
+interpolation (either <span class="keyword">
+:steps </span>
+or :linear): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ Using lists of integers, internally translated into fenvs. The result here is rather similar to the input, but with lists of different lengths. 
+ </p>
+<pre>
+    (alternate-fenvs '(0 1 0) '(3 3 4)  
+     		 '((1 2 3 4) 
+     		   (10 8 6 4))) 
+     =&gt; ((1 3 4) (10 6 4) (1 2 3 4)) </pre>
+<p>
+For ns greater than the length of the number lists representing the fenvs, the interpolation method makes a difference. 
+ </p>
+<pre>
+    (alternate-fenvs '(0 1 0) '(6 8 6)  
+     		 '((1 3 2) 
+     		   (10 4))) 
+     =&gt; ((1 1 3 3 2 2) (10 10 10 10 4 4 4 4) (1 1 3 3 2 2)) </pre>
+<p>
+</p>
+<pre>
+    (alternate-fenvs '(0 1 0) '(6 8 6)  
+     		 '((1 3 2) 
+     		   (10 4)) 
+     		 :interpolation :linear) 
+     =&gt; ((1 9/5 13/5 14/5 12/5 2) (10 64/7 58/7 52/7 46/7 40/7 34/7 4) (1 9/5 13/5 14/5 12/5 2)) </pre>
+<p>
+When specifying fenvs directly, the full range of fenvs are available. 
+ </p>
+<pre>
+    (alternate-fenvs '(0 1 0) '(3 3 4)  
+     		 (list (fenv:sin-fenv (0 1) (1 0)) 
+     		       (fenv:sin-fenv (0 0) (1 1)))) </pre>
+<p>
+For examples with nested lists of fenvs in `fenv-lists' compare the use of (double) nested OMN sequences in `alternate-omns' above. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229898">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_map-sublist-subseqs&nbsp;&nbsp;</td>
+<td class="lambda-list">
+no-of-sublists sequence fn</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+aux 
+ fn is a function expecting a list of sublists of sequence 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229899">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+alternate-subseq-fenvs&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ids no-of-sublists fenv-lists parameter sequence <em>&amp;key</em> (min-vel 'pp) (max-vel 'ff) (articulation-map nil) (interpolation :steps)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+This function adds (or replaces) a given `parameter' to (of) an OMN `sequence', where this new parameter sequence follows a concatenation of fenvs. Like `alternate-omns' and possibly in combination with that function, the present function is useful for switching between different musical characteristics, while having some kind of development within each characteristic. It is a powerful function for organising musical form on a higher level. 
+ </p>
+<p>
+For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
+ </p>
+<p>
+See also the function `alternate-omn-fenvs', which is similar but more easy to use. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+ids (list of 0-based integers): indicating order of positions of fenvs to choose from `fenv-lists'. 
+ </p>
+</li>
+<li>
+<p>
+no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. If a list, `no-of-sublists' should have the same length as `ids'. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value. 
+ </p>
+</li>
+<li>
+<p>
+fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling. 
+ </p>
+</li>
+<li>
+<p>
+parameter (keyword): the parameter the fenvs overwrite in `sequence', can be <span class="keyword">
+:length, </span>
+<span class="keyword">
+:pitch, </span>
+<span class="keyword">
+:velocity </span>
+or <span class="keyword">
+:articulation. </span>
+As fenv values are always numeric, they have to be translated into the corresponding parameter. Fenvs values for length values must be ratios; fenv values for pitches are MIDI note numbers; fenv values for velocities depend on `min-vel' and `max-vel'; and articulations are the rounded position of elements in the `articulation-map'. 
+ </p>
+</li>
+<li>
+<p>
+sequence: OMN sequence to transform, must be nested. 
+ </p>
+</li>
+<li>
+<p>
+min-vel/max-vel (OMN velocity symbol like 'p or 'ff): in case `parameter' is <span class="keyword">
+:velocity, </span>
+these args set the minimum and maximum velocity in the result. 
+ </p>
+</li>
+<li>
+<p>
+articulation-map (list of OMN articulation symbols): in case `parameter' is <span class="keyword">
+:articulation, </span>
+this arg specifies the articulations that rounded fenv values mean. For example, if `articulation-map' is '(stacc ten) then the fenv value 0 results in a staccato and 1 in a tenuto. 
+ </p>
+</li>
+<li>
+<p>
+interpolation (either <span class="keyword">
+:steps </span>
+or :linear): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+Lists of integers can be used instead of fenvs for convenience. 
+ </p>
+<pre>
+    (alternate-subseq-fenvs '(0 1 1 0) 
+     			'(2 1 2 1) 
+     			;; two envelopes, defined as linearly interpolated number lists 
+     			'((72 48) (60 84)) 
+     			:pitch 
+     			(gen-repeat 3 '((h h) (q q q q))) 
+     			:interpolation :linear) </pre>
+<p>
+When specifying fenvs directly, the full range of fenvs and their transformations are available. 
+ </p>
+<pre>
+    (alternate-subseq-fenvs '(0 1 1 0) 
+     			'(2 1 2 1) 
+     			(list (fenv:sin-fenv (0 72) (1 48)) 
+     			      (fenv:sin-fenv (0 60) (1 84))) 
+     			:pitch 
+     			(gen-repeat 3 '((h h) (q q q q)))) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229900">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+omn-&gt;fenv&nbsp;&nbsp;</td>
+<td class="lambda-list">
+parameter sequence <em>&amp;key</em> (type :steps)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Translates one of the parameters of the OMN `sequence' into a fenv with 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+parameter () 
+ </p>
+</li>
+<li>
+<p>
+sequence (either full OMN sequence or sequence of the respective OMN parameters) 
+ </p>
+</li>
+</ul>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229901">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+alternate-omn-fenvs&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ids no-of-sublists omn-fenv-lists parameters sequence <em>&amp;key</em> (interpolation :steps)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -393,7 +705,7 @@ segments fun arg-seqs <em>&amp;key</em> (section nil) (constant-args nil)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179995">
+<a id="_g229902">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -483,6 +795,6 @@ The following examples are rotating subsequences separately.
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-05-03 13:15:08</div>
+- 2018-06-30 21:36:13</div>
 </body>
 </html>

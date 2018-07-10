@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179889">
+<a href="OMN-utils.html#_g229772">
 copy-time-signature</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ music-with-time-signature music-to-rebar</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179896">
+<a href="OMN-utils.html#_g229780">
 count-notes</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ notes</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179891">
+<a href="OMN-utils.html#_g229774">
 edit-omn</a>
 </td>
 <td class="summary">
@@ -73,7 +73,15 @@ type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil) (addi
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179894">
+<a href="OMN-utils.html#_g229786">
+ensure-double-list</a>
+</td>
+<td class="summary">
+x</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g229778">
 flattened-length-adjust</a>
 </td>
 <td class="summary">
@@ -81,7 +89,7 @@ duration sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179898">
+<a href="OMN-utils.html#_g229782">
 insert-at-position</a>
 </td>
 <td class="summary">
@@ -89,7 +97,7 @@ position item list <em>&amp;key</em> seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179900">
+<a href="OMN-utils.html#_g229784">
 length-add</a>
 </td>
 <td class="summary">
@@ -97,7 +105,7 @@ length-add</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179899">
+<a href="OMN-utils.html#_g229783">
 length-subtract</a>
 </td>
 <td class="summary">
@@ -105,7 +113,23 @@ length-subtract</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179890">
+<a href="OMN-utils.html#_g229771">
+map-omn</a>
+</td>
+<td class="summary">
+fn omn-expr</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g229776">
+map-position-in-bar</a>
+</td>
+<td class="summary">
+position type sequence fun <em>&amp;key</em> (section nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="OMN-utils.html#_g229773">
 map-section</a>
 </td>
 <td class="summary">
@@ -113,7 +137,7 @@ function sequence <em>&amp;key</em> section exclude section-args shared-args</td
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179901">
+<a href="OMN-utils.html#_g229785">
 mk-seed</a>
 </td>
 <td class="summary">
@@ -121,7 +145,7 @@ mk-seed</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179895">
+<a href="OMN-utils.html#_g229779">
 note-no</a>
 </td>
 <td class="summary">
@@ -129,7 +153,7 @@ music</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179897">
+<a href="OMN-utils.html#_g229781">
 phrase-lengths</a>
 </td>
 <td class="summary">
@@ -137,7 +161,7 @@ lengths</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179892">
+<a href="OMN-utils.html#_g229775">
 process-omn2</a>
 </td>
 <td class="summary">
@@ -145,7 +169,7 @@ type function sequence <em>&amp;key</em> flatten flat (span :length) swallow sec
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="OMN-utils.html#_g179893">
+<a href="OMN-utils.html#_g229777">
 total-duration</a>
 </td>
 <td class="summary">
@@ -154,7 +178,78 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179889">
+<a id="_g229771">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-omn&nbsp;&nbsp;</td>
+<td class="lambda-list">
+fn omn-expr</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Variant of mapcar for omn expressions, intended for creating variations of omn-expr. Applies function fn to every note in omn-expr (a flat OMN list). fn must exect four arguments (a length, pitch, velocity and articution) and returns a list of four values (a length, pitch, velocity and articution). 
+ </p>
+<p>
+NOTE: This was one of my first Opusmodus function definitions, and while it works it is not as refined as some later functions <span class="keyword">
+:) </span>
+
+ </p>
+<p>
+Args: 
+ fn: a function expecting four arguments (a length, pitch, velocity and articulation) and returning a list of four values (a length, pitch, velocity and articulation). 
+ omn-expr: an OMN expression 
+ </p>
+<p>
+Example: 
+ </p>
+<p>
+</p>
+<pre>
+    (map-omn #'(lambda (length pitch velocity articulation) 
+                  (list length  
+                        pitch  
+                        ;; replace tasto dynamics by fff 
+                        (if (equal articulation 'tasto) 
+                          'fff 
+                          velocity) 
+                        articulation)) 
+              '(e. c4 pppp tasto d4 ponte e4)) 
+     =&gt; (e. c4 fff tasto d4 pppp ponte e4) </pre>
+<p>
+</p>
+<pre>
+    (map-omn #'(lambda (length pitch velocity articulation) 
+                  (list length  
+                              (if (member 'slap (disassemble-articulations articulation)) 
+                                'c4 
+                                pitch) 
+                              velocity 
+                              articulation)) 
+              '((q b4 f slap+stacc -h q bb4 slap+stacc -h) (q gs4 slap+stacc -h) (q bb4 slap+stacc c5 mp ord d5 q. f5 e eb5 q d5) (-q c5 g4 h fs4 q eb5 stacc) (q c5 f slap+stacc -h q. g4 mp ord e f5 q e5) (q f5 cs5 f4 h d5 -q))) </pre>
+<p>
+BUG: does not work if omn-expr contains rest. 
+ Problem: omn does not provide any values for rests. 
+ Possible solution: couple note durations with their respective params, but leave rests without. Then skip rests in the processing unchanged. 
+ BTW: This process looses articulations on rests, like fermata. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229772">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -182,7 +277,7 @@ Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179890">
+<a id="_g229773">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -304,7 +399,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179891">
+<a id="_g229774">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -326,7 +421,7 @@ type notation fun <em>&amp;key</em> (flat nil) (swallow nil) (section nil) (addi
 </div>
 <div class="doc-body">
 <p>
-Use function `fun', defined for transforming individual OMN parameters of `type' (e.g., <span class="keyword">
+Use function `fun', defined for transforming lists of individual OMN parameters of `type' (e.g., <span class="keyword">
 :length, </span>
 or <span class="keyword">
 :velocity) </span>
@@ -466,7 +561,7 @@ The function rotate-omn can now be called with either giving a single number or 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179892">
+<a id="_g229775">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -494,7 +589,54 @@ Function similar to edit-omn that will soon be built-in in Opusmodus.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179893">
+<a id="_g229776">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-position-in-bar&nbsp;&nbsp;</td>
+<td class="lambda-list">
+position type sequence fun <em>&amp;key</em> (section nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Transforms in the bars of `sequence' the parameter of `type' (e.g., <span class="keyword">
+:length) </span>
+at `position' with `fun'. 
+ </p>
+<p>
+Example: 
+ Apply the articulation tenuto to every first note in all bars except the last bar. 
+ (map-position-in-bar 0 <span class="keyword">
+:articulation </span>
+
+ '((-q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
+ #'(lambda (ignore) 'ten) 
+ <span class="keyword">
+:section </span>
+'(0 1)) 
+ </p>
+<p>
+NOTE: Currently, rests are simply not counted when estimating the position of a parameter other then <span class="keyword">
+:length. </span>
+Potential workaround: use argument `section'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229777">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -522,7 +664,7 @@ Return the total duration (sum of all note and rest values) of `sequence'.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179894">
+<a id="_g229778">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -552,7 +694,7 @@ argument. This function offers a workaround.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179895">
+<a id="_g229779">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -580,7 +722,7 @@ Returns the number of notes in music, which is a list of lengths values of OMN e
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179896">
+<a id="_g229780">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -608,7 +750,7 @@ Returns number of notes (ignoring rests) in length list or other OMN expression.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179897">
+<a id="_g229781">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -645,7 +787,7 @@ length: lengths or OMN (list or list of list).
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179898">
+<a id="_g229782">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -701,7 +843,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179899">
+<a id="_g229783">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -738,7 +880,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179900">
+<a id="_g229784">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -772,7 +914,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179901">
+<a id="_g229785">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -826,10 +968,40 @@ Examples:
  </p>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229786">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ensure-double-list&nbsp;&nbsp;</td>
+<td class="lambda-list">
+x</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Ensures that `x' is a duble-wrapped list. If not, a list (or two) are wrapped around it. 
+ 
+ As a precaution, if `x' is inconsistently nested, then the result is a flattened version of it wth a double list wrapped around. 
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-05-03 13:15:08</div>
+- 2018-06-30 21:36:13</div>
 </body>
 </html>

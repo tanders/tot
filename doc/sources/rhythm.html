@@ -49,7 +49,23 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179940">
+<a href="rhythm.html#_g229838">
+accented-yati-phrase</a>
+</td>
+<td class="summary">
+gati pala-lengths gap <em>&amp;rest</em> args <em>&amp;key</em> (type '(:srotovahayati :at-end)) <em>&amp;allow-other-keys</em></td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229842">
+bpm-&gt;duration</a>
+</td>
+<td class="summary">
+beats tempo</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229832">
 cut-holes</a>
 </td>
 <td class="summary">
@@ -57,23 +73,23 @@ sequence binary-list <em>&amp;key</em> (swallow nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179939">
-cut-holes-aux</a>
+<a href="rhythm.html#_g229821">
+divide-shortest</a>
 </td>
 <td class="summary">
-lengths binary-list</td>
+sequence <em>&amp;key</em> (divide 2) (count nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179943">
+<a href="rhythm.html#_g229836">
 durational-accent</a>
 </td>
 <td class="summary">
-lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) <em>&amp;allow-other-keys</em></td>
+lengths <em>&amp;key</em> (divide 2) (divide-n 1) (divide-prob 0.5) (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (merge-n 2) (merge-prob 0.5) (whole-note-prob 0.1) (set nil) (ignore nil) (seed nil) (format :omn)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179934">
+<a href="rhythm.html#_g229819">
 even-length-rhythm</a>
 </td>
 <td class="summary">
@@ -81,7 +97,15 @@ length <em>&amp;key</em> total-duration prefix suffix (time-sig '(4 4))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179950">
+<a href="rhythm.html#_g229837">
+gen-matras</a>
+</td>
+<td class="summary">
+gati jathi jathi-number <em>&amp;key</em> prefix suffix</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229847">
 insert-into-bar</a>
 </td>
 <td class="summary">
@@ -89,7 +113,7 @@ positions new lengths <em>&amp;key</em> section seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179947">
+<a href="rhythm.html#_g229843">
 isolate-time-signatures</a>
 </td>
 <td class="summary">
@@ -97,7 +121,7 @@ ts-forms</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179948">
+<a href="rhythm.html#_g229844">
 length-&gt;time-signature</a>
 </td>
 <td class="summary">
@@ -105,7 +129,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179935">
+<a href="rhythm.html#_g229825">
 length-divide-ext</a>
 </td>
 <td class="summary">
@@ -113,7 +137,7 @@ count divide length <em>&amp;rest</em> args <em>&amp;key</em> seed</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179945">
+<a href="rhythm.html#_g229840">
 lengths-with-merged-ties</a>
 </td>
 <td class="summary">
@@ -121,7 +145,15 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179938">
+<a href="rhythm.html#_g229824">
+map-tuplet</a>
+</td>
+<td class="summary">
+fn lengths <em>&amp;rest</em> arglist</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229830">
 merge-rest-into-note</a>
 </td>
 <td class="summary">
@@ -129,7 +161,15 @@ sequence <em>&amp;key</em> (flat nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179936">
+<a href="rhythm.html#_g229845">
+metric-shift</a>
+</td>
+<td class="summary">
+l lengths</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229826">
 note-rest-series</a>
 </td>
 <td class="summary">
@@ -137,7 +177,15 @@ positions sequence <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179949">
+<a href="rhythm.html#_g229828">
+position-to-rest</a>
+</td>
+<td class="summary">
+position sequence <em>&amp;key</em> (n 1) (flat nil) (swallow t) (section nil) (seed nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229846">
 shift-meter-boundaries</a>
 </td>
 <td class="summary">
@@ -145,15 +193,23 @@ lengths positions</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179946">
-total-duration</a>
+<a href="rhythm.html#_g229820">
+tie-whole-notes</a>
 </td>
 <td class="summary">
-sequence</td>
+lengths tie-prob <em>&amp;key</em> (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179932">
+<a href="rhythm.html#_g229841">
+total-duration</a>
+</td>
+<td class="summary">
+sequence <em>&amp;optional</em> float?</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229817">
 tuplet-rhythm</a>
 </td>
 <td class="summary">
@@ -161,7 +217,7 @@ lengths subdivisions <em>&amp;rest</em> args <em>&amp;key</em> (length-dividend 
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179933">
+<a href="rhythm.html#_g229818">
 tuplet-walk-rhythm</a>
 </td>
 <td class="summary">
@@ -169,7 +225,15 @@ bar-no <em>&amp;key</em> (bar-length 1/2) (subdivisions-ambitus '(2 7)) (rest-di
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179941">
+<a href="rhythm.html#_g229831">
+_cut-holes</a>
+</td>
+<td class="summary">
+lengths binary-list</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229833">
 _durational-accent-divide</a>
 </td>
 <td class="summary">
@@ -177,7 +241,7 @@ lengths <em>&amp;key</em> (divide 2) (n 1) (divide-prob 0.5) (tie-n 0) (tie-prob
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179942">
+<a href="rhythm.html#_g229834">
 _durational-accent-merge</a>
 </td>
 <td class="summary">
@@ -185,7 +249,23 @@ lengths <em>&amp;key</em> (n 2) (prob 0.5) (seed nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179937">
+<a href="rhythm.html#_g229835">
+_durational-accent-whole-note</a>
+</td>
+<td class="summary">
+lengths <em>&amp;key</em> (whole-note-prob 0.1) (seed nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229823">
+_map-tuplet-internal</a>
+</td>
+<td class="summary">
+fn lengths more-args <em>&amp;key</em> (type :extend)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229829">
 _merge-rest-into-note</a>
 </td>
 <td class="summary">
@@ -193,7 +273,23 @@ lengths</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="rhythm.html#_g179944">
+<a href="rhythm.html#_g229822">
+_partition-args</a>
+</td>
+<td class="summary">
+keywords arglist</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229827">
+_position-to-rest</a>
+</td>
+<td class="summary">
+position lengths <em>&amp;key</em> (n 1) (seed nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="rhythm.html#_g229839">
 _remove-rest-articulations</a>
 </td>
 <td class="summary">
@@ -202,7 +298,7 @@ sequence</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179932">
+<a id="_g229817">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -275,7 +371,7 @@ BUG: seed argument not working as expected -- it is not even used in this functi
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179933">
+<a id="_g229818">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -346,7 +442,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179934">
+<a id="_g229819">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -414,7 +510,241 @@ Lists can be specified specified for length, prefix and suffix
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179935">
+<a id="_g229820">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+tie-whole-notes&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths tie-prob <em>&amp;key</em> (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Every bar with only a single note in it is potentially tied over to the next bar, and that way can increase the degree of rhythmic contrast in a rhythmic sequence. 
+ </p>
+<p>
+NOTE: this function is intended for processing note length values only, as ties are otherwise also affected by pitches. If given a full OMN sequence, then nevertheless only the transformed rhythm is returned. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+sequence (nested OMN length sequence): input rhythm to process. 
+ </p>
+</li>
+<li>
+<p>
+tie-prob (number or list of numbers): Probability whether 'whole' notes are tied or note. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
+ </p>
+</li>
+<li>
+<p>
+seed (integer): random seed for probability. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+Enforce tie at end of every bar with only a single note by setting the probability to 1 (except the last -- there is never a tied added at the end of the last bar). 
+ (tie-whole-notes '((h) (q q) (h) (h)) 1) 
+ </p>
+<p>
+Whether or not a tie is added is randomised and should be rather evenly distributed (probability is 0.7). 
+ (tie-whole-notes '((h) (q q) (h) (h)) 0.7) 
+ </p>
+<p>
+The tie probability is controlled for individual 'whole' notes in the sequence. Note that the probabilities are only given for the actual 'whole' notes, not intermediate bars. 
+ (tie-whole-notes '((h) (q q) (h) (h)) '(0 1)) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229821">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+divide-shortest&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence <em>&amp;key</em> (divide 2) (count nil) (section nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Increase rhythmic contrast by dividing the shortest notes in the given `sequence'. 
+ </p>
+<p>
+Example: 
+ (divide-shortest '(1/8 1/16 1/16)) 
+ </p>
+<p>
+Note that if sequence is a full OMN expression, then the added notes cause all other parameters to shift forward. Additional parameters are added at the end by circling. 
+ (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4))) 
+ =&gt; ((E C4 T D4 E4 F4 E4) (E D4 T G4 C4 D4 E4) (Q F4)) 
+ </p>
+<p>
+(divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)) <span class="keyword">
+:section </span>
+'(1)) 
+ 
+ This function is a simplified variant of `length-divide'. For more control use that function instead. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229822">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_partition-args&nbsp;&nbsp;</td>
+<td class="lambda-list">
+keywords arglist</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Aux for map-tuplet] Partition the argument list around the first argument that is in KEYWORDS. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229823">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_map-tuplet-internal&nbsp;&nbsp;</td>
+<td class="lambda-list">
+fn lengths more-args <em>&amp;key</em> (type :extend)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Aux for map-tuplet] Defines actual function. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229824">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+map-tuplet&nbsp;&nbsp;</td>
+<td class="lambda-list">
+fn lengths <em>&amp;rest</em> arglist</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+A function for varying tuplet groups one by one: map-tuplet applies fn to each tuplet length group in lengths. 
+ </p>
+<p>
+Args: 
+ fn: a function expecting a length list, and potentially more arguments if further args are given 
+ lengths: a (possibly nested) lengths list. 
+ args -- arguments that are part of arg-list before keyword args: more argument lists to map in parallel. 
+ type -- a keyword arg that is part of arglist. <span class="keyword">
+:extend, </span>
+<span class="keyword">
+:denominator </span>
+or <span class="keyword">
+:tuplet. </span>
+The default is <span class="keyword">
+:extend </span>
+(inherited from split-lengths). 
+ </p>
+<p>
+Examples: 
+ </p>
+<p>
+</p>
+<pre>
+    (setf rhy '((-1/6 1/6 1/6 -1/8 1/8 1/8 1/8) (-1/10 1/10 1/10 1/10 1/10 -1/12 1/12 1/12 1/12 1/12 1/12) (-1/10 1/10 1/10 1/10 1/10 -1/8 1/8 1/8 1/8) (-1/6 1/6 1/6 -1/4 1/4))) </pre>
+<p>
+In this first example, all tuplet groups in rhy are rotated by one. 
+ </p>
+<p>
+</p>
+<pre>
+    (map-tuplet #'(lambda (ls) (gen-rotate 1 ls)) rhy) </pre>
+<p>
+Additional arguments can be given to fn by specifying further argument lists to map-tuplet. If an argument list is shorter than the number of tuplet groups in lengths then it is circled through. In this example, tuplet groups are rotated by 1 or 2 alternating. 
+ </p>
+<p>
+</p>
+<pre>
+    (map-tuplet #'(lambda (ls n) (gen-rotate n ls)) 
+                 rhy 
+                 '(1 2)) </pre>
+<p>
+</p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229825">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -456,7 +786,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179936">
+<a id="_g229826">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -478,7 +808,7 @@ positions sequence <em>&amp;key</em> (flat nil) (swallow nil) (section nil)</td>
 </div>
 <div class="doc-body">
 <p>
-Turn notes at specific positions into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section. 
+Turn notes at specific positions (actually, distances between positions) into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section. 
  </p>
 <p>
 Args: 
@@ -522,7 +852,142 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179937">
+<a id="_g229827">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_position-to-rest&nbsp;&nbsp;</td>
+<td class="lambda-list">
+position lengths <em>&amp;key</em> (n 1) (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Aux] Processing plain list of lengths. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229828">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+position-to-rest&nbsp;&nbsp;</td>
+<td class="lambda-list">
+position sequence <em>&amp;key</em> (n 1) (flat nil) (swallow t) (section nil) (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Turn notes at the given position in the bar into rests. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+position (symbol or integer): position of the note to turn into a rest. If an integer, it denotes the 0-based position. Symbols have the following meaning: s - first note (start); e - last note (end); ? - randomly chosen position. 
+ </p>
+</li>
+<li>
+<p>
+sequence (list of lengths or OMN expression): music to process. 
+ </p>
+</li>
+<li>
+<p>
+n (integer): how many consecutive notes to affect. 
+ </p>
+</li>
+<li>
+<p>
+flat (Boolean): whether positions count for sublists (nil) or the whole list (T) 
+ </p>
+</li>
+<li>
+<p>
+swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
+ </p>
+</li>
+<li>
+<p>
+section (list of ints): 0-based positions of sublists to process. This argument is ignored if flat is T. 
+ </p>
+</li>
+<li>
+<p>
+seed (integer): random seed for ? position. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ </p>
+<p>
+Processing a flat list of durations. 
+ </p>
+<pre>
+    (position-to-rest 's '(q q q q) :n 2) </pre>
+<p>
+A sequence to be processed in following examples. 
+ </p>
+<pre>
+    (setf seq '((q c4 q d4 q e4 q d4) (h b3 q g4 q f4) (w e4))) </pre>
+<p>
+Create rests at the beginning of every bar. 
+ </p>
+<pre>
+    (position-to-rest 's seq) </pre>
+<p>
+
+ Create rests at a random position in the first bar (section) with two consecutive rests. 
+ </p>
+<pre>
+    (position-to-rest '? seq :section '(0) :n 2) </pre>
+<p>
+Create a rest at a random position in every bar. 
+ </p>
+<pre>
+    (position-to-rest '? seq :seed 1) </pre>
+<p>
+Process the flattened sequence and create two consecutive rests starting from position 5, which happens to be in the second bar. 
+ </p>
+<pre>
+    (position-to-rest 5 seq :n 2 :flat T) </pre>
+<p>
+If there already is a rest at the given position, then it is simply kept as such. 
+ </p>
+<pre>
+    (position-to-rest 1 '(q -q q q) :n 2) </pre>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229829">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -561,7 +1026,7 @@ lengths: a flat list of length values
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179938">
+<a id="_g229830">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -622,7 +1087,7 @@ T)
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179939">
+<a id="_g229831">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -633,7 +1098,7 @@ T)
 <tbody>
 <tr>
 <td class="symbol-name">
-cut-holes-aux&nbsp;&nbsp;</td>
+_cut-holes&nbsp;&nbsp;</td>
 <td class="lambda-list">
 lengths binary-list</td>
 <td class="symbol-type">
@@ -644,7 +1109,7 @@ lengths binary-list</td>
 </div>
 <div class="doc-body">
 <p>
-Expects a list of lengths and a matching binary list. Every length at a position of a 1 in the binary list is left untouched, while every length at a 0 is turned into a rest. 
+[Aux] Expects a list of lengths and a matching binary list. Every length at a position of a 1 in the binary list is left untouched, while every length at a 0 is turned into a rest. 
  </p>
 <p>
 If binary-list is shorter than lengths it is repeated in a circular fashion. 
@@ -656,7 +1121,7 @@ Related: length-rest-series
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179940">
+<a id="_g229832">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -712,7 +1177,7 @@ See also: note-rest-series
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179941">
+<a id="_g229833">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -813,7 +1278,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179942">
+<a id="_g229834">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -869,7 +1334,35 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179943">
+<a id="_g229835">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+_durational-accent-whole-note&nbsp;&nbsp;</td>
+<td class="lambda-list">
+lengths <em>&amp;key</em> (whole-note-prob 0.1) (seed nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Adds quasi durational accents on first notes of bars (and simplifies the resulting music) by merging all notes of some bars into a single note taken the whole duration of that bar. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229836">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -882,7 +1375,7 @@ Example:
 <td class="symbol-name">
 durational-accent&nbsp;&nbsp;</td>
 <td class="lambda-list">
-lengths <em>&amp;rest</em> args <em>&amp;key</em> (divide-n 1) (merge-n 2) (merge-prob 0.5) (seed nil) <em>&amp;allow-other-keys</em></td>
+lengths <em>&amp;key</em> (divide 2) (divide-n 1) (divide-prob 0.5) (tie-n 0) (tie-prob 0.5) (tie-previous-beat? nil) (grace-n 0) (grace-length 1/8) (grace-prob 0.5) (merge-n 2) (merge-prob 0.5) (whole-note-prob 0.1) (set nil) (ignore nil) (seed nil) (format :omn)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -943,7 +1436,12 @@ merge-n (integer): number of notes at beginning of bars that are potentially sub
 </li>
 <li>
 <p>
-merge-prob (default 0.5): probability value controlling whether grace notes are inserted. 
+merge-prob (default 0.5): probability value controlling whether notes at the beginning of a bar are merged. 
+ </p>
+</li>
+<li>
+<p>
+whole-note-prob: probability value controlling whether all notes of a bar are merged to form quasi a whole note spanning that whole bar. 
  </p>
 </li>
 <li>
@@ -969,6 +1467,15 @@ set (length or list of lengths): only specified lengths are subdivided.
 <li>
 <p>
 ignore (length or list of lengths): specified lengths are *not* subdivided. 
+ </p>
+</li>
+<li>
+<p>
+format (either <span class="keyword">
+:omn </span>
+or :length): set the output format. In <span class="keyword">
+:length </span>
+format, grace notes are represented explicitly as acciaccatura and ties are represented explicitly, in length format they have simply the duration 0. 
  </p>
 </li>
 <li>
@@ -1027,7 +1534,170 @@ If you want your final rhythm to contain rests you best add these to your rhythm
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179944">
+<a id="_g229837">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+gen-matras&nbsp;&nbsp;</td>
+<td class="lambda-list">
+gati jathi jathi-number <em>&amp;key</em> prefix suffix</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `jathi' the number of matras per 'bar' (sublist) and `jathi-number' the resulting number of sublists. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+gati (int) 
+ </p>
+</li>
+<li>
+<p>
+jathi (int) 
+ </p>
+</li>
+<li>
+<p>
+yat-number (int) 
+ </p>
+</li>
+<li>
+<p>
+prefix (length value or length sequence, possibly nested): preceeding phrase 
+ </p>
+</li>
+<li>
+<p>
+suffix (length value or length sequence, possibly nested): succeeding phrase 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ gati 5 (quintuplets), jathi 4 
+ (gen-matras 5 4 3) 
+ gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest. 
+ (gen-matras 5 4 3 <span class="keyword">
+:prefix </span>
+'-q) 
+ </p>
+<p>
+See Reina (2016) for details on the terms matras, gati and jathi. 
+ 
+ Reference 
+ Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229838">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+accented-yati-phrase&nbsp;&nbsp;</td>
+<td class="lambda-list">
+gati pala-lengths gap <em>&amp;rest</em> args <em>&amp;key</em> (type '(:srotovahayati :at-end)) <em>&amp;allow-other-keys</em></td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Generates the matras sequence for a yati phrase, see Reina (2016, p. 205ff) for details. Resulting sublists are jathis for potential post-processing (e.g., adding an accent on their first notes) before redefining the metric structure (usually to follow the tala, e.g., with `omn-to-time-signature'). 
+ </p>
+<p>
+NOTE: In contrast to Karnatic music, resulting accents are expressed by durational accents by this function. Hence the word `accented' in the function name. 
+ 
+ Args: 
+ </p>
+<ul>
+<li>
+<p>
+gati (OMN length): beat subdivision 
+ </p>
+</li>
+<li>
+<p>
+pala-lengths (list of ints): number of matras per pala 
+ </p>
+</li>
+<li>
+<p>
+gap (OMN length, typically a rest): length of gaps between palas (always constant). For mridangamyati phrases, when you need different gap lengths, simply append two calls to the present function. 
+ </p>
+</li>
+<li>
+<p>
+type (list of two keywords): specifies first the type of the yati phrase (:srotovahayati, where matras are added or <span class="keyword">
+:gopuchayati, </span>
+where matras are removed over time). Secondly, it sets at which side the pala matras are added or removed (:at-end <span class="keyword">
+:at-front). </span>
+There are four combinations in total. You can compose mridangamyati and damaruyati yati phrases by combining the results of two calls of this function. Note that inserting matras in the middle is currently not supported. 
+ Additionally, all `durational-accent' key args are supported. 
+ </p>
+</li>
+</ul>
+<p>
+Examples: 
+ (accented-yati-phrase 's '(4 7 10 13) '-e <span class="keyword">
+:type </span>
+'(:srotovahayati <span class="keyword">
+:at-end) </span>
+<span class="keyword">
+:divide-prob </span>
+0.3 <span class="keyword">
+:merge-prob </span>
+0.7 <span class="keyword">
+:seed </span>
+1) 
+ (accented-yati-phrase '3q '(4 7 10 13) '-3e <span class="keyword">
+:type </span>
+'(:gopuchayati <span class="keyword">
+:at-front) </span>
+<span class="keyword">
+:divide-prob </span>
+0.7 <span class="keyword">
+:merge-prob </span>
+0.5 <span class="keyword">
+:seed </span>
+3) 
+ </p>
+<p>
+Reference 
+ Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge. 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229839">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1067,7 +1737,7 @@ sequence: OMN expression that _cannot_ be nested.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179945">
+<a id="_g229840">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1115,7 +1785,7 @@ See also:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179946">
+<a id="_g229841">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1128,7 +1798,7 @@ See also:
 <td class="symbol-name">
 total-duration&nbsp;&nbsp;</td>
 <td class="lambda-list">
-sequence</td>
+sequence <em>&amp;optional</em> float?</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -1140,6 +1810,9 @@ sequence</td>
 Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests. 
  </p>
 <p>
+If `float?' is true the result is a float. 
+ </p>
+<p>
 Example: 
  </p>
 <pre>
@@ -1149,7 +1822,35 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179947">
+<a id="_g229842">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+bpm-&gt;duration&nbsp;&nbsp;</td>
+<td class="lambda-list">
+beats tempo</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Converts a duration in number of beats and the corresponding tempo in BPM into a duration in seconds. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229843">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1183,7 +1884,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179948">
+<a id="_g229844">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1220,7 +1921,55 @@ This function is largely the complement of the Opusmodus buildin function `time-
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179949">
+<a id="_g229845">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+metric-shift&nbsp;&nbsp;</td>
+<td class="lambda-list">
+l lengths</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Appends `l' (a length or omn) before `lengths' (a list of lengths or omn), but maintains the metric structure, i.e., the function shifts `lengths' metrically 'to the right' by `l'. 
+ </p>
+<p>
+Returns an OMN form if lengths is an OMN form, otherwise a length form. 
+ 
+ Examples: 
+ </p>
+<pre>
+    (metric-shift '-h '((q q q q) (q q q q))) </pre>
+<p>
+</p>
+<pre>
+    (metric-shift '(h g4 e) '((q c4 q d4 q e4 q f4) (q c4 q d4 q e4 q f4))) </pre>
+<p>
+BUG: If `lengths' is only a list of length values and not a full OMN sequence, then other parameters in `l' are ignored. 
+ 
+ </p>
+<pre>
+    (metric-shift '(h d4) '((q q q q) (q q q q))) </pre>
+<p>
+Related: assemble-seq (but that does not shift across bars) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229846">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1272,7 +2021,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g179950">
+<a id="_g229847">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -1340,6 +2089,6 @@ See also Opusmodus builtin `position-insert'.
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-05-03 13:15:08</div>
+- 2018-06-30 21:36:13</div>
 </body>
 </html>
