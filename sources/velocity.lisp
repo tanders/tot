@@ -367,6 +367,30 @@ BUG: returns (ppppp pppp ppp < < < mf > > p f ff fff ffff fffff)
 
 
 
+(defun velocity-apply (fun velocities &key (type :float))
+  "Applies a numeric function `fun' to a list of symbolic velocity values `velocities', which are translated into floats in the background. 
+
+  Example:
+  (velocity-apply #'min '(p mf pp ff) :type :symbol)
+  =>pp"
+  (first (get-velocity (list (apply fun (get-velocity velocities)))
+		       :type type)))
+
+(defun min-velocity (velocities &key (type :float))
+  (velocity-apply #'min velocities :type type))
+
+
+(defun max-velocity (velocities &key (type :float))
+  (velocity-apply #'max velocities :type type))
+
+#|
+(min-velocity '(p mf pp ff))
+
+(min-velocity '(p mf pp ff) :type :symbol)
+
+(max-velocity '(p mf pp ff))
+|#
+
 (defun velocity-transform (fun args &key (simplify T))
   "Higher-order function for transforming velocities by processing them as an Openmodus vector in the background.
   
@@ -450,7 +474,5 @@ BUG: returns (ppppp pppp ppp < < < mf > > p f ff fff ffff fffff)
   "
   (edit-omn :velocity velocities
             #'(lambda (vs) (_velocity-smooth alfa vs :simplify simplify))))
-
-
 
 
