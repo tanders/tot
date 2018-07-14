@@ -116,6 +116,49 @@
  :flat T)
 |#
 
+;;; BUG: not working for flat lists
+(defun get-full-articulations (sequence)
+  "[Aux function] Similar to (omn :articulation sequence), but the result includes `leg' symbols for legato 'articulation', which are handled seperately by the function `omn'.
+
+  NOTE: as the implementation of omn is not necessarily stable, this function is breakable.
+
+  Example: 
+  (get-full-articulations '((q g4 leg+gliss q a4 leg q b4 stacc)
+                            (q c4 ten q c5 trem)
+                            ))
+  => ((leg+gliss leg stacc) (ten trem))
+"
+  (if (listp (first sequence))
+      ;; if first nested then assume all are nested
+      (mapcar #'get-full-articulations sequence)
+      ;; flat sequence
+      (let* ((art-list (omn :articulation sequence))
+	     ;; numerically encoded format
+	     (orig-leg-list (omn :leg sequence))
+	     ;; numerically encoded format
+	     (orig-gliss-list (omn :gliss sequence))
+	     ;; decode orig-legs
+	     (leg-list (if orig-leg-list
+			   (loop for leg-val in orig-leg-list
+			      append (if (> leg-val 0)
+					 (gen-repeat leg-val '(leg))
+					 (gen-repeat (abs leg-val) '(-))))
+			   (gen-repeat (length art-list) '(-))))
+	     ;; NOTE: code repetition
+	     (gliss-list (if orig-gliss-list
+			     (loop for gliss-val in orig-gliss-list
+				append (if (> gliss-val 0)
+					   (gen-repeat gliss-val '(gliss))
+					   (gen-repeat (abs gliss-val) '(-))))
+			     (gen-repeat (length art-list) '(-)))))
+	(zip-articulations art-list leg-list gliss-list))))
+
+#|
+(get-full-articulations '(q g4 leg+gliss q a4 leg q b4 stacc))
+|#
+
+
+
 ;;; BUG: I misunderstood function span -- may not work for OMN
 (defun articulation-at-beginning (articulation sequence &key (default 'default))
   "Returns a list of articulations spanning the given `sequence' (can be nested) with `articulation' at the beginning and `default' for the rest.
