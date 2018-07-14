@@ -265,7 +265,9 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 
 
 (defun alternate-fenvs (ids ns fenv-lists &key (interpolation :steps))
-  "Alternate between fenvs and sample the fenvs; the result is a list of lists of numbers (fenv values). For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
+  "Alternate between fenvs and sample the fenvs; the result is a list of lists of numbers (fenv values). A fenv is a particularly flexible envelope, see my fenv library for details. 
+
+  For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
 
   Args: 
   - ids (list of 0-based integers): indicating the position of fenvs.
@@ -600,20 +602,21 @@ The following examples are rotating subsequences separately.
 |#
 
 #|
-(let ((n-list-arg? (listp n)))
-    (when n-list-arg?
-      (assert (not flat)
-	      (n flat)
-	      "If N is a list then FLAT must be nil."))
-    (edit-omn parameter (if n-list-arg?
-			    (tu:mat-trans (list (gen-repeat (length sequence) n)
-						sequence))
-			    sequence)
-	      #'(lambda (xs)
-		  (if n-list-arg?
-		      (gen-rotate (first xs) (second xs))
-		      (gen-rotate n xs)))
-	      ;; :swallow swallow
-	      :section section
-	      :flat flat))
+;; (let ((n-list-arg? (listp n)))
+;;     (when n-list-arg?
+;;       (assert (not flat)
+;; 	      (n flat)
+;; 	      "If N is a list then FLAT must be nil."))
+;;     (edit-omn parameter (if n-list-arg?
+;; 			    (tu:mat-trans (list (gen-repeat (length sequence) n)
+;; 						sequence))
+;; 			    sequence)
+;; 	      #'(lambda (xs)
+;; 		  (if n-list-arg?
+;; 		      (gen-rotate (first xs) (second xs))
+;; 		      (gen-rotate n xs)))
+;; 	      ;; :swallow swallow
+;; 	      :section section
+;; 	      :flat flat))
 |#
+
