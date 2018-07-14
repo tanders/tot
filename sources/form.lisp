@@ -349,12 +349,19 @@ For examples with nested lists of fenvs in `fenv-lists' compare the use of (doub
 		     #'(lambda (sublists) (count-notes sublists)))
 |#
 
-;;; TODO: add more examples to doc?
+;;; TODO:
+;;; - add more examples to doc?
+;;; - Make more efficient: internally translate articulation-maps into vector for faster access at index
 (defun alternate-subseq-fenvs (ids no-of-sublists fenv-lists parameter sequence
 			       &key (min-vel 'pp) (max-vel 'ff)
-				 (articulation-map nil)
-				 (interpolation :steps))
-  "This function adds (or replaces) a given `parameter' to (of) an OMN `sequence', where this new parameter sequence follows a concatenation of fenvs. Like `alternate-omns' and possibly in combination with that function, the present function is useful for switching between different musical characteristics, while having some kind of development within each characteristic. It is a powerful function for organising musical form on a higher level. 
+				 (articulation-maps nil)
+				 (interpolation :steps)
+				 (hairpins? nil))
+  "This function adds (or replaces) a given `parameter' to (of) an OMN `sequence', where this new parameter sequence follows a concatenation of fenvs. A fenv is a particularly flexible envelope, see my fenv library for details. 
+
+  Like `alternate-omns', the present function is useful for switching between different musical characteristics, while having some kind of development within each characteristic. It is a powerful function for organising musical form on a higher level. 
+
+  While this function allows to rather freely add (or change) the musical characteristic of `sequence', it does not allow to change the number of elements in it.
 
   For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
 
@@ -364,11 +371,12 @@ For examples with nested lists of fenvs in `fenv-lists' compare the use of (doub
   - ids (list of 0-based integers): indicating order of positions of fenvs to choose from `fenv-lists'.
   - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. If a list, `no-of-sublists' should have the same length as `ids'. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
   - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
-  - parameter (keyword): the parameter the fenvs overwrite in `sequence', can be :length, :pitch, :velocity or :articulation. As fenv values are always numeric, they have to be translated into the corresponding parameter. Fenvs values for length values must be ratios; fenv values for pitches are MIDI note numbers; fenv values for velocities depend on `min-vel' and `max-vel'; and articulations are the rounded position of elements in the `articulation-map'.
+  - parameter (keyword): the parameter the fenvs overwrite in `sequence', can be :length, :pitch, :velocity or :articulation. As fenv values are always numeric, they have to be translated into the corresponding parameter. Fenvs values for length values should be ratios (they are translated to ratios internally, but complex ratios can lead to difficulties with notation); fenv values for pitches are MIDI note numbers; fenv values for velocities depend on `min-vel' and `max-vel'; and articulations are the rounded position of elements in the `articulation-maps'.
   - sequence: OMN sequence to transform, must be nested.
   - min-vel/max-vel (OMN velocity symbol like 'p or 'ff): in case `parameter' is :velocity, these args set the minimum and maximum velocity in the result.
-  - articulation-map (list of OMN articulation symbols): in case `parameter' is :articulation, this arg specifies the articulations that rounded fenv values mean. For example, if `articulation-map' is '(stacc ten) then the fenv value 0 results in a staccato and 1 in a tenuto.
-  - interpolation (either :steps or :linear): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
+  - articulation-maps (list of list of OMN articulation symbols): in case `parameter' is :articulation, this arg specifies the articulations that rounded fenv values mean. For example, if `articulation-maps' is '(stacc ten) then the fenv value 0 results in a staccato and 1 in a tenuto.
+  - interpolation (either `:steps' or `:linear'): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
+  - hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dynamics are connected with crescendo and diminuendo hairpins, which may make particularly sense if `interpolation' is set to `:linear'.
 
 Examples:
 
@@ -389,43 +397,92 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 ;;; 			      (fenv:sin-fenv (0 60) (1 84)))
 ;;; 			:pitch
 ;;; 			(gen-repeat 3 '((h h) (q q q q))))
+
+
+An example with velocities
+;;; (alternate-subseq-fenvs '(0 1 1 0)
+;;; 			'(1 1 1 1)
+;;; 			(list (omn->fenv :velocity '(p p p ff) :type :steps)
+;;; 			      (omn->fenv :velocity '(mf pp pp pp) :type :steps))
+;;; 			:velocity
+;;; 			(gen-repeat 3 '((h h) (q q q q))))
 "
   (let* ((full-no-of-sublists (if (listp no-of-sublists)
 				  no-of-sublists
 				  (gen-repeat (length ids) no-of-sublists)))
-	 (art-map-length (length articulation-map))
 	 (fenv-ns (_map-sublist-subseqs full-no-of-sublists sequence
-				       #'(lambda (sublists) (count-notes sublists))))
-	 (fenv-vals (flatten (alternate-fenvs ids fenv-ns fenv-lists :interpolation interpolation)))
+					#'(lambda (sublists) (count-notes sublists))))
+	 (fenv-val-lists (alternate-fenvs ids fenv-ns fenv-lists :interpolation interpolation))
+	 ;; efficiency: not needed when parameter is :articulation
+	 (flat-fenv-vals (unless (eql parameter :articulation)
+			   (flatten fenv-val-lists)))
 	 ;; fenv vals translated into OMN params
-	 (fenv-params (case parameter
-			(:length
-			 (assert (every #'ratiop fenv-vals)
-				 (fenv-vals)
-				 "alternate-subseq-fenvs: in order to translate fenv values into OMN length values, you can only use integers and fractions to define the fenvs, not floats, and you cannot use fenvs resulting in floats (e.g., sin-fenv is not possible):  ~A " fenv-vals)
-			 fenv-vals)
-		        (:pitch (midi-to-pitch (mapcar #'round fenv-vals)))
-			(:velocity (velocity-to-dynamic (vector-to-velocity min-vel max-vel fenv-vals)))
-			(:articulation (mapcar #'(lambda (val)
-						   (let ((rnd-val (round val)))
-						     (assert (< -1 rnd-val art-map-length)
-							     (rnd-val)
-							     "alternate-fenvs-for-subseqs: when generating articulations, all fenv values must be within the range of the length of the articulation-map. Current fenv value: ~A, articulation-map: ~A" rnd-val articulation-map)
-						     (nth rnd-val articulation-map)))
-					       fenv-vals))))
+	 (fenv-params (ccase parameter
+			(:length (mapcar #'rationalize flat-fenv-vals))
+		        (:pitch (midi-to-pitch (mapcar #'round flat-fenv-vals)))
+			(:velocity (if hairpins?
+				       (velocity-to-dynamic (vector-to-velocity min-vel max-vel flat-fenv-vals))
+				       (vector-to-velocity min-vel max-vel flat-fenv-vals :type :symbol)))
+			(:articulation
+			 (mapcar #'(lambda (fenv-vals id)
+				     (let* (;; NOTE: inefficient: access with nth
+					    (articulation-map (nth id articulation-maps))
+					    (art-map-length (length articulation-map)))
+				       (mapcar #'(lambda (val)
+						   (let ((round-val (round val)))
+						     (assert (< -1 round-val art-map-length)
+							     (round-val)
+							     "alternate-fenvs-for-subseqs: when generating articulations, all fenv values must be within the range of the length of ;TODO: he articulation-maps. Current fenv value: ~A, articulation-maps: ~A" round-val articulation-maps)
+						     ;; NOTE: inefficient: access with nth
+						     (nth round-val articulation-map)))
+					       fenv-vals)))
+				 fenv-val-lists
+				 ids))))
 	 )
     (omn-replace parameter (span (omn :length sequence) fenv-params) sequence)
     ))
 
+
 ;;; TODO: consider whether to additionally have the option that y-values of the resulting fenv reflect the rhythm of the sequence.
 (defun omn->fenv (parameter sequence &key (type :steps))
-  ;;; TODO: document function
-  "Translates one of the parameters of the OMN `sequence' into a fenv with 
+  "Translates one of the parameters of the OMN `sequence' into a number sequence, which is then translated into a fenv. A fenv is a particularly flexible envelope, see my fenv library for details. 
+
+  This function is useful, e.g., for quasi motific variation, where the number of notes in the result changes but the result still follows the overall shape (profile) of the given music. 
+
+  Usually, you do not want to use this function directly, but instead use the function `alternate-omn-fenvs', which is less low-level and therefore more easy to use.
 
   Args:
-  - parameter ()
-  - sequence (either full OMN sequence or sequence of the respective OMN parameters)  
+  - parameter: an OMN parameter keyword like :length or :pitch
+  - sequence: either full OMN sequence or sequence of the respective OMN parameters
+  - type: how to interpolate between parameter values. Can be :steps (a step function, i.e. parameter values are hold by the fenv unti the next value) or :linear (linear interpolation). 
 
+  Examples:
+
+  A six-note OMN sequence with multiple parameters used for several examples
+  ;;; (setf sequence '((h c5 f ten q g4 mp stacc) (q b4 ff ten q g4 f stacc q d4 mp stacc) (h. g4 f tr2)))
+
+  Translate the note values of this six-note sequence into a sequence of five note values.  
+  ;;; (fenv:fenv->list (omn->fenv :length sequence) 5)
+
+  Translate the pitches of this six-note sequence into a sequence of five pitches. 
+  ;;; (midi-to-pitch (fenv:fenv->list (omn->fenv :pitch sequence) 5))
+
+  Translate the pitches of this six-note sequence into a sequence of eight pitches. 
+  ;;; (midi-to-pitch (mapcar #'round (fenv:fenv->list (omn->fenv :pitch sequence :type :linear) 8)))  
+
+  Translate the note dynamics of this six-note sequence into a sequence of 9 dynamics without interpolation.
+  ;;; (get-velocity (mapcar #'round (fenv:fenv->list (omn->fenv :velocity sequence :type :steps) 9)) :type :symbol)
+
+  Translate the note dynamics of this six-note sequence into a sequence of 5 dynamics, but linearily interpolating between the original xones.
+  ;;; (get-velocity (mapcar #'round (fenv:fenv->list (omn->fenv :velocity sequence :type :linear) 5)) :type :symbol)
+
+
+  Translate the articulations of this six-note sequence into a sequence of 7 articulations.
+  ;;; (multiple-value-bind (fenv arts-set)
+  ;;;     (omn->fenv :articulation (flatten sequence))
+  ;;;   ;; inefficient with list
+  ;;;   (mapcar #'(lambda (i) (nth i arts-set)) 
+  ;;; 	    (fenv:fenv->list fenv 7)))
 "
   (let ((flat-seq (flatten sequence)))
     (multiple-value-bind (num-seq arts-set)
@@ -441,7 +498,7 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 	  (:articulation (let* ((arts
 				 (if (every #'articulationp flat-seq)
 				     flat-seq
-				     (omn parameter flat-seq)))
+				     (get-full-articulations flat-seq)))
 				  ;; (omn :articulation flat-seq))
 				(arts-set (remove-duplicates arts)))
 			   (values 
@@ -453,45 +510,79 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 	  (:articulation (values fenv arts-set))
 	  (otherwise fenv))))))
 
-#|
-;; tests
-(setf sequence '((h c5 f ten q g4 mp stacc) (q b4 ff ten q g4 f stacc q d4 mp stacc) (h. g4 f tr2)))
-(fenv:v (omn->fenv :length sequence) 5)
-(fenv:v (omn->fenv :pitch sequence) 5)
-(fenv:v (omn->fenv :velocity sequence :type :linear) 5)
+; (omn->fenv :articulation '(q g4 f legno q c5 p stacc q c3 pp stacc) :type :steps)
 
-(multiple-value-bind (fenv arts-set)
-    (omn->fenv :articulation sequence)
-  ;; inefficient with list
-  (mapcar #'(lambda (i) (nth i arts-set)) 
-	  (fenv:fenv->list fenv 7)))
-
-|#
 
 ;;; TODO: consider allowing for OMN expressions to be translated into fenvs for multiple parameters: Have another function calling this one that expects OMN seqs as fenvs, and a list of parameters to extract from those.
 ;; params min-vel, max-vel and articulation-map extracted from omn-fenvs
 
-  ;;; TODO: make it recursive for multiple params
-  ;;; TODO: allow for nested omn-fenv-lists
-;;; TODO: add support for params velocity and articulation
-;;; TODO: parameters: ensure list, but only once in recursive function 
+;;; OK TODO: make it recursive for multiple params
+;;; TODO: allow for nested omn-fenv-lists
+;;; OK TODO: add support for param velocity 
+;;; !! TODO: add support for param articulation
+;;; TODO: parameters: ensure list, but only once in recursive function
+;;; TODO: Consider interpreting the rhythm of omn-fenv-lists as fenv y values (distances between them)
 (defun alternate-omn-fenvs (ids no-of-sublists omn-fenv-lists parameters sequence
-			    &key (interpolation :steps))
+			    &key (interpolation :steps) (hairpins? nil))  
   ;;; TODO: add doc
+  "
+
+  - hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dynamics are connected with crescendo and diminuendo hairpins, which may make particularly sense if `interpolation' is set to `:linear'.
+
+
+A fenv is a particularly flexible envelope, see my fenv library for details. 
+
+"
   (if parameters
       (alternate-omn-fenvs
-       ids no-of-sublists omn-fenv-lists (rest parameters)
-       (alternate-subseq-fenvs ids no-of-sublists
-			       ;; TODO: currently only list of flat omn-fenv-lists supported, but not a list of alternatives
-			       (mapcar #'(lambda (omn-env)
-					   (omn->fenv (first parameters) omn-env :type interpolation))
-				       omn-fenv-lists)
-			       (first parameters)
-			       sequence)
-       :interpolation interpolation)
-      sequence))
-  
+       ids no-of-sublists omn-fenv-lists (rest parameters)       
+       (let* ((param (first parameters))
+	      ;; TODO: currently only list of flat omn-fenv-lists supported, but not a list of alternatives
+	      ;; skip if (eql param :articulation)
+	      (fenv-lists (unless (eql param :articulation)
+			    (mapcar #'(lambda (omn-env) (omn->fenv param omn-env :type interpolation))
+				    omn-fenv-lists))))
+	 (ccase param
+	   ((:length :pitch)
+	    (alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence))
+	   ((:velocity)
+	    (let ((flat-omn-fenv-lists (flatten omn-fenv-lists)))
+	    (alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence
+				    :min-vel (min-velocity flat-omn-fenv-lists)
+				    :max-vel (max-velocity flat-omn-fenv-lists)
+				    :hairpins? hairpins?)))
+	   ((:articulation)
+	    (let* (;; TODO: currently only list of flat omn-fenv-lists supported, but not a list of alternatives
+		   (fenvs_and_articulation-map
+		    (tu:mat-trans
+		     (mapcar #'(lambda (omn-env)
+				 (multiple-value-list
+				  (omn->fenv :articulation omn-env :type interpolation)))
+			     omn-fenv-lists)))
+		   (fenv-lists (first fenvs_and_articulation-map))
+		   (articulation-maps (second fenvs_and_articulation-map)))
+	      ;; (break)
+	      ;;; BUG: articulation-maps are multiple lists -- how to use that suitably?
+	      (alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence
+				      :articulation-maps articulation-maps)))))       
+       :interpolation interpolation
+       :hairpins? hairpins?)
+  sequence))
+
+
+;;; TODO: needs functions min-velocity and max-velocity
+
+#|
 ;;; tests
+(alternate-omn-fenvs '(0 1 1 0)
+		     '(2 1 2 1)
+		     ;; two note value envelopes, defined by parameter seqs
+		     '((h q q h h)
+		       (e e e e))
+		     '(:length)
+		     (gen-repeat 3 '((h h) (q q q q))))
+
+
 (alternate-omn-fenvs '(0 1 1 0)
 		     '(2 1 2 1)
 		     ;; two pitch envelopes, defined by parameter seqs
@@ -500,6 +591,7 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 		     '(:pitch)
 		     (gen-repeat 3 '((h h) (q q q q)))
 		     :interpolation :linear)
+=> ((H G4 A4) (Q B4 G4 BB3 C3) (H C4 C6) (Q C4 F4 BB4 D5) (H G5 C6) (Q G4 BB4 E4 C3)) 
 
 (alternate-omn-fenvs '(0 1 1 0)
 		     '(2 1 2 1)
@@ -510,8 +602,32 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 		     (gen-repeat 3 '((h h) (q q q q)))
 		     :interpolation :linear)
 
-;;; BUG: arg :step (instead of :steps) not supported -- should cause error, not return nil
-;;; BUG: too many velocity symbols in result
+(alternate-omn-fenvs '(0 1 1 0)
+		     '(1 1 1 1)
+		     ; '(2 1 2 1)
+		     ;; two envelopes consisting of multiple parameters
+		     '((q g4 f q c5 pp q c3)
+		       (q c4 f q c6 pp)
+		       )
+		     '(:velocity)
+		     (gen-repeat 3 '((h h) (q q q q)))
+		     :interpolation :steps)
+
+;;; BUG: simplify-dynamics results not correct
+(simplify-dynamics 
+ (alternate-omn-fenvs '(0 1 1 0)
+                      '(1 1 1 1)
+                      ; '(2 1 2 1)
+                      ;; two envelopes consisting of multiple parameters
+                      '((q g4 f q c5 pp q c3)
+                        (q c4 f q c6 pp)
+                        )
+                      '(:velocity)
+                      (gen-repeat 3 '((h h) (q q q q)))
+                      :interpolation :linear
+                      :hairpins? T))
+
+
 (alternate-omn-fenvs '(0 1 1 0)
 		     '(2 1 2 1)
 		     ;; two envelopes consisting of multiple parameters
@@ -521,10 +637,47 @@ When specifying fenvs directly, the full range of fenvs and their transformation
 		     ;; '(:pitch)
 		     '(:pitch :velocity)
 		     (gen-repeat 3 '((h h) (q q q q)))
-		     :interpolation :steps)
+		     :interpolation :linear)
+
+;;; BUG: fenv values "circled"
+;;; BUG: legato articulation ignored?
+(alternate-omn-fenvs '(0 1 1 0)
+		     '(1 1 1 1)
+		     ;; two envelopes consisting of multiple parameters
+		     '((q g4 f legno q c5 p stacc q c3 pp stacc)
+		       (q c4 f ten+ord q c6 pp stacc)
+		       )
+		     '(:articulation)
+		     (gen-repeat 2 '((h c4 q e4 q g4) (q f4 q e4 q d4 q b3)))
+		     :interpolation :steps
+                     )
+
+;;; BUG: causes error -- :articulation not yet supported
+(alternate-omn-fenvs '(0 1 1 0)
+		     '(2 1 2 1)
+		     ;; two envelopes consisting of multiple parameters
+		     '((q g4 f ten q c5 p stacc q c3 pp stacc)
+		       (q c4 f leg q c6 pp stacc)
+		       )
+		     '(:articulation)
+		     (gen-repeat 3 '((h h) (q q q q)))
+		     ;;; BUG: can I allow for :linear for :articulation?
+		     :interpolation :linear)
 
 
+;;; BUG: causes error -- :articulation not yet supported
+(alternate-omn-fenvs '(0 1 1 0)
+		     '(2 1 2 1)
+		     ;; two envelopes consisting of multiple parameters
+		     '((q g4 f ten q c5 p stacc q c3 pp stacc)
+		       (q c4 f leg q c6 pp stacc)
+		       )
+		     ;; '(:pitch)
+		     '(:pitch :velocity :articulation)
+		     (gen-repeat 3 '((h h) (q q q q)))
+		     :interpolation :linear)
 
+|#
 
 
 
