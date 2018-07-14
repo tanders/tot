@@ -270,6 +270,11 @@
   processing floats
   ;;; (simplify-dynamics '((0.1 0.2 0.3 0.4) (0.5 0.6 0.5 0.3)))
   ;;; => ((pppp < < <) (< f > pp))
+
+
+  BUG: This is not correct -- various problems.
+  ;;; (simplify-dynamics
+  ;;;  '((h c4 f> pp<) (q c4 f> mf> p> pp<) (h c4 f> pp<) (q c4 f> p> pp c4) (h c4 f> pp<) (q c4 f> mf> p> pp<)))
   "
   (edit-omn :velocity notation
             #'(lambda (vs) (_simplify-dynamics vs :flat flat))
