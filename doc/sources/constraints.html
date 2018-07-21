@@ -49,7 +49,7 @@ Method summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229889">
+<a href="constraints.html#_g232041">
 _chords-to-gracenotes</a>
 </td>
 <td class="summary">
@@ -63,7 +63,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229888">
+<a href="constraints.html#_g232040">
 chords-&gt;domain</a>
 </td>
 <td class="summary">
@@ -71,7 +71,7 @@ chords <em>&amp;key</em> (transpositions '(0)) preview?</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229890">
+<a href="constraints.html#_g232042">
 chords-to-gracenotes</a>
 </td>
 <td class="summary">
@@ -79,7 +79,7 @@ sequence <em>&amp;optional</em> (root? t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229885">
+<a href="constraints.html#_g232037">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -87,7 +87,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229886">
+<a href="constraints.html#_g232038">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -95,7 +95,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229887">
+<a href="constraints.html#_g232039">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -103,7 +103,7 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g229891">
+<a href="constraints.html#_g232043">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
@@ -112,7 +112,7 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229889">
+<a id="_g232041">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -149,7 +149,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229885">
+<a id="_g232037">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -216,7 +216,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229886">
+<a id="_g232038">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -246,7 +246,7 @@ Args:
 <ul>
 <li>
 <p>
-score (headerless score): see <a href="score.html#_g229791">
+score (headerless score): see <a href="score.html#_g231939">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -268,7 +268,7 @@ NOTE: `cluster-engine-score' must contain the same number and order of parts, no
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229887">
+<a id="_g232039">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -296,7 +296,7 @@ Just shorthand for (preview-score (cluster-engine-score score))
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229888">
+<a id="_g232040">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -333,7 +333,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229890">
+<a id="_g232042">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -365,7 +365,7 @@ Args:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229891">
+<a id="_g232043">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -395,7 +395,7 @@ CSP transforming the input `score' such that it follows the underlying harmony s
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g229791">
+score (headerless score): See <a href="score.html#_g231939">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -520,7 +520,77 @@ For better readability and exportability to notation software, the underlying ha
 :scales-treble, </span>
 <span class="keyword">
 :scales-bass, </span>
-i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an 
+i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an 'o'). 
+ 
+ Examples: 
+ </p>
+<p>
+Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf *preview-score-return-value* :headerless-score) 
+      
+     (setf polyphonic-score 
+           (preview-score  
+            '(:vl1 ((-3h fs4 pp a4) (q gs4 fs4) (3h e4 eb4 d4) (h eb4)) 
+              :vl2 ((h d4 pp) (h e4) (h f4 tie) (h f4))))) </pre>
+<p>
+The underlying harmony -- both chords and scales -- are declared now. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf harmonies 
+           '((h c4eb4g4a4) (h c4eb4g4a4)        
+             (h f4g4a4c4) (h f4g4a4c4))) 
+      
+     (setf scales 
+           (list (append (length-merge (flatten (omn :length harmonies)))  
+                         (chordize '(c4 cs4 ds4 f4 g4 a4 b4))))) </pre>
+<p>
+Some playback customisation of preview-score is silencing the first two parts (chords and scales are only an underlying analysis). 
+ </p>
+<p>
+</p>
+<pre>
+    (setf *default-preview-score-instruments* 
+           '(;; silent harmony -- :volume 0 
+             :scales (:program 'violin :sound 'gm :channel 16 :volume 0) 
+             :chords (:program 'violin :sound 'gm :channel 16 :volume 0) 
+             :vl1 (:program 'violin :sound 'gm :channel 1) 
+             :vl2 (:program 'violin :sound 'gm :channel 1))) </pre>
+<p>
+The next code snippet shows the actual call to `revise-score-harmonically'. In this example, the resulting score is previewed and at the same time also saved in a variable for later inspection, postprocessing etc. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf revised-polyphonic-score 
+           (preview-score (revise-score-harmonically polyphonic-score harmonies scales))) </pre>
+<p>
+The default pitch domains (the ambitus of parts in the score) can be extended. In the following example it is extended by 3 semitones for all parts (:vl1 and <span class="keyword">
+:vl2) </span>
+in both directions (at the upper and lower end of each ambitus). See the discussion of the argument `pitch-domains-extension' above for further options. 
+ </p>
+<p>
+</p>
+<pre>
+    (preview-score  
+      (revise-score-harmonically polyphonic-score harmonies scales 
+      			        :pitch-domains-extension 3)) </pre>
+<p>
+The default pitch domains (the ambitus of parts) can be overwritten explicitly. This argument can be combined with the argument `pitch-domains-extension', which then extends the explicitly given pitch domains. 
+ </p>
+<p>
+</p>
+<pre>
+    (preview-score  
+      (revise-score-harmonically polyphonic-score harmonies scales 
+     			        :pitch-domains '(:vl1 (c4 g5) :vl2 (g3 c5)))) </pre>
+<p>
+TODO: demonstrate how default rules are overwritten. 
  </p>
 </div>
 </div>
@@ -528,6 +598,6 @@ i.e., both underlying chords and scales are notated across two staves. For bette
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-06-30 21:36:13</div>
+- 2018-07-21 17:41:21</div>
 </body>
 </html>

@@ -49,7 +49,23 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229865">
+<a href="velocity.html#_g232016">
+max-velocity</a>
+</td>
+<td class="summary">
+velocities <em>&amp;key</em> (type :float)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="velocity.html#_g232015">
+min-velocity</a>
+</td>
+<td class="summary">
+velocities <em>&amp;key</em> (type :float)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="velocity.html#_g232013">
 simplify-dynamics</a>
 </td>
 <td class="summary">
@@ -57,7 +73,7 @@ notation <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229868">
+<a href="velocity.html#_g232019">
 velocity-add</a>
 </td>
 <td class="summary">
@@ -65,7 +81,15 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229862">
+<a href="velocity.html#_g232014">
+velocity-apply</a>
+</td>
+<td class="summary">
+fun velocities <em>&amp;key</em> (type :float)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="velocity.html#_g232010">
 velocity-fenvs</a>
 </td>
 <td class="summary">
@@ -73,7 +97,7 @@ lengths <em>&amp;rest</em> dynamics-fenvs</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229863">
+<a href="velocity.html#_g232011">
 velocity-fenvs2</a>
 </td>
 <td class="summary">
@@ -81,7 +105,7 @@ sequence dynamics-fenvs <em>&amp;key</em> (omn t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229870">
+<a href="velocity.html#_g232021">
 velocity-smooth</a>
 </td>
 <td class="summary">
@@ -89,7 +113,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229866">
+<a href="velocity.html#_g232017">
 velocity-transform</a>
 </td>
 <td class="summary">
@@ -97,7 +121,7 @@ fun args <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229864">
+<a href="velocity.html#_g232012">
 _simplify-dynamics</a>
 </td>
 <td class="summary">
@@ -105,7 +129,7 @@ dynamics <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229867">
+<a href="velocity.html#_g232018">
 _velocity-add</a>
 </td>
 <td class="summary">
@@ -113,7 +137,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g229869">
+<a href="velocity.html#_g232020">
 _velocity-smooth</a>
 </td>
 <td class="summary">
@@ -122,7 +146,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229862">
+<a id="_g232010">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -175,7 +199,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229863">
+<a id="_g232011">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -234,7 +258,7 @@ BUG: not working yet
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229864">
+<a id="_g232012">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -257,7 +281,7 @@ dynamics <em>&amp;key</em> (flat t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229865">
+<a id="_g232013">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -334,13 +358,102 @@ processing floats
     (simplify-dynamics '((0.1 0.2 0.3 0.4) (0.5 0.6 0.5 0.3))) 
      =&gt; ((pppp &lt; &lt; &lt;) (&lt; f &gt; pp)) </pre>
 <p>
+BUG: This is not correct -- various problems. 
+ </p>
+<pre>
+    (simplify-dynamics 
+      '((h c4 f&gt; pp&lt;) (q c4 f&gt; mf&gt; p&gt; pp&lt;) (h c4 f&gt; pp&lt;) (q c4 f&gt; p&gt; pp c4) (h c4 f&gt; pp&lt;) (q c4 f&gt; mf&gt; p&gt; pp&lt;))) </pre>
+<p>
 
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229866">
+<a id="_g232014">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+velocity-apply&nbsp;&nbsp;</td>
+<td class="lambda-list">
+fun velocities <em>&amp;key</em> (type :float)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Applies a numeric function `fun' to a list of symbolic velocity values `velocities', which are translated into floats in the background. 
+ </p>
+<p>
+Example: 
+ (velocity-apply #'min '(p mf pp ff) <span class="keyword">
+:type </span>
+<span class="keyword">
+:symbol) </span>
+
+ =&gt;pp 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g232015">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+min-velocity&nbsp;&nbsp;</td>
+<td class="lambda-list">
+velocities <em>&amp;key</em> (type :float)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g232016">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+max-velocity&nbsp;&nbsp;</td>
+<td class="lambda-list">
+velocities <em>&amp;key</em> (type :float)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g232017">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -389,7 +502,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229867">
+<a id="_g232018">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -412,7 +525,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229868">
+<a id="_g232019">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -490,7 +603,7 @@ omn input
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229869">
+<a id="_g232020">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -513,7 +626,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g229870">
+<a id="_g232021">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -577,6 +690,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-06-30 21:36:13</div>
+- 2018-07-21 17:41:21</div>
 </body>
 </html>
