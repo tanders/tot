@@ -263,7 +263,6 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 
 |#
 
-
 (defun alternate-fenvs (ids ns fenv-lists &key (interpolation :steps))
   "Alternate between fenvs and sample the fenvs; the result is a list of lists of numbers (fenv values). A fenv is a particularly flexible envelope, see my fenv library for details. 
 
@@ -301,7 +300,13 @@ When specifying fenvs directly, the full range of fenvs are available.
 ;;; 		 (list (fenv:sin-fenv (0 1) (1 0))
 ;;; 		       (fenv:sin-fenv (0 0) (1 1))))
 
-For examples with nested lists of fenvs in `fenv-lists' compare the use of (double) nested OMN sequences in `alternate-omns' above. 
+An example with double-nested fenvs
+;;; (alternate-fenvs '(0 0 1 1 0 0) '(4 4 4 4 4 4)  
+;;;      		 '(((1 2 3 4) (2 3 4 5) (3 4 5 6)) 
+;;;      		   ((10 8 6 4) (11 9 7 5))))
+;;; => ((1 2 3 4) (2 3 4 5) (10 8 6 4) (11 9 7 5) (3 4 5 6) (1 2 3 4))
+
+For more examples with nested lists of fenvs in `fenv-lists' compare the use of (double) nested OMN sequences in `alternate-omns' above. 
 "
   (let ((omn-no (length fenv-lists))
 	(full-fenv-lists (if (every #'fenv:fenv? fenv-lists)
@@ -315,12 +320,14 @@ For examples with nested lists of fenvs in `fenv-lists' compare the use of (doub
 				 ;; flat list of number seqs
 				 ((every #'numberp first-list) 								  
 				  (mapcar #'(lambda (fenv) (list (fenv:list->fenv fenv :type interpolation))) fenv-lists))
-				 ;; nested list of number seqs
+				 ;; Assume nested list of number seqs
 				 (T (mapcar #'(lambda (fenvs)
-						(mapcar #'(lambda (fenv) (fenv:list->fenv fenv :type interpolation)) fenvs))
-					    fenv-lists)))))))
+						(mapcar #'(lambda (fenv)
+							    (fenv:list->fenv fenv :type interpolation))
+							fenvs))
+					    fenv-lists)))))))    
     (assert (every #'(lambda (x) (and (integerp x) (< x omn-no))) ids)
-            (ids) "alternate-fenvs: ids must be a list of integers between 0 and (1- (length seqs-of-seqs)): ~A" ids)    
+            (ids) "alternate-fenvs: ids must be a list of integers between 0 and (1- (length seqs-of-seqs)): ~A" ids)  
     (let ((hash (make-hash-table)))
       (loop 
         for i from 0 to (1- omn-no)
@@ -329,11 +336,7 @@ For examples with nested lists of fenvs in `fenv-lists' compare the use of (doub
       (loop 
 	 for id in ids
 	 for n in ns
-	 collect (fenv:fenv->list (pop (gethash id hash)) n)))))
-
-
-
-
+	 collect (fenv:fenv->list (pop (gethash id hash)) n :first)))))
 
 
 ;; TODO: not tail recursive
@@ -349,19 +352,23 @@ For examples with nested lists of fenvs in `fenv-lists' compare the use of (doub
 		     #'(lambda (sublists) (count-notes sublists)))
 |#
 
+
 ;;; TODO:
 ;;; - add more examples to doc?
 ;;; - Make more efficient: internally translate articulation-maps into vector for faster access at index
+;;; - OK "Protect" arg no-of-sublists -- ensure it is of same length as ids
+;;; - OK Allow for option to add articulation parameters without overwriting existing articulations
 (defun alternate-subseq-fenvs (ids no-of-sublists fenv-lists parameter sequence
 			       &key (min-vel 'pp) (max-vel 'ff)
 				 (articulation-maps nil)
+				 (keep-articulations? T)
 				 (interpolation :steps)
 				 (hairpins? nil))
   "This function adds (or replaces) a given `parameter' to (of) an OMN `sequence', where this new parameter sequence follows a concatenation of fenvs. A fenv is a particularly flexible envelope, see my fenv library for details. 
 
   Like `alternate-omns', the present function is useful for switching between different musical characteristics, while having some kind of development within each characteristic. It is a powerful function for organising musical form on a higher level. 
 
-  While this function allows to rather freely add (or change) the musical characteristic of `sequence', it does not allow to change the number of elements in it.
+  One of the particular expressive powers of this function is that characteristics defined by fenvs (`fenv-lists') can be applied to sublists (bars) in `sequence' of different lengths. For example, the same overall gestus can be applied to a bar of three but all four or five notes. (Nevertheless, it does not allow to change the number of elements in `sequence'.)
 
   For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
 
