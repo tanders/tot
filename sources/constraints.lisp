@@ -271,7 +271,7 @@
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
  - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
 
-For better readability and exportability to notation software, the underlying harmony is output in the score as up to four instruments (if scales is not nil): :chord-treble, :chord-bass, :scales-treble, :scales-bass, i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an "o"). 
+For better readability and exportability to notation software, the underlying harmony is output in the score as up to four instruments (if scales is not nil): :chord-treble, :chord-bass, :scales-treble, :scales-bass, i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an 'o'). 
   
 Examples:
 
