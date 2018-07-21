@@ -135,30 +135,30 @@
   - section-args (list or list of lists): Further arguments to `function' added behind the current sublist of `sequence'. If not a nested list, then only a single additional argument is specified for each bar (sublist) to which `function' is applied.
 
   Examples:
-  (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :section '(1 2))
+  ;;; (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :section '(1 2))
 
-  (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :exclude '(0))
+  ;;; (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :exclude '(0))
 
-  (map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
-               :section '(1 2)
-               :shared-args '(7))
+  ;;; (map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
+  ;;;              :section '(1 2)
+  ;;;              :shared-args '(7))
 
-  (map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
-               :section '(1 2)
-               :section-args '(7 12))
+  ;;; (map-section #'(lambda (seq interval) (pitch-transpose interval seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) 
+  ;;;              :section '(1 2)
+  ;;;              :section-args '(7 12))
 
-  (map-section #'(lambda (seq count divide) 
-                   (length-divide count divide seq))
-               '((q q q) (q q q) (q q q) (q q q)) 
-               :section '(1 2 3)
-               :section-args '((1 2) (2 3)))
+  ;;; (map-section #'(lambda (seq count divide) 
+  ;;;                  (length-divide count divide seq))
+  ;;;              '((q q q) (q q q) (q q q) (q q q)) 
+  ;;;              :section '(1 2 3)
+  ;;;              :section-args '((1 2) (2 3)))
 
-  (map-section #'(lambda (seq count divide &rest args) 
-                   (apply #'length-divide count divide seq args))
-               '((q q q) (q q q) (q q q) (h.)) 
-               :section '(1 2 3)
-               :section-args '((1 2) (2 3))
-               :shared-args '(:ignore h.))
+  ;;; (map-section #'(lambda (seq count divide &rest args) 
+  ;;;                  (apply #'length-divide count divide seq args))
+  ;;;              '((q q q) (q q q) (q q q) (h.)) 
+  ;;;              :section '(1 2 3)
+  ;;;              :section-args '((1 2) (2 3))
+  ;;;              :shared-args '(:ignore h.))
 
 This function is a generalised and somewhat more clean variant of the Opusmodus builtin `do-section'.
 
@@ -409,10 +409,10 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
   Example:
   Apply the articulation tenuto to every first note in all bars except the last bar.
-  (map-position-in-bar 0 :articulation 
-                       '((-q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
-                       #'(lambda (ignore) 'ten)
-                       :section '(0 1))
+  ;;; (map-position-in-bar 0 :articulation 
+  ;;;                      '((-q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
+  ;;;                      #'(lambda (ignore) 'ten)
+  ;;;                      :section '(0 1))
 
   NOTE: Currently, rests are simply not counted when estimating the position of a parameter other then :length. Potential workaround: use argument `section'."
   (edit-omn type sequence 
@@ -531,11 +531,11 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
   - list: flat list of values.
 
   Examples:
-  (insert-at-position 'e 'x '(a a a a))
-  (insert-at-position 's 'x '(a a a a))
-  (insert-at-position '? 'x '(a a a a))
-  (insert-at-position 'e '(x y) '(a a a a))
-  (insert-at-position '0 '(x y) '(a a a a))
+  ;;; (insert-at-position 'e 'x '(a a a a))
+  ;;; (insert-at-position 's 'x '(a a a a))
+  ;;; (insert-at-position '? 'x '(a a a a))
+  ;;; (insert-at-position 'e '(x y) '(a a a a))
+  ;;; (insert-at-position '0 '(x y) '(a a a a))
 "
   (rnd-seed seed)
   (let* ((pos1 (case position
@@ -643,13 +643,13 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
   Examples:
 
-  (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed))
-  ; 405621 rnd-sample
-  => (c4 e4 d4) 
+  ;;; (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed))
+  ;;; ; 405621 rnd-sample
+  ;;; => (c4 e4 d4) 
 
-  (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed 13))
-  ; 13 rnd-sample
-  => (e4 d4 e4) 
+  ;;; (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed 13))
+  ;;; ; 13 rnd-sample
+  ;;; => (e4 d4 e4) 
   "
   (print (if seed seed (rnd-range 1 999999))))
 
