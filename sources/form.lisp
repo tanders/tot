@@ -537,64 +537,87 @@ An example with double-nested lists.
 ; (omn->fenv :articulation '(q g4 f legno q c5 p stacc q c3 pp stacc) :type :steps)
 
 
-;;; TODO: consider allowing for OMN expressions to be translated into fenvs for multiple parameters: Have another function calling this one that expects OMN seqs as fenvs, and a list of parameters to extract from those.
-;; params min-vel, max-vel and articulation-map extracted from omn-fenvs
 
-;;; OK TODO: make it recursive for multiple params
-;;; TODO: allow for nested omn-fenv-lists
-;;; OK TODO: add support for param velocity 
-;;; !! TODO: add support for param articulation
-;;; TODO: parameters: ensure list, but only once in recursive function
+;;; TODO: allow for nested omn-fenv-lists for articulations as well
+;;; BUG: if no-of-sublists values are not all 1 for parameter :articulation, then results are not correct -- possibly wrapping messed up?
+;;; TODO: Args swallow for rests?
 ;;; TODO: Consider interpreting the rhythm of omn-fenv-lists as fenv y values (distances between them)
+;;; TODO Dynamics currently only be static values here, because behind the scene they are translated into fenvs with only one velocity number per note
+;;;      I could at a later stage also allow for cresc. and dim. by extending the definition of alternate-omn-fenvs and introducing dynamics-maps, much like articulation-maps
+;;; OK TODO: Allow for option to add articulation parameters without overwriting existing articulations
+;;; OK TODO: make it recursive for multiple params
+;;; OK TODO: add support for param velocity 
+;;; OK TODO: add support for param articulation
+;;; OK TODO: parameters: ensure list, but only once in recursive function
 (defun alternate-omn-fenvs (ids no-of-sublists omn-fenv-lists parameters sequence
-			    &key (interpolation :steps) (hairpins? nil))  
-  ;;; TODO: add doc
-  "
+			    &key (keep-articulations? T) (interpolation :steps) (hairpins? nil))  
+  "This function adds (or replaces) one or more given `parameters' to (of) an OMN `sequence', where this new parameter sequence follows a concatenation of fenvs. A fenv is a particularly flexible envelope, see my fenv library for details. However, for this function musical characteristics in `omn-fenv-lists' are defined by OMN expressions instead, and fenvs are only used in the background.
 
+  Like `alternate-omns', the present function is useful for switching between different musical characteristics, while having some kind of development within each characteristic. It is a powerful function for organising musical form on a higher level. 
+
+  One of the particular expressive powers of this function is that characteristics defined by fenvs (`fenv-lists') can be applied to sublists (bars) in `sequence' of different lengths. For example, the same overall gestus can be applied to a bar of three but all four or five notes. (Nevertheless, it does not allow to change the number of elements in `sequence'.)
+
+  Args:
+  - ids (list of 0-based integers): indicating order of positions of fenvs to choose from `omn-fenv-lists'.
+  - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
+  - omn-fenv-lists (list of flat OMN expression lists, or list of lists of flat OMN expression lists): specifies characteristics between which to switch (transformed into fenvs in the background). If `omn-fenv-lists' is a list of OMN expression lists, then `ids' simply access the fenvs at those positions. If `omn-fenv-lists' is further nested, then `ids' indicate the top-level list positions of `omn-fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
+  - parameter (keyword or list of keywords): the parameter the fenvs overwrite in `sequence', can be :length, :pitch, :velocity or :articulation. 
+  - sequence: OMN sequence to transform, must be nested.
+  - keep-articulations? (Boolean): if T, existing articulations of `sequence' are retained and new articulations are added, otherwise new articulations overwrite the existing ones.
+  - interpolation (either `:steps' or `:linear'): `interpolation' indicates the type of fenv created (interpolation between the numeric representation of OMN parameter values or not).
   - hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dynamics are connected with crescendo and diminuendo hairpins, which may make particularly sense if `interpolation' is set to `:linear'.
 
+  Examples:
 
-A fenv is a particularly flexible envelope, see my fenv library for details. 
+TODO:
 
 "
   (if parameters
-      (alternate-omn-fenvs
-       ids no-of-sublists omn-fenv-lists (rest parameters)       
-       (let* ((param (first parameters))
-	      ;; TODO: currently only list of flat omn-fenv-lists supported, but not a list of alternatives
-	      ;; skip if (eql param :articulation)
-	      (fenv-lists (unless (eql param :articulation)
-			    (mapcar #'(lambda (omn-env) (omn->fenv param omn-env :type interpolation))
-				    omn-fenv-lists))))
-	 (ccase param
-	   ((:length :pitch)
-	    (alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence))
-	   ((:velocity)
-	    (let ((flat-omn-fenv-lists (flatten omn-fenv-lists)))
-	    (alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence
-				    :min-vel (min-velocity flat-omn-fenv-lists)
-				    :max-vel (max-velocity flat-omn-fenv-lists)
-				    :hairpins? hairpins?)))
-	   ((:articulation)
-	    (let* (;; TODO: currently only list of flat omn-fenv-lists supported, but not a list of alternatives
-		   (fenvs_and_articulation-map
-		    (tu:mat-trans
-		     (mapcar #'(lambda (omn-env)
-				 (multiple-value-list
-				  (omn->fenv :articulation omn-env :type interpolation)))
-			     omn-fenv-lists)))
-		   (fenv-lists (first fenvs_and_articulation-map))
-		   (articulation-maps (second fenvs_and_articulation-map)))
-	      ;; (break)
-	      ;;; BUG: articulation-maps are multiple lists -- how to use that suitably?
+      (let ((params (tu:ensure-list parameters)))
+	(alternate-omn-fenvs
+	 ids no-of-sublists omn-fenv-lists (rest params)       
+	 (let* ((param (first params))
+		;; skip if (eql param :articulation)
+		(fenv-lists (unless (eql param :articulation)
+			      (mapcar #'(lambda (omn-env)
+					  (cond ((every #'listp omn-env)
+						 (mapcar #'(lambda (omn-sub-env)
+							     (omn->fenv param omn-sub-env :type interpolation))
+							 omn-env))
+						((every #'atom omn-env)
+						 (omn->fenv param omn-env :type interpolation))))
+				      omn-fenv-lists))))
+	   (ccase param
+	     ((:length :pitch)
 	      (alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence
-				      :articulation-maps articulation-maps)))))       
-       :interpolation interpolation
-       :hairpins? hairpins?)
-  sequence))
+				      :interpolation interpolation :hairpins? hairpins?))
+	     ((:velocity)
+	      (let ((flat-omn-fenv-lists (flatten omn-fenv-lists)))
+		(alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence
+					:interpolation interpolation
+					:min-vel (min-velocity flat-omn-fenv-lists)
+					:max-vel (max-velocity flat-omn-fenv-lists)
+					:hairpins? hairpins?)))
+	     ((:articulation)
+	      (let* (;; TODO: currently only list of flat omn-fenv-lists for :articulation supported, but not a list of alternatives
+		     (fenvs_and_articulation-map
+		      (tu:mat-trans
+		       (mapcar #'(lambda (omn-env)
+				   (multiple-value-list
+				    (omn->fenv :articulation omn-env :type interpolation)))
+			       omn-fenv-lists)))
+		     (fenv-lists (first fenvs_and_articulation-map))
+		     (articulation-maps (second fenvs_and_articulation-map)))
+		(alternate-subseq-fenvs ids no-of-sublists fenv-lists param sequence
+					:articulation-maps articulation-maps
+					:keep-articulations? keep-articulations?
+					:hairpins? hairpins?)))))       
+	 :keep-articulations? keep-articulations? 
+	 :interpolation interpolation
+	 :hairpins? hairpins?))
+      sequence))
 
 
-;;; TODO: needs functions min-velocity and max-velocity
 
 #|
 ;;; tests
