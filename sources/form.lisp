@@ -376,12 +376,13 @@ For more examples with nested lists of fenvs in `fenv-lists' compare the use of 
 
   Args: 
   - ids (list of 0-based integers): indicating order of positions of fenvs to choose from `fenv-lists'.
-  - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. If a list, `no-of-sublists' should have the same length as `ids'. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
-  - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
+  - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
+  - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those positions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
   - parameter (keyword): the parameter the fenvs overwrite in `sequence', can be :length, :pitch, :velocity or :articulation. As fenv values are always numeric, they have to be translated into the corresponding parameter. Fenvs values for length values should be ratios (they are translated to ratios internally, but complex ratios can lead to difficulties with notation); fenv values for pitches are MIDI note numbers; fenv values for velocities depend on `min-vel' and `max-vel'; and articulations are the rounded position of elements in the `articulation-maps'.
   - sequence: OMN sequence to transform, must be nested.
   - min-vel/max-vel (OMN velocity symbol like 'p or 'ff): in case `parameter' is :velocity, these args set the minimum and maximum velocity in the result.
   - articulation-maps (list of list of OMN articulation symbols): in case `parameter' is :articulation, this arg specifies the articulations that rounded fenv values mean. For example, if `articulation-maps' is '(stacc ten) then the fenv value 0 results in a staccato and 1 in a tenuto.
+  - keep-articulations? (Boolean): if T, existing articulations of `sequence' are retained and new articulations are added, otherwise new articulations overwrite the existing ones.
   - interpolation (either `:steps' or `:linear'): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
   - hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dynamics are connected with crescendo and diminuendo hairpins, which may make particularly sense if `interpolation' is set to `:linear'.
 
@@ -413,10 +414,19 @@ An example with velocities
 ;;; 			      (omn->fenv :velocity '(mf pp pp pp) :type :steps))
 ;;; 			:velocity
 ;;; 			(gen-repeat 3 '((h h) (q q q q))))
+
+An example with double-nested lists.
+;;; (alternate-subseq-fenvs '(0 0 1 1 0 0) 
+;;;      			'(1 1 1 1 1 1) 
+;;;      			;; two envelopes, defined as linearly interpolated number lists 
+;;;      			'(((72 60) (71 59) (70 58))
+;;;                               ((72 84) (74 86)))
+;;;      			:pitch 
+;;;      			(gen-repeat 3 '((h h) (q q q q))) 
+;;;      			:interpolation :linear)
+;;; => ((h c5 c3) (q b4 eb4 g3 b2) (h c4 c6) (q d4 bb4 fs5 d6) (h bb4 bb2) (q c5 e4 gs3 c3))
 "
-  (let* ((full-no-of-sublists (if (listp no-of-sublists)
-				  no-of-sublists
-				  (gen-repeat (length ids) no-of-sublists)))
+  (let* ((full-no-of-sublists (circle-repeat no-of-sublists (length ids)))
 	 (fenv-ns (_map-sublist-subseqs full-no-of-sublists sequence
 					#'(lambda (sublists) (count-notes sublists))))
 	 (fenv-val-lists (alternate-fenvs ids fenv-ns fenv-lists :interpolation interpolation))
@@ -446,7 +456,14 @@ An example with velocities
 				 fenv-val-lists
 				 ids))))
 	 )
-    (omn-replace parameter (span (omn :length sequence) fenv-params) sequence)
+    (omn-replace parameter (span (omn :length sequence)
+				 (if (and (eql parameter :articulation)
+				      keep-articulations?)
+				     (zip-articulations
+				      (flatten fenv-params)
+				      (flatten (get-full-articulations sequence)))
+				     fenv-params))
+		 sequence)
     ))
 
 
