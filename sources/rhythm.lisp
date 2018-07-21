@@ -193,19 +193,19 @@
 
   Args:
   - sequence (nested OMN length sequence): input rhythm to process.
-  - tie-prob (number or list of numbers): Probability whether 'whole' notes are tied or note. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
+  - tie-prob (number or list of numbers): Probability whether 'whole' notes (notes filling a whole sublist) are tied or note. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
   - seed (integer): random seed for probability.
 
   Examples:
 
   Enforce tie at end of every bar with only a single note by setting the probability to 1 (except the last -- there is never a tied added at the end of the last bar). 
-  (tie-whole-notes '((h) (q q) (h) (h)) 1)
+  ;;; (tie-whole-notes '((h) (q q) (h) (h)) 1)
 
   Whether or not a tie is added is randomised and should be rather evenly distributed (probability is 0.7).
-  (tie-whole-notes '((h) (q q) (h) (h)) 0.7)
+  ;;; (tie-whole-notes '((h) (q q) (h) (h)) 0.7)
 
   The tie probability is controlled for individual 'whole' notes in the sequence. Note that the probabilities are only given for the actual 'whole' notes, not intermediate bars.
-  (tie-whole-notes '((h) (q q) (h) (h)) '(0 1))
+  ;;; (tie-whole-notes '((h) (q q) (h) (h)) '(0 1))
 "
   (rnd-seed seed)
   (let* ((ensured-lengths (omn :length lengths))
@@ -227,13 +227,13 @@
   "Increase rhythmic contrast by dividing the shortest notes in the given `sequence'.
 
   Example:
-  (divide-shortest '(1/8 1/16 1/16))
+  ;;; (divide-shortest '(1/8 1/16 1/16))
 
   Note that if sequence is a full OMN expression, then the added notes cause all other parameters to shift forward. Additional parameters are added at the end by circling.
-  (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)))
-  => ((E C4 T D4 E4 F4 E4) (E D4 T G4 C4 D4 E4) (Q F4))
+  ;;; (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)))
+  ;;; => ((E C4 T D4 E4 F4 E4) (E D4 T G4 C4 D4 E4) (Q F4))
 
-  (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)) :section '(1))
+  ;;; (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)) :section '(1))
    
   This function is a simplified variant of `length-divide'. For more control use that function instead."  
   (let ((shortest (apply #'min (flatten (omn :length sequence))))
@@ -415,7 +415,9 @@ Additional arguments can be given to fn by specifying further argument lists to 
 (_position-to-rest 2 '(q q q q) :n 2)
 |#
 
-;;; TODO: args position and n should support lists
+;;; TODO:
+;; - args position and n should support lists
+;; - allow to control probability of notes turned into rests
 (defun position-to-rest (position sequence &key (n 1) (flat nil) (swallow T) (section nil) (seed nil))
   "Turn notes at the given position in the bar into rests.
 
@@ -488,11 +490,11 @@ Args:
 
 Example:
 
-(merge-rest-into-note '((-h w. e4 pp) (-h w. gs4 pp) (-h w. gs4 pp)))
-=> ((d e4 pp) (d gs4) (d gs4))
+;;; (merge-rest-into-note '((-h w. e4 pp) (-h w. gs4 pp) (-h w. gs4 pp)))
+;;; => ((d e4 pp) (d gs4) (d gs4))
 
-(merge-rest-into-note '((-w) (-h h e4 pp)) :flat T)
-=> ((w e4 pp tie) (w e4 pp))
+;;; (merge-rest-into-note '((-w) (-h h e4 pp)) :flat T)
+;;; => ((w e4 pp tie) (w e4 pp))
 "
   (edit-omn :length sequence 
             #'(lambda (ls) (_merge-rest-into-note ls))
@@ -1054,7 +1056,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
   Args:
   - gati (integer or list of them): gati for the cell(s) to generate.
-  - yati (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
+  - jathi (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
   - position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
     If `position' is '? then the position is randomised.
   - accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
@@ -1067,37 +1069,37 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   Examples:
 
   The first position is always a single note per cell (if no other filtering is selected)
-  (gen-karnatic-cell 4 4 0)
+  ;;; (gen-karnatic-cell 4 4 0)
 
   Generating multiple cells, and showing the order of cells in this gati and jathi without filtering (only cells carrying poteentially a durational accent on the first note of the cell).
-  (gen-karnatic-cell 4 4 '(0 1 2 3 4))
+  ;;; (gen-karnatic-cell 4 4 '(0 1 2 3 4))
 
   Setting a different jathi.
-  (gen-karnatic-cell 4 5 '(0 1 2 3 4))
+  ;;; (gen-karnatic-cell 4 5 '(0 1 2 3 4))
 
   If position exceeds the range of possible cell, the last cell is chosen (which is always an even subdivision of the full cell length into `yati' matras.
-  (gen-karnatic-cell 4 4 100)
+  ;;; (gen-karnatic-cell 4 4 100)
 
   If position receives a list, also all other arguments can be lists (of the same length), e.g., different jathis. Note that equal positions in different jathis tend to result in similar cells.
-  (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
+  ;;; (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
 
   Filtering arguments can further shape the result. The meaning of the position argument changes accordingly, always depending on the remaining number of rhythmic options for cells. E.g., the minimum number of notes per cell can be set...
-  (gen-karnatic-cell 4 4 0 :min-number 2)
+  ;;; (gen-karnatic-cell 4 4 0 :min-number 2)
  
   ... or the maximum number of notes. Note that the position is randomised here.
-  (gen-karnatic-cell 4 4 '? :max-number 3)
+  ;;; (gen-karnatic-cell 4 4 '? :max-number 3)
 
   ... or the first note value in the cell can be set.
-  (gen-karnatic-cell 4 4 0 :first-length)
+  ;;; (gen-karnatic-cell 4 4 0 :first-length)
 
   All these filter arguments also support lists for setting different values for each sublist.
-  (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
+  ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
 
   Again, an example with randomised positions, but here the seed is fixed.
-  (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
+  ;;; (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
 
   Filtering can remove all options for cells, in which case nil returned.
-  (gen-karnatic-cell 4 4 0 :min-number 5)
+  ;;; (gen-karnatic-cell 4 4 0 :min-number 5)
 
 
   You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
@@ -1197,9 +1199,10 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
   Examples:
   gati 5 (quintuplets), jathi 4
-  (gen-matras 5 4 3)
+  ;;; (gen-matras 5 4 3)
+
   gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest.
-  (gen-matras 5 4 3 :prefix '-q)
+  ;;; (gen-matras 5 4 3 :prefix '-q)
 
   See Reina (2016) for details on the terms matras, gati and jathi.
   
@@ -1214,7 +1217,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
 
 
-
+;;; TODO: consider revising (or an alternative function) definition by using gen-karnatic-cell: stored are then not actual cells, but args for gen-karnatic-cell. E.g., in such a revision I would not be limited to have a durational accent on every cell/pala
 (defun accented-yati-phrase (gati pala-lengths gap &rest args &key (type '(:srotovahayati :at-end)) &allow-other-keys)
   "Generates the matras sequence for a yati phrase, see Reina (2016, p. 205ff) for details. Resulting sublists are jathis for potential post-processing (e.g., adding an accent on their first notes) before redefining the metric structure (usually to follow the tala, e.g., with `omn-to-time-signature'). 
 
@@ -1228,8 +1231,9 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   Additionally, all `durational-accent' key args are supported.
 
   Examples:
-  (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-end) :divide-prob 0.3 :merge-prob 0.7 :seed 1)
-  (accented-yati-phrase '3q '(4 7 10 13) '-3e :type '(:gopuchayati :at-front) :divide-prob 0.7 :merge-prob 0.5 :seed 3)
+  ;;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-end) :divide-prob 0.3 :merge-prob 0.7 :seed 1)
+
+  ;;; (accented-yati-phrase '3q '(4 7 10 13) '-3e :type '(:gopuchayati :at-front) :divide-prob 0.7 :merge-prob 0.5 :seed 3)
 
   Reference
   Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
@@ -1505,7 +1509,11 @@ Note that resulting meter changes may occur even within tuplets, though Opusmodu
   - positions (lists of ints, length most be one shorter than number of bars/sublists in lengths): amount by how many note values the bar line should be moved to the left (negative number) or to the right (positive number). `positions' is circled through to meet the length of `lengths'.
 
   Example:
-  (shift-meter-boundaries '((1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18) (1/16 1/16 1/16 1/16 1/16 1/16 1/16 -1/16) (-1/14 1/14 1/14 1/14 1/14 1/14 1/14) (q -q)) '(0 -1 1))
+  ;;; (shift-meter-boundaries '((1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18)
+  ;;;                           (1/16 1/16 1/16 1/16 1/16 1/16 1/16 -1/16)
+  ;;;                           (-1/14 1/14 1/14 1/14 1/14 1/14 1/14) 
+  ;;;                           (q -q)) 
+  ;;;                         '(0 -1 1))
 
 "
   (reverse
@@ -1545,8 +1553,8 @@ Note that resulting meter changes may occur even within tuplets, though Opusmodu
   - section (list of ints): selected sublists to process.
 
   Examples
-  (insert-into-bar '(s e) '(q (e e)) '((h) (h) (h)))
-  (insert-into-bar '(?) '(q (e e)) '((h) (h) (h)) :section '(1 2) :seed 1)
+  ;;; (insert-into-bar '(s e) '(q (e e)) '((h) (h) (h)))
+  ;;; (insert-into-bar '(?) '(q (e e)) '((h) (h) (h)) :section '(1 2) :seed 1)
 
 See also Opusmodus builtin `position-insert'.
 "
