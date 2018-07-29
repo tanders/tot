@@ -34,14 +34,29 @@ $ git clone https://github.com/tanders/cluster-rules.git
 
 ** Updating your software
 
-   If there are [[https://github.com/tanders/tot/commits/master][changes]], you can update your software later at the terminal in the following way.
+   If there are [[https://github.com/tanders/tot/commits/master][changes]], you can update your software later at the terminal in the following way. 
 
 #+begin_src bash :tangle yes
 $ cd ~/common-lisp/tot
 $ git pull
 #+end_src
 
-  
+   Make sure you update all the dependencies likewise.
+
+#+begin_src bash :tangle yes
+$ cd ~/common-lisp/string-tools
+$ git pull
+$ cd ~/common-lisp/ta-utilities
+$ git pull
+$ cd ~/common-lisp/fenv
+$ git pull
+$ cd ~/common-lisp/cluster-engine
+$ git pull
+$ cd ~/common-lisp/cluster-rules
+$ git pull
+#+end_src
+
+
 
 * Usage 
 
