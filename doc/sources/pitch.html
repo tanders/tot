@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232000">
+<a href="pitch.html#_g233315">
 chord-multiplication</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ chord1 chord2</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232005">
+<a href="pitch.html#_g233320">
 fenv-&gt;pitches</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ fenv n</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232006">
+<a href="pitch.html#_g233321">
 fenv-transpose-pitch</a>
 </td>
 <td class="summary">
@@ -73,7 +73,15 @@ sequence fenv <em>&amp;rest</em> args</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g231997">
+<a href="pitch.html#_g233324">
+make-is-trill-length?</a>
+</td>
+<td class="summary">
+length</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g233312">
 pc-&gt;pitch</a>
 </td>
 <td class="summary">
@@ -81,7 +89,7 @@ pc octave</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g231998">
+<a href="pitch.html#_g233313">
 pcs-&gt;chord</a>
 </td>
 <td class="summary">
@@ -89,7 +97,7 @@ pcs <em>&amp;optional</em> (octave 4)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g231999">
+<a href="pitch.html#_g233314">
 pitch-&gt;pc</a>
 </td>
 <td class="summary">
@@ -97,7 +105,7 @@ pitch</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232007">
+<a href="pitch.html#_g233322">
 pitch-retrograde-omn</a>
 </td>
 <td class="summary">
@@ -105,7 +113,7 @@ sequence <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232004">
+<a href="pitch.html#_g233319">
 pitches-&gt;fenv</a>
 </td>
 <td class="summary">
@@ -113,7 +121,7 @@ pitches</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232003">
+<a href="pitch.html#_g233318">
 spectra-transpositions-fitting-in-scale</a>
 </td>
 <td class="summary">
@@ -121,7 +129,7 @@ spectra scale</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232001">
+<a href="pitch.html#_g233316">
 stretch-pitches</a>
 </td>
 <td class="summary">
@@ -129,7 +137,7 @@ pitches factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232002">
+<a href="pitch.html#_g233317">
 stretch-pitches2</a>
 </td>
 <td class="summary">
@@ -137,16 +145,24 @@ number chord factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g232008">
+<a href="pitch.html#_g233325">
 thomassen-accents</a>
 </td>
 <td class="summary">
 sequence <em>&amp;optional</em> (format :omn)</td>
 </tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="pitch.html#_g233323">
+trill-selected-notes</a>
+</td>
+<td class="summary">
+sequence test <em>&amp;key</em> (interval 2) (ignore-articulations '(marc))</td>
+</tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g231997">
+<a id="_g233312">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -179,7 +195,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g231998">
+<a id="_g233313">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -212,7 +228,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g231999">
+<a id="_g233314">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -240,7 +256,7 @@ Converts the OMN pitch `pitch' into a pitch class integer
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232000">
+<a id="_g233315">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -284,7 +300,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232001">
+<a id="_g233316">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -349,7 +365,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232002">
+<a id="_g233317">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -412,7 +428,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232003">
+<a id="_g233318">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -446,7 +462,7 @@ Args:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232004">
+<a id="_g233319">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -474,7 +490,7 @@ Translates a sequence of pitches into a fenv that linearily inerpolates between 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232005">
+<a id="_g233320">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -502,7 +518,7 @@ Translates a fenv into a sequence of pitches. Fenv values encode pitches by thei
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232006">
+<a id="_g233321">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -537,6 +553,7 @@ sequence: (possibly nested) list of pitches or OMN expression
 <li>
 <p>
 fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value by position in sequence (not temporal position); intervals are specified in semitones; intervals are rounded to their closes integer 
+ 
  All arguments of pitch-transpose-n are supported as well. 
  </p>
 </li>
@@ -561,7 +578,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232007">
+<a id="_g233322">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -589,7 +606,94 @@ My version of pitch-retrograde that is working until the original is fixed for O
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g232008">
+<a id="_g233323">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+trill-selected-notes&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence test <em>&amp;key</em> (interval 2) (ignore-articulations '(marc))</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Increases rhythmic interest by subdividing all notes that meet the function test and turning these into a trill. 
+ </p>
+<p>
+Args: 
+ </p>
+<ul>
+<li>
+<p>
+sequence: nested OMN sequence 
+ </p>
+</li>
+<li>
+<p>
+test: function expecting four arguments of a given note, its length, pitch, velocity and articulation. 
+ </p>
+</li>
+<li>
+<p>
+interval: integer specifying size and direction of trill interval (positive is up, negative is down). 
+ </p>
+</li>
+<li>
+<p>
+ignore-articulations: list of articulations not to repeat at inserted notes. 
+ </p>
+</li>
+</ul>
+<p>
+Example: 
+ (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e)) 
+ =&gt; ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf)) 
+ 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g233324">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+make-is-trill-length?&nbsp;&nbsp;</td>
+<td class="lambda-list">
+length</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Helper function for trill-selected-notes] Returns a function to be used as `test' argument for function `trill-selected-notes'. The returned function returns true for all notes of the given `length'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g233325">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -661,6 +765,6 @@ References:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-07-21 17:41:21</div>
+- 2018-07-29 13:49:37</div>
 </body>
 </html>
