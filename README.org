@@ -2,7 +2,15 @@
 
 This library provides a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]]. 
 
-Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations :)
+Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited :)  
+
+Nevertheless, I trust at least some of the various function here might be useful for others. Note that I always tried to document their purpose and limitations and included many usage examples. 
+
+
+* Documentation
+
+  You can browse the documentation of this library online at https://tanders.github.io/tot/. However, remember that you can directly evaluate the many examples in the documentation when (after installing the library) you drag the library folder into your Opusmodus project navigator and open the documentation within Opusmodus.
+
 
 
 * Installation
@@ -18,9 +26,9 @@ $ cd ~/common-lisp
 $ git clone https://github.com/tanders/tot.git
 #+end_src
 
-  You will be asked for your GitHub username and password.
+  You might be be asked for your GitHub username and password.
   
-  This library depends on several other libraries, which you can install in the same way.
+  This library depends on several other libraries, which you should install in the same way.
   
 #+begin_src bash :tangle yes
 $ cd ~/common-lisp
@@ -77,5 +85,5 @@ $ git pull
 
   Distributed under the GNU General Public License.
   
-  Copyright © 2017 Torsten Anders
+  Copyright © 2018 Torsten Anders
 
