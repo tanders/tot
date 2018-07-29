@@ -350,6 +350,9 @@ For more examples with nested lists of fenvs in `fenv-lists' compare the use of 
 #|  ; test
 (_map-sublist-subseqs '(2 1 2 1) (gen-repeat 3 '((h) (q q)))
 		     #'(lambda (sublists) (count-notes sublists)))
+
+(_map-sublist-subseqs '(2) (gen-repeat 3 '((q q)))
+		     #'(lambda (sublists) (count-notes sublists)))
 |#
 
 
