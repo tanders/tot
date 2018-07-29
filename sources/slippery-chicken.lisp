@@ -130,7 +130,7 @@
                                        (item2 1))
   "Generates a list containing only instances of item1 and and item2, where initially item1 dominates, but then item1 gradually decreases and item2 increases, until item2 completely dominates. The transition follows Fibonacci numbers.
 
-  Example:
+* Examples:
   ;;; (fibonacci-transition 35 0 1)
   ;;; => (0 0 0 0 0 0 0 1 0 0 0 0 1 0 0 1 0 1 0 1 1 0 1 0 1 1 0 1 1 1 1 1)
 

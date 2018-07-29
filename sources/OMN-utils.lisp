@@ -15,7 +15,7 @@
 
   Rests are skipped unprocessed
 
-  Args:
+* Arguments:
   - fn: function expecting and returning a single event
   - sequence: an OMN sequence
   - test: Boolean function expecting a single event. By default, all elements are processed. 
@@ -23,7 +23,7 @@
   - section (list of ints): 0-based positions of bars (sublists) in nested `sequence' to which `fn' is applied.
   - exclude (list of ints): 0-based positions of bars (sublists) in nested `sequence' to which `fn' is *not* applied. Only either `section' or `exclude' should be specified, otherwise `exclude' is ignored.
 
-  Example:
+* Examples:
 
   Reduce all events with velocity p to velocity pp
 ;;; (map-selected-events
@@ -61,7 +61,8 @@
 (defun process-element (fn element args)
   "Many Opusmodus functions are defined to work only with lists. This function is intended to help to keep when you want to instead process a single element with such a function.
 
-  Example
+* Examples:
+
   Transpose a single element with pitch-transpose
   ;;; (process-element #'pitch-transpose 'c4 '(2 _))
 
@@ -80,12 +81,12 @@
 
   NOTE: This was one of my first Opusmodus function definitions, and while it works it is not as refined as some later functions :)
 
-  Args:
-  fn: a function expecting four arguments (a length, pitch, velocity and articulation) and returning a list of four values (a length, pitch, velocity and articulation).
-  omn-expr: an OMN expression
+* Arguments:
+  - fn: a function expecting four arguments (a length, pitch, velocity and articulation) and returning a list of four values (a length, pitch, velocity and articulation).
+  - omn-expr: an OMN expression
 
 
-  Example:
+* Examples:
 
 ;;; (map-omn #'(lambda (length pitch velocity articulation)
 ;;;              (list length 
@@ -108,12 +109,19 @@
 ;;;          '((q b4 f slap+stacc -h q bb4 slap+stacc -h) (q gs4 slap+stacc -h) (q bb4 slap+stacc c5 mp ord d5 q. f5 e eb5 q d5) (-q c5 g4 h fs4 q eb5 stacc) (q c5 f slap+stacc -h q. g4 mp ord e f5 q e5) (q f5 cs5 f4 h d5 -q)))
 
 
-  BUG: does not work if omn-expr contains rest.
+* BUGS: 
+
+ Does not work if omn-expr contains rest.
   Problem: omn does not provide any values for rests.
   Possible solution: couple note durations with their respective params, but leave rests without. Then skip rests in the processing unchanged. 
   BTW: This process looses articulations on rests, like fermata.
 
-  NOTE: see also function `single-events': looping (or mapping) over its result has similar effect."
+
+* Notes: 
+
+  See also the Opusmodus built-in function `single-events': looping (or mapping) over its result has similar effect.
+
+"
   ;;; TMP
   ; (format T "map-omn ~A~%" omn-expr)
   (if (listp (first omn-expr))
@@ -192,7 +200,7 @@
 		    &key section exclude section-args shared-args)
   "Apply a function to only selected bars (sublists) in an OMN sequence. 
 
-  Args:
+* Arguments:
   - function: function to apply to sublists in `sequence'
   - sequence: nested list of OMN parameters or full OMN expressions
   - section (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is applied.
@@ -200,7 +208,7 @@
   - shared-args (list): Further arguments to `function' added behind the current sublist of `sequence' and potentially `section-args'. 
   - section-args (list or list of lists): Further arguments to `function' added behind the current sublist of `sequence'. If not a nested list, then only a single additional argument is specified for each bar (sublist) to which `function' is applied.
 
-  Examples:
+* Examples:
   ;;; (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :section '(1 2))
 
   ;;; (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :exclude '(0))
@@ -261,7 +269,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun edit-omn (type notation fun &key (flat nil) (swallow nil) (section nil) (additional-args nil))
   "Use function `fun', defined for transforming lists of individual OMN parameters of `type' (e.g., :length, or :velocity) to transform omn expression `notation'. This function is intended as a convenient way to generalise your functions to support omn notation as input.
 
-  Args:
+* Arguments:
   - type: a keyword like :length, :pitch, :velocity, :duration, or :articulation (any keyword supported by function omn or make-omn).
   - notation: a omn sequence or a plain parameter list (can be nested).
   - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
@@ -270,7 +278,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
   - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
   - additional-args (list of args): `additional-args' allows implementing 'dynamic' arguments, i.e., transformations that change over the sublists of `notation' depending on a list of arguments instead of a plain value. If `additional-args' is nil, then `fun' expects parameter values directly. However, if it is a list, then `fun' expects a list where the parameter values are the first element, and `additional-args' (if `flat' is T) or an element thereof (if `flat' is NIL) the second element in the list expected by `fun'. 
 
-  Examples: 
+* Examples: 
 
   roll your own transposition supporting omn input
   first aux def supporting only pitches
@@ -473,7 +481,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun map-position-in-bar (position type sequence fun &key (section nil))
   "Transforms in the bars of `sequence' the parameter of `type' (e.g., :length) at `position' with `fun'. 
 
-  Example:
+* Examples:
   Apply the articulation tenuto to every first note in all bars except the last bar.
   ;;; (map-position-in-bar 0 :articulation 
   ;;;                      '((-q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
@@ -532,7 +540,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun phrase-lengths (lengths)
   "Returns the number of notes between rests in the given lengths.
   
-  Args:
+* Arguments:
   - length: lengths or OMN (list or list of list)."
   (let ((flat-lengths (length-rest-merge (flatten (omn :length lengths)))))
     (mapcar #'1-
@@ -591,12 +599,12 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun insert-at-position (position item list &key seed)
   "Insert item(s) at given position into list.
 
-  Args
+* Arguments:
   - position: either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
   - item: value or list of values to be inserted.
   - list: flat list of values.
 
-  Examples:
+* Examples:
   ;;; (insert-at-position 'e 'x '(a a a a))
   ;;; (insert-at-position 's 'x '(a a a a))
   ;;; (insert-at-position '? 'x '(a a a a))
@@ -620,7 +628,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun length-subtract (&rest length-values)
   "Subtraction for OMN length values. 
 
-  Example:
+* Examples:
 ;;; (length-subtract 'w 'q)
 ;;; => h.
   "
@@ -630,7 +638,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun length-add (&rest length-values)
   "Addition of OMN length values.
 
-  Example:
+* Examples:
 ;;; (length-add 'w 'q)
 ;;; => wq"
   (first (omn-decode (list (apply #'+ (omn-encode length-values))))))
@@ -660,7 +668,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
   Args: 
   - part: nested OMN list.
 
-  Example:
+* Examples:
   ;;; (pprint-part '((q c4 d4 e4) (h f4 q e4) (h. d2)))
 
   Meanwhile made redundant by new Opusmodus builtin functionality: Tools > PPrint Expression, and Tools > PPrint Last Score"
@@ -704,10 +712,10 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 (defun mk-seed (&optional seed)
   "Generates a random seed value, prints and returns it. Useful for exploring different results of random processes, but then keeping a found solution.
 
-  Args:
+* Arguments:
   - seed (int): optionally fixes generated seed.
 
-  Examples:
+* Examples:
 
   ;;; (rnd-sample 3 '(c4 d4 e4) :seed (mk-seed))
   ;;; ; 405621 rnd-sample

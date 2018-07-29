@@ -21,7 +21,7 @@
 (defun dynamic-rhythmic-transformation (length fenv fun &key (quantize '(1 2 3 4 5 7 8)))
   "Generic transformation function: transforms the rhythmic sequence `length' in a way that changes over the duration of that sequence and is specified with a fenv and a function.  
 
-  Args:
+* Arguments:
   - 
   "
   
@@ -35,7 +35,7 @@
                               &allow-other-keys)
   "Subdivides given note `lengths'.  
 
-  Args:
+* Arguments:
   - lengths: list of length values, can be nested.
   - subdivisions: (circling list of ints) specifies tuplet sequence.
   - length-dividend (default 1/2): duration ratio divided by subdivisions. Default case are half note subdivisions, ie. a subdivision of 3 results 3h notes (triplets splitting a half note). 
@@ -43,7 +43,7 @@
   
   All keyword args from `length-divide2' are inherited, but some with different default.
 
-  Examples:
+* Examples:
   ;;; (tuplet-rhythm '(1/2 1/2 1/2) '(3 4 5))
   ;;; => (1/6 1/6 1/6 1/8 1/8 1/8 1/8 1/10 1/10 1/10 1/10 1/10)
 
@@ -52,7 +52,9 @@
   With irregular meter
   ;;; (tuplet-rhythm (gen-eval 4 '(gen-repeat (rnd1 :low 2 :high 5) 'h)) '(3 4 5 6 5 4 3 2) :seed 1234)
 
-  BUG: seed argument not working as expected -- it is not even used in this function!"
+* BUGS: 
+
+  Seed argument not working as expected -- it is not even used in this function!"
   (apply #'length-divide2 (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
          (mapcar #'(lambda (x) (/ length-dividend x)) subdivisions)
          lengths
@@ -82,7 +84,7 @@
                                   (seed nil))
   "Some custom algorithm to create rhythmic phrases that randomly walk across tuplet subdivisions and includes some rests.
 
-  Args:
+* Arguments:
   - bar-no: number of bars to generate
   - bar-length: regular duration of resulting bars
   - subdivisions-ambitus: range of tuplet subdivisions
@@ -90,7 +92,7 @@
   - rest-distance-order (:rnd or :seq): whether rest distances will be in the given order (:seq) or randomised (:rnd)
   - last-bar: bar added at end after bar-no bars. If nil, no bar is added. 
 
-  Example: 
+* Examples: 
   ;;; (tuplet-walk-rhythm 7 :seed 569 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4))
   "
   ;; ? Old doc of removed arg? -- kann weg?
@@ -115,14 +117,14 @@
 (defun even-length-rhythm (length &key total-duration prefix suffix (time-sig '(4 4)))
   "Custom algorithm to create rhythmic phrases consisting of even note durations over a certain time. 
 
-  Args:
+* Arguments:
   - length (length value or list of length values): rhythmic value(s) to repeat
   - total-duration (length value): duration of the generated phrase including the prefix and suffix length.
   - prefix (length value or length sequence): preceeding phrase
   - suffix (length value or length sequence): succeeding phrase
   - time-sig: time signature
 
-  Examples:
+* Examples:
   ;;; (even-length-rhythm '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q)
 
   Lists can be specified specified for length, prefix and suffix
@@ -149,14 +151,14 @@
                                     &key prefix suffix (time-sig '(4 4)))
   "Some custom algorithm to create rhythmic phrases consisten of even note durations over a certain time. Variant of even-length-rhythm, where the total-duration is the sum of duration, prefix and suffix length.
 
-  Args:
+* Arguments:
   - length (length value): rhythmic value to repeat
   - duration (length value): duration over which to repeat the rhythmic value
   - prefix (length value or length sequence): preceeding phrase
   - suffix (length value or length sequence): succeeding phrase
   - time-sig: time signature
 
-  Example:
+* Examples:
   ;;; (even-length-rhythm2 '5q 'w_w_h :prefix '-w_5h :suffix '-5q_5h_q)"  
   (omn-to-time-signature
    (append 
@@ -191,12 +193,12 @@
 
   NOTE: this function is intended for processing note length values only, as ties are otherwise also affected by pitches. If given a full OMN sequence, then nevertheless only the transformed rhythm is returned.
 
-  Args:
+* Arguments:
   - sequence (nested OMN length sequence): input rhythm to process.
   - tie-prob (number or list of numbers): Probability whether 'whole' notes (notes filling a whole sublist) are tied or note. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
   - seed (integer): random seed for probability.
 
-  Examples:
+* Examples:
 
   Enforce tie at end of every bar with only a single note by setting the probability to 1 (except the last -- there is never a tied added at the end of the last bar). 
   ;;; (tie-whole-notes '((h) (q q) (h) (h)) 1)
@@ -234,7 +236,7 @@
 (defun divide-shortest (sequence &key (divide 2) (count nil) (section nil) (seed nil))
   "Increase rhythmic contrast by dividing the shortest notes in the given `sequence'.
 
-  Examples:
+* Examples:
   ;;; (divide-shortest '(1/8 1/16 1/16))
 
   ;;; (divide-shortest '(1/8 1/16 1/16) :count 1)
@@ -313,14 +315,15 @@
 (defun map-tuplet (fn lengths &rest arglist)
   "A function for varying tuplet groups one by one: map-tuplet applies fn to each tuplet length group in lengths.
 
-  Args:
-  fn: a function expecting a length list, and potentially more arguments if further args are given
-  lengths: a (possibly nested) lengths list.
-  args -- arguments that are part of arg-list before keyword args: more argument lists to map in parallel. 
-  type -- a keyword arg that is part of arglist. :extend, :denominator or :tuplet. The default is :extend (inherited from split-lengths).
+* Arguments:
+  - fn: a function expecting a length list, and potentially more arguments if further args are given
+  - lengths: a (possibly nested) lengths list
+  - arglist: further argument
+    -- args -- arguments that are part of arg-list before keyword args: more argument lists to map in parallel. 
+    -- type -- a keyword arg that is part of arglist. :extend, :denominator or :tuplet. The default is :extend (inherited from split-lengths).
 
 
-Examples:
+* Examples:
 
 ;;; (setf rhy '((-1/6 1/6 1/6 -1/8 1/8 1/8 1/8) (-1/10 1/10 1/10 1/10 1/10 -1/12 1/12 1/12 1/12 1/12 1/12) (-1/10 1/10 1/10 1/10 1/10 -1/8 1/8 1/8 1/8) (-1/6 1/6 1/6 -1/4 1/4)))
 
@@ -366,7 +369,7 @@ Additional arguments can be given to fn by specifying further argument lists to 
 
   Note: implemented by calling length-divide internally for each sublist in length, and therefore arguments like section and exclude are not supported.
 
-  Examples:
+* Examples:
   ;;; (length-divide-ext 1 '(2 3) '((q q) (q q)) :seed 1)
   ;;; => ((1/8 1/8 1/4) (1/4 1/12 1/12 1/12))
 
@@ -382,14 +385,14 @@ Additional arguments can be given to fn by specifying further argument lists to 
 (defun note-rest-series (positions sequence &key (flat nil) (swallow nil) (section nil))
   "Turn notes at specific positions (actually, distances between positions) into rests. This function is like the Opusmodus built-in length-rest-series, but supports arbitrary OMN expressions as input and additionally the arguments swallow and section.
 
-  Args:
+* Arguments:
   - positions (list of ints): 1-based positions of notes to be turned into rests
   - sequence (list of lengths or OMN expression): music to process
   - flat (Boolean): whether positions count for sublists (nil) or the whole list (T)
   - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
   - section (list of ints): 0-based positions of sublists to process. This argument is ignored if flat is T.
 
-  Example:
+* Examples:
 
 ;;; (setf melody '((s eb6 < leg f5 < leg c5 < leg f5 < leg) (e e6 f - -q)))
 ;;; (note-rest-series '(1 1) melody :swallow T :section '(0))
@@ -441,7 +444,7 @@ Additional arguments can be given to fn by specifying further argument lists to 
 (defun position-to-rest (position sequence &key (n 1) (flat nil) (swallow T) (section nil) (seed nil))
   "Turn notes at the given position in the bar into rests.
 
-  Args:
+* Arguments:
   - position (symbol or integer): position of the note to turn into a rest. If a positive integer, it denotes the 0-based position. If a negative integer, it counts backwards from the end (-1 is the last element, -2 the one before the last and so on). Symbols have the following meaning: s - first note (start); e - last note (end); ? - randomly chosen position.  
   - sequence (list of lengths or OMN expression): music to process.
   - n (integer): how many consecutive notes after `position' to affect.
@@ -450,7 +453,7 @@ Additional arguments can be given to fn by specifying further argument lists to 
   - section (list of ints): 0-based positions of sublists to process. This argument is ignored if flat is T.
   - seed (integer): random seed for ? position.
 
-  Examples:
+* Examples:
 
   Processing a flat list of durations.
 ;;; (position-to-rest 's '(q q q q) :n 2)
@@ -489,7 +492,7 @@ Additional arguments can be given to fn by specifying further argument lists to 
   "[Aux def]
 All rests are merged into the following note. This function can be useful for producing harmonic rhythms. 
 
-Args: 
+* Arguments: 
 - lengths: a flat list of length values"
   ;; (declare (optimize (debug 3)))
   (reduce #'(lambda (accum elem)
@@ -506,12 +509,12 @@ Args:
 (defun merge-rest-into-note (sequence &key (flat nil) (section nil))
   "All rests are merged into the following note. This function can be useful for producing harmonic rhythms.
 
-Args:
+* Arguments:
 - sequence: OMN sequence, can be nested
 - flat (Boolean): whether or not to merge rests across bar boundaries
 - section (list of positive integers): selection of sublists to process
 
-Example:
+* Examples:
 
 ;;; (merge-rest-into-note '((-h w. e4 pp) (-h w. gs4 pp) (-h w. gs4 pp)))
 ;;; => ((d e4 pp) (d gs4) (d gs4))
@@ -566,13 +569,16 @@ Example:
 (defun cut-holes (sequence binary-list &key (swallow nil))
   "Turns notes in `sequence' into rests if `binary-list' contains a 0 at the matching position. Notes are left untouched if there is a 1 at the matching position.
 
-  Args:
+* Arguments:
   - sequence (list of lengths or OMN expression): music to process
   - binary-list (flat list of ints): 
   - flat (Boolean): whether binary-list count for sublists (nil) or the whole list (T)
   - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
 
-  See also: note-rest-series"
+* See Also: 
+
+{defun note-rest-series}
+"
   (edit-omn :length sequence
 	    #'(lambda (ls) (_cut-holes ls binary-list))
 	    :flat T
@@ -636,7 +642,7 @@ Example:
 
   If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
 
-  Args:
+* Arguments:
   - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
   - n (integer): maximum number of notes at end of bars that are potentially subdivided.
   - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
@@ -650,7 +656,7 @@ Example:
   - ignore (length or list of lengths): specified lengths are *not* subdivided. 
   - seed (integer): random seed.
 
-  Example:
+* Examples:
   ;;; (_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)"
   (do-verbose ("")
     (assert (and (listp lengths) (every #'listp lengths)) 
@@ -727,7 +733,7 @@ Example:
                                          (set nil) (ignore nil) (seed nil))
   "Adds durational accents on first notes of bars by subdividing the last note of the preceding bar. `lengths' must be a list of length lists (multiple bars). 
 
-  Args:
+* Arguments:
   divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
   n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
   divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
@@ -738,7 +744,7 @@ Example:
   ignore (length or list of lengths): specified lengths are *not* subdivided. 
   seed (integer): random seed.
 
-  Example:
+* Examples:
   (_durational-accent-divide (gen-repeat 2 '((h q) (q q q) (h -q))) :divide '(2 3) :n 2 :seed 4321)"
   (do-verbose ("")
     (assert (and (listp lengths) (every #'listp lengths)) 
@@ -807,12 +813,12 @@ Example:
 
   If a bar starts with a rest, then it cannot carry a durational accent, and hence notes are not merged. 
 
-  Args:
+* Arguments:
   - n (integer): number of notes at beginning of bars that are potentially subdivided.
   - prob (default 0.5): probability value between 0.0 and 1.0, controlling whether notes that could be merged for creating a durational accent actually will be. Higher values make durational accents more likely.
   - seed (integer): random seed.
 
-  Example:
+* Examples:
   ;;; (_durational-accent-merge (gen-repeat 4 '((q q q))) :n 3 :seed 3333)"
   (do-verbose ("")
     (assert (and (listp lengths) (every #'listp lengths)) 
@@ -897,7 +903,7 @@ Example:
 
 While `durational-accent' only supports accents of the first beat of each bar, you can easily realise other accent patterns by temporarily rebarring the music (e.g., with `omn-to-time-signature' and perhaps `length->time-signature'), and then afterwards align the result of `durational-accent' again with the original time signatures (e.g., with `copy-time-signature').
 
-  Args:
+* Arguments:
   - lengths: a list of length lists (multiple bars). `length' can also be arbitrary OMN expressions, but only length lists are returned and other parameters are ignored. 
   - divide (integer or list of integers, default 2): specifies into how many equal note values notes preceeding a durational accent are subdivided. If list of integer, subdivision is randomly chosen.
   - divide-n (integer): number of notes at end of bars that are potentially subdivided. If a bar starts with a rest, then it cannot carry a durational accent, and hence its preceding note is never subdivided. 
@@ -917,7 +923,9 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   - format (either :omn or :length): set the output format. In :length format, grace notes are represented explicitly as acciaccatura and ties are represented explicitly, in length format they have simply the duration 0.
   - seed (integer): random seed.
 
-  Examples (evaluate multiple times to see range of solutions):
+* Examples:
+
+  Evaluate these examples multiple times to see range of solutions.
   ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide 2 :divide-n 2 :merge-n 3)
   ;;; (durational-accent (gen-repeat 4 '((q q q))) :divide '(2 3) :divide-n 2 :merge-n 3)
 
@@ -1077,7 +1085,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
   See Reina (2016) for details on terms like gati, jathi and matra.
 
-  Args:
+* Arguments:
   - gati (integer or list of them): gati for the cell(s) to generate.
   - jathi (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
   - position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
@@ -1213,24 +1221,27 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 (defun gen-matras (gati jathi jathi-number &key prefix suffix)
   "Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `jathi' the number of matras per 'bar' (sublist) and `jathi-number' the resulting number of sublists.
 
-  Args:
+* Arguments:
   - gati (int)
   - jathi (int)
   - yat-number (int)
   - prefix (length value or length sequence, possibly nested): preceeding phrase
   - suffix (length value or length sequence, possibly nested): succeeding phrase
 
-  Examples:
+* Examples:
   gati 5 (quintuplets), jathi 4
   ;;; (gen-matras 5 4 3)
 
   gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest.
   ;;; (gen-matras 5 4 3 :prefix '-q)
 
+* Notes:
+
   See Reina (2016) for details on the terms matras, gati and jathi.
   
-  Reference
-  Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge."
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+
+"
   (append 
    (when prefix (ensure-double-list prefix))
    (gen-repeat jathi-number (list (gen-repeat jathi (/ 1/4 gati))))
@@ -1246,20 +1257,22 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 
   NOTE: In contrast to Karnatic music, resulting accents are expressed by durational accents by this function. Hence the word `accented' in the  function name.
   
-  Args:
+* Arguments:
   - gati (OMN length): beat subdivision 
   - pala-lengths (list of ints): number of matras per pala 
   - gap (OMN length, typically a rest): length of gaps between palas (always constant). For mridangamyati phrases, when you need different gap lengths, simply append two calls to the present function.
   - type (list of two keywords): specifies first the type of the yati phrase (:srotovahayati, where matras are added or :gopuchayati, where matras are removed over time). Secondly, it sets at which side the pala matras are added or removed  (:at-end :at-front). There are four combinations in total. You can compose mridangamyati and damaruyati yati phrases by combining the results of two calls of this function. Note that inserting matras in the middle is currently not supported.
+
   Additionally, all `durational-accent' key args are supported.
 
-  Examples:
+* Examples:
   ;;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-end) :divide-prob 0.3 :merge-prob 0.7 :seed 1)
 
   ;;; (accented-yati-phrase '3q '(4 7 10 13) '-3e :type '(:gopuchayati :at-front) :divide-prob 0.7 :merge-prob 0.5 :seed 3)
 
-  Reference
-  Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+* Notes:
+
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
   "
   (let* ((gati-ratio (omn-encode gati))
          (longest-pala-jathis (cons (first pala-lengths) (tu:x->dx pala-lengths)))
@@ -1327,7 +1340,7 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 (defun _remove-rest-articulations (sequence)
   "Strips all articulations from rests. 
 
-  Args:
+* Arguments:
   - sequence: OMN expression that _cannot_ be nested.
  
   TMP function -- only necessary until length-rest-merge or omn-merge-rests support merging rests with articulations."
@@ -1341,10 +1354,10 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 (defun merge-rests-with-preceeding-note (sequence)
   "Remove all rests in sequence without changing the actual rhythm: extends the length of each note followed by that rest value, so that the overall duration remains as before.
 
-  Args:
+* Arguments:
   - sequence: OMN expression, can be nested.
 
-  Examples:
+* Examples:
   ;;; (merge-rests-with-preceeding-note '(e g6 f stacc -e e ab5 mp ten e c4 mf ten))
   ;;; => (1/4 g6 f stacc e ab5 mp ten e c4 mf ten)
 
@@ -1394,7 +1407,7 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 (defun lengths-with-merged-ties (sequence)
   "Returns a flat list of lengths that preserves the lengths in `sequence' including their tied notes.
   
-  Examples:
+* Examples:
   ;;; (lengths-with-merged-ties '((h c4 pizz q arco+tie) (q h tie) (h.)))
   ;;; => (1/2 1/2 5/4)
 
@@ -1402,7 +1415,8 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
   ;;; (omn :length '((h c4 pizz q arco+tie) (q h tie) (h.)))
   ;;; => ((1/2 1/4) (1/4 1/2) (3/4))
 
-  See also:
+* See Also:
+
   ;;; (omn-merge-ties (flatten-omn '((h c4 pizz q arco+tie) (q h tie) (h.))))
   ;;; => (h c4 pizz c4 arco wq)
   "
@@ -1429,7 +1443,7 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 
   If `float?' is true the result is a float.
 
-  Example:
+* Examples:
   ;;; (total-duration '((h c4 q) (q h tie) (h.)))
   ;;; => 9/4"
   (let ((result (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence))))))
@@ -1445,7 +1459,7 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 (defun isolate-time-signatures (ts-forms)
   "Transforms time signatures `ts-forms' so that each resulting time signature denotes only a single bar.  
 
-  Example:
+* Examples:
   ;;; (isolate-time-signatures '((3 4 2) (2 4 1)))
   ;;; => ((3 4 1) (3 4 1) (2 4 1))"
   (mappend #'(lambda (ts-form) 
@@ -1458,9 +1472,11 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 (defun length->time-signature (sequence)
   "Expects any OMN sequence, extracts its rhythm, and translates each note value in a time signature of the same length.
 
-  Example: 
+* Examples: 
 ;;; (rhythm-to-time-sig-sequence '(3/4 1/4 1/2))
 ;;; => ((3 4 1) (1 4 1) (2 4 1))
+
+* See Also:
 
   This function is largely the complement of the Opusmodus buildin function `time-signature-length'."
   (let ((ls (flatten (omn :length sequence)))
@@ -1496,17 +1512,22 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
   "Appends `l' (a length or omn) before `lengths' (a list of lengths or omn), but maintains the metric structure, i.e., the function shifts `lengths' metrically 'to the right' by `l'.
   Returns an OMN form if lengths is an OMN form, otherwise a length form.
   
-  Examples:
+* Examples:
+
 ;;; (metric-shift '-h '((q q q q) (q q q q)))
 
 ;;; (metric-shift '(h g4 e) '((q c4 q d4 q e4 q f4) (q c4 q d4 q e4 q f4)))
 
-BUG: If `lengths' is only a list of length values and not a full OMN sequence, then other parameters in `l' are ignored.
+* BUGS: 
+
+If `lengths' is only a list of length values and not a full OMN sequence, then other parameters in `l' are ignored.
   
 ;;; (metric-shift '(h d4) '((q q q q) (q q q q)))
 
 
-  Related: assemble-seq (but that does not shift across bars)"
+* See Also: 
+
+assemble-seq (but that does not shift across bars)"
   (let* ((time-sigs (get-time-signature lengths))
          (result (omn-to-time-signature (cons l (flatten lengths)) time-sigs)))
     (if (omn-formp lengths)
@@ -1527,11 +1548,11 @@ BUG: If `lengths' is only a list of length values and not a full OMN sequence, t
 
 Note that resulting meter changes may occur even within tuplets, though Opusmodus may not support notating the result.  
 
-  Args: 
+* Arguments: 
   - length: list of OMN length values, must be nested
   - positions (lists of ints, length most be one shorter than number of bars/sublists in lengths): amount by how many note values the bar line should be moved to the left (negative number) or to the right (positive number). `positions' is circled through to meet the length of `lengths'.
 
-  Example:
+* Examples:
   ;;; (shift-meter-boundaries '((1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18 1/18)
   ;;;                           (1/16 1/16 1/16 1/16 1/16 1/16 1/16 -1/16)
   ;;;                           (-1/14 1/14 1/14 1/14 1/14 1/14 1/14) 
@@ -1568,18 +1589,20 @@ Note that resulting meter changes may occur even within tuplets, though Opusmodu
 (defun insert-into-bar (positions new lengths &key section seed)
   "Inserts item(s) 
 
-  Args
+* Arguments:
   - positions (list of position values): either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
   - new: list of OMN length values to be inserted, can be nested or partially nested. 
   - lengths: list of OMN length values, must be nested.
   `positions' and `new' is circled through to meet the length of `lengths' or `section'.
   - section (list of ints): selected sublists to process.
 
-  Examples
+* Examples:
   ;;; (insert-into-bar '(s e) '(q (e e)) '((h) (h) (h)))
   ;;; (insert-into-bar '(?) '(q (e e)) '((h) (h) (h)) :section '(1 2) :seed 1)
 
-See also Opusmodus builtin `position-insert'.
+* See Also: 
+
+Opusmodus builtin `position-insert'.
 "
   (rnd-seed seed)
   (map-section #'(lambda (seq position item)

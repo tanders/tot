@@ -14,7 +14,7 @@
 (defun filter-notes-if (test OMN &key (remain T) (section nil))
   "Extracts events in OMN for which a given test function returns true (or keeps only events for which the test function returns nils). All other notes are turned into rests.
 
-  Args:
+* Arguments:
   - test: Boolean function expecting individual parameters of each note in `OMN'
   - OMN: An OMN sequence
   - remain: Boolean expressing whether only matching notes (T) or non-matching notes (nil) should be kept.
@@ -22,7 +22,7 @@
 
   See also Opusmodus builtin `filter-events'.
 
-  Examples:
+* Examples:
 
 Keep only notes above middle C and turn other notes into rests
 
@@ -46,7 +46,9 @@ This also works with nested lists and you can process only selected bars (other 
 
 For musical application examples see also {https://opusmodus.com/forums/topic/867-opusmodus-1222292/}.
 
-NOTE: This function could also be useful for Beethoven like motif condensation, where notes are first turned into rests with this function, and then their preceding notes are extended with length-legato, as demonstrated in the following example. 
+* Notes: 
+
+This function could also be useful for Beethoven like motif condensation, where notes are first turned into rests with this function, and then their preceding notes are extended with length-legato, as demonstrated in the following example. 
 
 ;;; (setf my-motif '((q. c4 e d4 q. e4 e f4) (h g4 -h)))
 ;;; (length-legato
@@ -55,7 +57,9 @@ NOTE: This function could also be useful for Beethoven like motif condensation, 
 ;;;                   my-motif))
 ;;; => ((h c4 e4) (w g4))
 
-See also {https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-note/?tab=comments#comment-2713}.
+* See Also: 
+
+https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-note/?tab=comments#comment-2713
 
 "
   (if section
@@ -81,7 +85,7 @@ See also {https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-not
 (defun corresponding-rest (event)
   "Turns a single OMN note into a rest of the same note value. Rests remain rests, and rest articulations are preserved.
 
-  Example: 
+* Examples: 
   ;;; (corresponding-rest '(h c4))"
   (let ((len (omn-encode (first event))))
     (cons 
@@ -108,14 +112,15 @@ See also {https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-not
 
     See also {https://opusmodus.com/forums/topic/849-towards-algorithmic-orchestration-and-customising-sound-playback-with-multiple-sound-libraries/}
 
-    Args:
+* Arguments:
     - sequence: OMN sequence, can be nested
     - articulation-sets: list of list of articulations. All notes with articulations contained in the first articulation-set end up in the first resulting part, notes with articulations in the second set end up in the second part and so forth. 
     
     The decision which part a note belongs to is always made based on the first articulation that matches an articulation-set. If a note contains no articulation, or an articulation contained in no set, then it is matched to the first articulation-set. If an articulation is contained in multiple articulation-sets, then the earlier match in articulation-sets is used.
 
 
-    Examples:     
+* Examples:     
+
 ;;; (separate-parts '(h c4 pizz q arco)
 ;;;                 '((pizz)
 ;;;                   (arco)))
@@ -212,7 +217,7 @@ Full score example:
 (defun insert-articulation (flat-omn-list &rest articulations)
   "Merge in one or more lists of articulations to an OMN expression.
 
-  Example:
+* Examples:
   added nil for the rest
   ;;; (insert-articulation '(e c4 mp arco e. d4 -h e. p pizz e e4 arco) 
   ;;;                      '(ponte tasto nil ponte tasto))
@@ -249,13 +254,13 @@ Full score example:
 (defun remove-unless-parameters (flat-omn-list parameter &key (remove-non-matching? nil))
   "Checks every note whether it contains `parameter'. All notes containing the parameter are preserved, all other notes are turned into rests. If a note contains a combination of articulations, all of them are checked.  
 
-  Args:
+* Arguments:
   - flat-omn-list: flat OMN list
   - parameter: a length, pitch, OMN velocity or single articulation
   - remove-rests? (default nil): if true, all notes that do not match are removed instead of turned into rests.
 
 
-  Examples:
+* Examples:
   ;;; (remove-unless-parameters '(e c4 mp arco+ponte e. d4 mp tasto -h e. c4 p pizz+ponte e e4 p arco+tasto) 
   ;;;                         'e.)
   ;;; => (-1/8 e. d4 mp tasto -1/2 e. c4 p pizz+ponte -1/8)

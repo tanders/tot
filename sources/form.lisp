@@ -18,12 +18,12 @@
   Note that sequence elements to replace can be arbitrary values, including subsequences.
   
 
-  Args:
+* Arguments:
   - map:        old-new pairs (list of two-element lists)
   - sequence:   sequence (list) to transform
   - otherwise:  flat list of alternative replacements. Per sublist, only a single replacement value is chosen.
 
-  Examples:
+* Examples:
 ;;; (developing-substitute '((1 (a b c))
 ;;;   			     (2 (h i j)))
 ;;;                        '(1 1 2 1 3 2 1)
@@ -78,11 +78,11 @@
 (defun condense (sequence test &key (section nil))
   "Beethoven-like condensation of music. All notes for which a given test function returns `nil' are removed, and their preceeding note is extended by their duration.
 
-  Args:
+* Arguments:
   - test: Boolean function expecting individual parameters of each note in `OMN'
   - sequence: An OMN sequence
 
-  Example:
+* Examples:
 
 ;;; (setf my-motif '((q. c4 e d4 q. e4 e f4) (h g4 -h)))
 
@@ -99,13 +99,13 @@
 (defun alternate-omns (ids seqs-of-seqs &key (append? nil))
   "This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level.
 
-  Args:
+* Arguments:
   - ids (list of 0-based integers): indicating the position of OMN expressions in seqs-of-seqs.
   - seqs-of-seqs (list of lists of OMN sequences or plain OMN parameters): specifies material between which to switch. The top-level list positions indicate the different materials pointed to by `ids'. The next level specifies the order in which material will be included when `ids' contains repetitions of an id. This order is circling. The lowest level is the actual material either as a flat list (each a single bar), or as a nested list (multiple bars). In case of a nested list at the lowest level you likely want to set `append' to T.
   - append? (Boolean): whether or not nested OMN sequences should be appended instead of been combined in a list. 
 
 
-Examples:
+* Examples:
 
 The following example demonstrates the use of the arguments `ids' and `seqs-of-seqs' with a flat sequence of note lengths. Note the nesting of `seqs-of-seqs', as explained by the comments. 
  
@@ -268,14 +268,14 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 
   For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
 
-  Args: 
+* Arguments: 
   - ids (list of 0-based integers): indicating the position of fenvs.
   - ns (list of integers): indicates number of samples per fenv. `ids' and `ns' should have the same length.
   - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those postions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
     Remember that fenvs can be specified as a number sequence as well. 
   - interpolation (either :steps or :linear): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
 
-Examples:
+* Examples:
 Using lists of integers, internally translated into fenvs. The result here is rather similar to the input, but with lists of different lengths. 
 ;;; (alternate-fenvs '(0 1 0) '(3 3 4) 
 ;;; 		 '((1 2 3 4)
@@ -377,7 +377,7 @@ For more examples with nested lists of fenvs in `fenv-lists' compare the use of 
 
   See also the function `alternate-omn-fenvs', which is similar but more easy to use.
 
-  Args: 
+* Arguments: 
   - ids (list of 0-based integers): indicating order of positions of fenvs to choose from `fenv-lists'.
   - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
   - fenv-lists (list of fenvs, or list of lists of fenvs): specifies fenvs between which to switch. If `fenv-lists' is a flat list of fenvs, then `ids' simply access the fenvs at those positions. If `fenv-lists' is nested, then `ids' indicate the top-level list positions of `fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
@@ -389,7 +389,7 @@ For more examples with nested lists of fenvs in `fenv-lists' compare the use of 
   - interpolation (either `:steps' or `:linear'): in case fenvs are specified as lists of numbers, the `interpolation' indicates the type of fenv created.
   - hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dynamics are connected with crescendo and diminuendo hairpins, which may make particularly sense if `interpolation' is set to `:linear'.
 
-Examples:
+* Examples:
 
 Lists of integers can be used instead of fenvs for convenience. 
 ;;; (alternate-subseq-fenvs '(0 1 1 0)
@@ -478,12 +478,12 @@ An example with double-nested lists.
 
   Usually, you do not want to use this function directly, but instead use the function `alternate-omn-fenvs', which is less low-level and therefore more easy to use.
 
-  Args:
+* Arguments:
   - parameter: an OMN parameter keyword like :length or :pitch
   - sequence: either full OMN sequence or sequence of the respective OMN parameters
   - type: how to interpolate between parameter values. Can be :steps (a step function, i.e. parameter values are hold by the fenv unti the next value) or :linear (linear interpolation). 
 
-  Examples:
+* Examples:
 
   A six-note OMN sequence with multiple parameters used for several examples
   ;;; (setf sequence '((h c5 f ten q g4 mp stacc) (q b4 ff ten q g4 f stacc q d4 mp stacc) (h. g4 f tr2)))
@@ -560,7 +560,7 @@ An example with double-nested lists.
 
   One of the particular expressive powers of this function is that characteristics defined by fenvs (`fenv-lists') can be applied to sublists (bars) in `sequence' of different lengths. For example, the same overall gestus can be applied to a bar of three but all four or five notes. (Nevertheless, it does not allow to change the number of elements in `sequence'.)
 
-  Args:
+* Arguments:
   - ids (list of 0-based integers): indicating order of positions of fenvs to choose from `omn-fenv-lists'.
   - no-of-sublists (integer or list of integers): indicates how many consecutive sublists (quasi bars) of `sequence' each fenv shapes. The number of samples created from each fenv is the product of the length of the sublist in question and the respective `no-of-sublists' value.
   - omn-fenv-lists (list of flat OMN expression lists, or list of lists of flat OMN expression lists): specifies characteristics between which to switch (transformed into fenvs in the background). If `omn-fenv-lists' is a list of OMN expression lists, then `ids' simply access the fenvs at those positions. If `omn-fenv-lists' is further nested, then `ids' indicate the top-level list positions of `omn-fenv-lists'. The lower-level list of fenvs indicates alternatives from which to choose in order. So, when there is a repetition of integers in `ids', always the next fenv in the respective list of alternatives is choses. This order is circling.
@@ -570,7 +570,7 @@ An example with double-nested lists.
   - interpolation (either `:steps' or `:linear'): `interpolation' indicates the type of fenv created (interpolation between the numeric representation of OMN parameter values or not).
   - hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dynamics are connected with crescendo and diminuendo hairpins, which may make particularly sense if `interpolation' is set to `:linear'.
 
-  Examples:
+* Examples:
 
 TODO:
 
@@ -757,14 +757,14 @@ TODO:
 (defun rotate-omn (n sequence &key (parameter :pitch) (flat T) (section nil))
   "Rotate the OMN `sequence' by `n' positions.
 
-  Args:
+* Arguments:
   - n: an integer (rotation number, positive or negative) or a list of ints. The keywords :left and :right are equivalents of the integer values -1 and 1. If `n' is a list then `flat' must be nil.
   - sequence: OMN expression.
   - parameter (keyword): which parameter to rotate (e.g., :length, :pitch...). 
   - flat (Boolean): whether to rotate the full flattened sequence (T) or subsequences. 
   - section (list of ints): positions of sublists to process. This argument is ignored if flat is T.  
 
-  Examples:
+* Examples:
 
 ;;; (rotate-omn :right '((-h q c4) (q. f4 e g4 q a4) (h. g4)))
 ;;; 

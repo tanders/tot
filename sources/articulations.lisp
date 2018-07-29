@@ -13,11 +13,11 @@
 (defun merge-articulations (arts &key (empty-articulations '(default -)))
   "Merges list of OMN articulations to a combined attribute.
 
-  Args:
+* Arguments:
   - arts: a list of OMN articulations
   - empty-attributes: articulations to ignore in a combination. 
 
-  Examples:
+* Examples:
   ;;; (merge-articulations '(ten ponte ubow))
   ;;; => ten+ponte+ubow
 
@@ -58,6 +58,7 @@
 
 
 
+
 #|
 (merge-articulations '(default stacc))
 
@@ -73,7 +74,7 @@
 (defun disassemble-articulations (art)
   "Splits a combined OMN articulations into a list of its individual attributes.
 
-  Example:
+* Examples:
   ;;; (disassemble-articulations 'leg+ponte)
   ;;; => (leg ponte)"  
   #|
@@ -97,7 +98,7 @@
 
   If arts are list of lists, the result follows the nesting organisation of the first list.
 
-  Example:
+* Examples:
   ;;; (zip-articulations '(default leg leg default) '(breathy))
   ;;; => (breathy leg+breathy leg+breathy breathy)"
   (let* ((flat-arts (mapcar #'flatten arts))
@@ -122,11 +123,11 @@
 
   NOTE: as the implementation of omn is not necessarily stable, this function is breakable.
 
-  Example: 
-  (get-full-articulations '((q g4 leg+gliss q a4 leg q b4 stacc)
-                            (q c4 ten q c5 trem)
-                            ))
-  => ((leg+gliss leg stacc) (ten trem))
+* Examples: 
+  ;;; (get-full-articulations '((q g4 leg+gliss q a4 leg q b4 stacc)
+  ;;;                           (q c4 ten q c5 trem)
+  ;;;                           ))
+  ;;; => ((leg+gliss leg stacc) (ten trem))
 "
   (if (listp (first sequence))
       ;; if first nested then assume all are nested
@@ -163,7 +164,7 @@
 (defun articulation-at-beginning (articulation sequence &key (default 'default))
   "Returns a list of articulations spanning the given `sequence' (can be nested) with `articulation' at the beginning and `default' for the rest.
   
-  Example: 
+* Examples: 
   ;;; (articulation-at-beginning 'pizz '((q q e e) (h.)))
   ;;; => ((pizz default default default) (default))
 
@@ -174,11 +175,11 @@
 (defun articulation-at-end (articulation sequence &key (default 'default))
   "Returns a list of articulations spanning the given `sequence' (can be nested) with `articulation' at the beginning and `default' for the rest.
   
-  Example: 
+* Examples: 
   ;;; (articulation-at-end 'pizz '((q q e e) (h.)))
   ;;; => ((pizz default default default) (default))
 
-  BUGS: 
+* BUGS: 
   - Does not work if last element in sequence is a rest.
   - May not work for OMN sequence."
   (span sequence
@@ -187,7 +188,7 @@
 (defun articulation-up-to-end (articulation sequence &key (default 'default))
   "Returns a list of articulations spanning the given `sequence' (can be nested) with `articulation' from the beginning to the but-last tone, which carries the default. This is useful for legato slurs over a sublist.
   
-  Example:
+* Examples:
   ;;; (articulation-up-to-end 'leg '((q q e e) (q q)))
   ;;; => ((leg leg leg leg) (leg default))"
   (span sequence
@@ -201,19 +202,19 @@
 
   Definition currently only works with multiple integers or floats.
   
-  Examples:
+* Examples:
   ;;; (text-attribute -7 2 13)
   ;;; => -7+2+13
 
   ;;; (text-attribute 3.14 42)
   ;;; => 3.14+42
 
-  BUGS: 
+* BUGS: 
   All these examples are not working.
-  (text-attribute \"this is a test\")
-  (text-attribute 42)
-  (text-attribute 'parameters -7 2 13)
-  (text-attribute -7 3.14 16 1/3)
+  ;;; (text-attribute \"this is a test\")
+  ;;; (text-attribute 42)
+  ;;; (text-attribute 'parameters -7 2 13)
+  ;;; (text-attribute -7 3.14 16 1/3)
   "
   (flet ((text-attr (x)
            (let ((s (format nil "~A" x)))

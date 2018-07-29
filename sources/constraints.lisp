@@ -20,25 +20,25 @@
 (defun cluster-engine-score (cluster-engine-score &key (instruments nil))
   "Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format.
 
-  Args:
+* Arguments:
   - cluster-engine-score: The score data in the format returned by ClusterEngine.
   - instruments (list of keywords): Optional instrument labels for score parts -- length should be the same as parts in score.
 
-  Example:
+* Examples:
 
-(preview-score
- (cluster-engine-score
-  ;; simple polyphonic constraint problem
-  (ce::ClusterEngine 10 t nil 
-                     ;; single rule: all rhythmic values are equal
-                     (ce::R-rhythms-one-voice 
-                      #'(lambda (x y) (= x y)) '(0 1) :durations)
-                     '((3 4)) 
-                     '(((1/4) (1/8))
-                       ((60) (61))
-                       ((1/4) (1/8))
-                       ((60) (61))))
-  :instruments '(:vln :vla)))
+;;; (preview-score
+;;;  (cluster-engine-score
+;;;   ;; simple polyphonic constraint problem
+;;;   (ce::ClusterEngine 10 t nil 
+;;;                      ;; single rule: all rhythmic values are equal
+;;;                      (ce::R-rhythms-one-voice 
+;;;                       #'(lambda (x y) (= x y)) '(0 1) :durations)
+;;;                      '((3 4)) 
+;;;                      '(((1/4) (1/8))
+;;;                        ((60) (61))
+;;;                        ((1/4) (1/8))
+;;;                        ((60) (61))))
+;;;   :instruments '(:vln :vla)))
 "
  (case cluster-engine-score
   ;; in case of failure return score that displays (preview-score"no solution"
@@ -86,13 +86,15 @@
 (defun copy-cluster-engine-pitches-to-score (score cluster-engine-score) 
   "Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
 
-  Args:
+* Arguments:
   - score (headerless score): see {defun preview-score} for format description of headerless scores. 
   - cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.com/tanders/cluster-engine). 
 
-  NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts).
+* Notes:
 
-  NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
+The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts).
+
+`cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
   "
   ;; (declare (optimize (debug 3)))
   (case cluster-engine-score
@@ -157,8 +159,9 @@
 
   If `preview?' is T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus.
 
-  Example:
-  (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4))"
+* Examples:
+  ;;; (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4))
+"
   (let ((result (loop for transposition in transpositions
                   append (pitch-transpose transposition chords))))
     (if preview?
@@ -176,12 +179,13 @@
 (defmethod _chords-to-gracenotes ((chord symbol) &optional (grace-length 'e))
   "[Aux] Turns a chord into a a sequence of grace notes.
 
-  Args
-  grace-length (OMN length): the notated length assigned to the grace notes.
+* Arguments:
+  - grace-length (OMN length): the notated length assigned to the grace notes.
 
-  Example:
-  (_chords-to-gracenotes 'd2a2d3fs3bb3c4d4e4fs4gs4bb4c5)
-  (_chords-to-gracenotes 'c4)"
+* Examples:
+  ;;; (_chords-to-gracenotes 'd2a2d3fs3bb3c4d4e4fs4gs4bb4c5)
+  ;;; (_chords-to-gracenotes 'c4)
+"
   (let ((chord-ps  (melodize chord)))
     (cons 'app (loop for pitch in chord-ps
                  append (list grace-length pitch)))))
@@ -189,8 +193,8 @@
 (defun chords-to-gracenotes (sequence &optional (root? T))
   "For notating underlying scales as sequence of grace notes.
 
-  Args: 
-  root (OMN pitch): can be overwritten in case scales are notated on separate staffs and the treble clef portion does not contain the actual root."
+* Arguments: 
+  - root (OMN pitch): can be overwritten in case scales are notated on separate staffs and the treble clef portion does not contain the actual root."
  (copy-time-signature 
   sequence
    (loop for (len pitch vel art) in (single-events (flatten sequence))
@@ -240,7 +244,7 @@
   "CSP transforming the input `score' such that it follows the underlying harmony specified. 
   The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied.
   
-  Args:
+* Arguments:
   - score (headerless score): See {defun preview-score} for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations.
   - harmonies (OMN expression): OMN chords expressing the harmonic rhythm and chord changes of the underlying harmony 
   - scales (OMN expression or NIL): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony. If `scales' is NIL (convenience when there are no constrains restricting the underlying scale) then simply the underlying harmonies are doublicated in the scales staff (the staff is not skipped to preserve the order of parts for the constraints that depend on it).
@@ -263,8 +267,8 @@
     If `split-score?' is  
     - :at-shared-rests or simply T, the score is split at shared rests (see function `split-score-at-shared-rests').
     - :at-bar-boundaries, the score is split after every bar.
-    - A list '(:at-bar-boundaries <n>), the score is split after every `n' bars (`n' must be an integer).
-    - A list '(:at-bar-boundaries <list of integers>), the score is split at the given zero-based bar numbers.
+    -- A list, the score is split after every `n' bars (`n' must be an integer).
+    -- A list '(:at-bar-boundaries <list of integers>), the score is split at the given zero-based bar numbers.
     NOTE: You cannot use index rules if `split-score?' is not NIL -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
     If you want to split your score at different positions (e.g., in order to ensure that melodic rules towards the first note of the next bar are actually followed), then simply rebar your score before calling `revise-score-harmonically' (e.g., by calling `omn-to-time-signature') and rebar the result back to the original time signature afterwards. 
   - length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer).
@@ -273,7 +277,7 @@
 
 For better readability and exportability to notation software, the underlying harmony is output in the score as up to four instruments (if scales is not nil): :chord-treble, :chord-bass, :scales-treble, :scales-bass, i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an 'o'). 
   
-Examples:
+* Examples:
 
 Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
 

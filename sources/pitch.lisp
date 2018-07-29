@@ -13,17 +13,19 @@
 (defun pc->pitch (pc octave)
   "Converts the pitch class `pc' into an OMN pitch in the given `octave'.
 
-  Example:
-  (pc->pitch 1 4)
-  => cs4"
+* Examples:
+  ;;; (pc->pitch 1 4)
+  ;;; => cs4
+"
   (midi-to-pitch (+ pc (* 12 (1+ octave)))))
 
 (defun pcs->chord (pcs &optional (octave 4))
   "Expects a list of pitch class integers and returns an Opusmodus chord symbol.
 
-  Example:
-  (pcs->chord '(0 4 7))
-  => c4e4g4"
+* Examples:
+  ;;; (pcs->chord '(0 4 7))
+  ;;; => c4e4g4
+"
   (first (chordize
           (loop for pc in pcs
 	     collect (pc->pitch pc octave)))))
@@ -44,13 +46,13 @@
 (defun chord-multiplication (chord1 chord2)
 	 "Boulez's multiplication of chords. The intervals of `chord1' are built over every pitch of `chord2'.
 
-Example:
+* Examples:
 
 Over every pitch of the C-major triad (chord2) the fifths of chord1 is created. 
 
 ;;; (chord-multiplication '(d4 a4) '(c4 e4 g4))
 
-  References:
+* Notes:
 
 Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 "
@@ -65,12 +67,12 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 (defun stretch-pitches (pitches factor &key (round T))
   "Proportional streching/shrinking of intervals.
 
-  Args:
+* Arguments:
   - pitches: list of Opusmodus pitches
   - factor (integer, float or fraction): Factor by which all but the first `pitches' are stretched or shrunk. 
   - round: whether or not to round the result to semitones. Must be T for now, but in future when Opusmodus supports microtonal music this might be refined.
 
-  Examples:
+* Examples:
 
 ;;; (stretch-pitches '(c4 e4 g4) 2)
 ;;; 
@@ -78,7 +80,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 ;;; 
 ;;; (stretch-pitches '(c4 e4 g4) 2/3)  
 
-  References:
+* Notes:
 
 Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 "
@@ -98,19 +100,19 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 (defun stretch-pitches2 (number chord factor &key (round T))
   "Creates `number' derivates from chord following a procedure suggested by Giacomo Manzoni where the chord intervals are systematically stretched or shrunk. 
 
-  Args:
+* Arguments:
   - number (int): number of chords to generate.
   - chord: list of Opusmodus pitches
   - factor (integer, float or fraction): controls the interval between resulting chord pitches. If 1, the first chord interval is increased by 1 semitone, the second by 2 and so on. If 2, the first interval is increased by 2 semitones, the second by 4 etc. 
 
-  Examples:
+* Examples:
 
 ;;; (stretch-pitches2 5 '(c4 e4 g4) 1)
 ;;; 
 ;;; (stretch-pitches2 5 '(c4 e4 g4) 1.5)
 
 
-  References:
+* Notes:
 
 Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of Music from 26th of June to 1st of July, 1988.
 "
@@ -139,9 +141,9 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 (defun spectra-transpositions-fitting-in-scale (spectra scale)
   "Function for generating a chord/spectral domain. Returns all transpositions of the given spectral that fit in the given scale (i.e., all their pitch classes are contained in the scale).
 
-  Args:
-  spectra (OMN chords): a list of untransposed spectra  
-  scale (OMN pitch list)  
+* Arguments:
+  - spectra (OMN chords): a list of untransposed spectra  
+  - scale (OMN pitch list)  
   "
   (let ((all-spectra (loop for transposition in (gen-integer 0 11)
                        append (pitch-transpose transposition spectra)))
@@ -186,14 +188,14 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 (defun fenv-transpose-pitch (sequence fenv &rest args)
   "Transposes pitches in sequence by their corresponding fenv value. 
   
-  Args:
+* Arguments:
   - sequence: (possibly nested) list of pitches or OMN expression
   - fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value by position in sequence (not temporal position); intervals are specified in semitones; intervals are rounded to their closes integer
   
   All arguments of pitch-transpose-n are supported as well.
 
 
-  Examples:
+* Examples:
   ;;; (fenv-transpose-pitch '(c4 c4 g4 g4) (fenv:linear-fenv (0 0) (1 2)))
   ;;; => (c4 cs4 gs4 a4)
 
@@ -229,15 +231,15 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 (defun trill-selected-notes (sequence test &key (interval 2) (ignore-articulations '(marc)))
   "Increases rhythmic interest by subdividing all notes that meet the function test and turning these into a trill.
 
-  Args:
+* Arguments:
   - sequence: nested OMN sequence
   - test: function expecting four arguments of a given note, its length, pitch, velocity and articulation.
   - interval: integer specifying size and direction of trill interval (positive is up, negative is down).
   - ignore-articulations: list of articulations not to repeat at inserted notes.
 
-  Example:
-  (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e))
-  => ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf))
+* Examples:
+  ;;; (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e))
+  ;;; => ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf))
   "
   (let ((remove-articulations (flatten (mapcar #'disassemble-articulations (tu:ensure-list ignore-articulations)))))
     (loop for bar in (single-events sequence)
@@ -272,19 +274,20 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 (defun thomassen-accents (sequence &optional (format :omn))
   "Expects an OMN sequence (or a different format, see below), and returns a *flat* list of floats representing the associated melodic accent value of each pitch as defined by the Thomassen model.
 
-  Args:
+* Arguments:
   - format (keyword): sets the format of `sequence'. 
-    - :omn - full OMN sequence, possibly nested (though the result will be flat)
-    - :pitch - list of OMN pitches, possibly nested
-    - :midi - list of MIDI note numbers  
+    -- :omn - full OMN sequence, possibly nested (though the result will be flat)
+    -- :pitch - list of OMN pitches, possibly nested
+    -- :midi - list of MIDI note numbers  
 
-NOTE: no accent values are available for the first two and the last pitch, therefor nil is return for those pitches.
+Note that no accent values are available for the first two and the last pitch, therefor nil is return for those pitches.
+
+* Notes:
 
 Hack: Quick evaluation: strong melodic accents have an accent value greater than 0.4.
 
-References:
-Thomassen, J. M. (1982) Melodic accent: Experiments and a tentative model. The Journal of the Acoustical Society of America. 71 (6), 1596–1605.
-Huron, D. & Royal, M. (1996) What is melodic accent? Converging evidence from musical practice. Music Perception. 489–516.
+- Thomassen, J. M. (1982) Melodic accent: Experiments and a tentative model. The Journal of the Acoustical Society of America. 71 (6), 1596–1605.
+- Huron, D. & Royal, M. (1996) What is melodic accent? Converging evidence from musical practice. Music Perception. 489–516.
 "
   (cr:thomassen-accents
    (flatten

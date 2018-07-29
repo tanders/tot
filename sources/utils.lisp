@@ -17,15 +17,16 @@
 (defun mapcar-nested (fn &rest nested-lists)
   "A simplified equivalent of mapcar, but expects nested lists (as common for OMN parameter lists). All lists in nested-lists must be nested equally.
 
-  Example: 
-  (mapcar-nested #'(lambda (x) (* x 2)) '((1/4 1/8 1/8) (1/2)))
-  => ((1/2 1/4 1/4) (1))
+* Examples:
+ 
+  ;;; (mapcar-nested #'(lambda (x) (* x 2)) '((1/4 1/8 1/8) (1/2)))
+  ;;; => ((1/2 1/4 1/4) (1))
 
-  Using the built-in Opusmodus function `span' to ensure an equal nesting of value lists
-  (let* ((ls '((1/4 1/8 1/8) (1/2)))
-         (factors (span ls '(2 3))))
-    (mapcar-nested #'* ls factors))
-  => ((1/2 3/8 1/4) (3/2))
+  ;;; Using the built-in Opusmodus function `span' to ensure an equal nesting of value lists
+  ;;; (let* ((ls '((1/4 1/8 1/8) (1/2)))
+  ;;;        (factors (span ls '(2 3))))
+  ;;;   (mapcar-nested #'* ls factors))
+  ;;; => ((1/2 3/8 1/4) (3/2))
   "
   (apply #'mapcar #'(lambda (&rest lists) (apply #'mapcar fn lists))
 	 nested-lists))
@@ -36,11 +37,11 @@
 
   NOTE: only supports flat list so far.
 
-  Args:
+* Arguments:
   - pattern: a list or single value treated as a one-value list
   - n: an integer
 
-  Example:
+* Examples:
 
 ;;; (circle-repeat '(bb4 g4) 10)
 ;;; => (bb4 g4 bb4 g4 bb4 g4 bb4 g4 bb4 g4)
