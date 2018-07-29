@@ -413,8 +413,12 @@ Additional arguments can be given to fn by specifying further argument lists to 
 		(? (cons (rnd1 :low 1 :high (- l (1- n)) :seed (seed))
 			 (append (gen-repeat (1- n) '(1)) (list l))))
 		(e (list l))
-		;; 1+: turn into zero-based position
-		(otherwise (cons (1+ position) (append (gen-repeat (1- n) '(1)) (list l))))
+		(otherwise
+		 (if (< position 0)
+		     ;;; TODO:
+		     (cons (+ l position 1) (append (gen-repeat (1- n) '(1)) (list l)))
+		     ;; 1+: turn into 1-based position
+		     (cons (1+ position) (append (gen-repeat (1- n) '(1)) (list l)))))
 		)))    
     (note-rest-series pos lengths)))
 
@@ -424,7 +428,11 @@ Additional arguments can be given to fn by specifying further argument lists to 
 (_position-to-rest 'e '(q q q q))
 (_position-to-rest '? '(q q q q) :n 2)
 (_position-to-rest '? '(q q q q) :n 2 :seed 1)
+(_position-to-rest 0 '(q q q q) :n 2)
 (_position-to-rest 2 '(q q q q) :n 2)
+(_position-to-rest -1 '(q q q q))
+(_position-to-rest -2 '(q q q q))
+(_position-to-rest -3 '(q q q q) :n 2)
 |#
 
 ;;; TODO:
@@ -434,9 +442,9 @@ Additional arguments can be given to fn by specifying further argument lists to 
   "Turn notes at the given position in the bar into rests.
 
   Args:
-  - position (symbol or integer): position of the note to turn into a rest. If an integer, it denotes the 0-based position. Symbols have the following meaning: s - first note (start); e - last note (end); ? - randomly chosen position.  
+  - position (symbol or integer): position of the note to turn into a rest. If a positive integer, it denotes the 0-based position. If a negative integer, it counts backwards from the end (-1 is the last element, -2 the one before the last and so on). Symbols have the following meaning: s - first note (start); e - last note (end); ? - randomly chosen position.  
   - sequence (list of lengths or OMN expression): music to process.
-  - n (integer): how many consecutive notes to affect.
+  - n (integer): how many consecutive notes after `position' to affect.
   - flat (Boolean): whether positions count for sublists (nil) or the whole list (T)
   - swallow (Boolean): whether the pitches of notes turned into rests should be shifted to the next note or omitted (swallowed) 
   - section (list of ints): 0-based positions of sublists to process. This argument is ignored if flat is T.
@@ -452,6 +460,9 @@ Additional arguments can be given to fn by specifying further argument lists to 
 
   Create rests at the beginning of every bar.
 ;;; (position-to-rest 's seq)
+
+  Create rests at the end of every bar using a negative position
+;;; (position-to-rest -1 seq)
   
   Create rests at a random position in the first bar (section) with two consecutive rests.
 ;;; (position-to-rest '? seq :section '(0) :n 2)
