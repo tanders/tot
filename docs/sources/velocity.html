@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233333">
+<a href="velocity.html#_g248890">
 max-velocity</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ velocities <em>&amp;key</em> (type :float)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233332">
+<a href="velocity.html#_g248889">
 min-velocity</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ velocities <em>&amp;key</em> (type :float)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233330">
+<a href="velocity.html#_g248887">
 simplify-dynamics</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ notation <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233336">
+<a href="velocity.html#_g248893">
 velocity-add</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233331">
+<a href="velocity.html#_g248888">
 velocity-apply</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ fun velocities <em>&amp;key</em> (type :float)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233327">
+<a href="velocity.html#_g248884">
 velocity-fenvs</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ lengths <em>&amp;rest</em> dynamics-fenvs</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233328">
+<a href="velocity.html#_g248885">
 velocity-fenvs2</a>
 </td>
 <td class="summary">
@@ -105,7 +105,7 @@ sequence dynamics-fenvs <em>&amp;key</em> (omn t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233338">
+<a href="velocity.html#_g248895">
 velocity-smooth</a>
 </td>
 <td class="summary">
@@ -113,7 +113,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233334">
+<a href="velocity.html#_g248891">
 velocity-transform</a>
 </td>
 <td class="summary">
@@ -121,7 +121,7 @@ fun args <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233329">
+<a href="velocity.html#_g248886">
 _simplify-dynamics</a>
 </td>
 <td class="summary">
@@ -129,7 +129,7 @@ dynamics <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233335">
+<a href="velocity.html#_g248892">
 _velocity-add</a>
 </td>
 <td class="summary">
@@ -137,7 +137,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="velocity.html#_g233337">
+<a href="velocity.html#_g248894">
 _velocity-smooth</a>
 </td>
 <td class="summary">
@@ -146,7 +146,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233327">
+<a id="_g248884">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -171,8 +171,9 @@ lengths <em>&amp;rest</em> dynamics-fenvs</td>
 Generates dynamics markers (velocities) for OMN `lengths'. Dynamics for each phrase (notes between rests) are defined by their own fenv (if fewer fenvs are defined, they are circled through). Returns a sublist for each phrase. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -185,9 +186,8 @@ each dynamics-fenv has the form (&lt;min-vel&gt; &lt;max-vel&gt; &amp;rest point
  </p>
 </li>
 </ul>
-<p>
-Example: 
- </p>
+<h4>
+Examples: </h4>
 <pre>
     (velocity-fenvs  '((1/4 1/8 1/8) (1/4 -1/4) (1/4 1/4) (1/4 -1/4)) 
                       '(pp mp (0 0) (0.7 1) (1 0))) 
@@ -199,7 +199,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233328">
+<a id="_g248885">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -224,8 +224,9 @@ sequence dynamics-fenvs <em>&amp;key</em> (omn t)</td>
 Generates dynamics markers (velocities) for OMN `lengths'. Dynamics for each phrase (notes between rests) are defined by their own fenv (if fewer fenvs are defined, they are circled through). Returns a sublist for each phrase. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -243,9 +244,8 @@ omn (Boolean): whether to return a plain velocity list or OMN expression
  </p>
 </li>
 </ul>
-<p>
-Example: 
- </p>
+<h4>
+Examples: </h4>
 <pre>
     (velocity-fenvs  '((1/4 1/8 1/8) (1/4 -1/4) (1/4 1/4) (1/4 -1/4)) 
                       '(pp mp (0 0) (0.7 1) (1 0))) 
@@ -258,7 +258,7 @@ BUG: not working yet
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233329">
+<a id="_g248886">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -281,7 +281,7 @@ dynamics <em>&amp;key</em> (flat t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233330">
+<a id="_g248887">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -305,8 +305,9 @@ notation <em>&amp;key</em> (flat t)</td>
 <p>
 Removes intermediate textual dynamic indicators from longer hairpins (e.g., generated by velocity-to-dynamic or gen-dynamic). 
  
- Args: 
  </p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -320,9 +321,8 @@ flat (default T): whether or not to simplify dynamics across sublists.
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 </p>
 <pre>
@@ -358,7 +358,11 @@ processing floats
     (simplify-dynamics '((0.1 0.2 0.3 0.4) (0.5 0.6 0.5 0.3))) 
      =&gt; ((pppp &lt; &lt; &lt;) (&lt; f &gt; pp)) </pre>
 <p>
-BUG: This is not correct -- various problems. 
+</p>
+<h4>
+BUGS: </h4>
+<p>
+This is not correct -- various problems. 
  </p>
 <pre>
     (simplify-dynamics 
@@ -370,7 +374,7 @@ BUG: This is not correct -- various problems.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233331">
+<a id="_g248888">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -395,8 +399,11 @@ fun velocities <em>&amp;key</em> (type :float)</td>
 Applies a numeric function `fun' to a list of symbolic velocity values `velocities', which are translated into floats in the background. 
  </p>
 <p>
-Example: 
- (velocity-apply #'min '(p mf pp ff) <span class="keyword">
+</p>
+<h4>
+Examples: </h4>
+<p>
+(velocity-apply #'min '(p mf pp ff) <span class="keyword">
 :type </span>
 <span class="keyword">
 :symbol) </span>
@@ -407,7 +414,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233332">
+<a id="_g248889">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -430,7 +437,7 @@ velocities <em>&amp;key</em> (type :float)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233333">
+<a id="_g248890">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -453,7 +460,7 @@ velocities <em>&amp;key</em> (type :float)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233334">
+<a id="_g248891">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -477,10 +484,15 @@ fun args <em>&amp;key</em> (simplify t)</td>
 <p>
 Higher-order function for transforming velocities by processing them as an Openmodus vector in the background. 
  
- Args 
- ; fun: a function expecting a vector and possibly more arguments. 
  </p>
+<h4>
+Arguments: </h4>
 <ul>
+<li>
+<p>
+fun: a function expecting a vector and possibly more arguments. 
+ </p>
+</li>
 <li>
 <p>
 args: the arguments for `fun'. Velocities should be explicitly transformed into numeric values. 
@@ -489,20 +501,19 @@ args: the arguments for `fun'. Velocities should be explicitly transformed into 
 </li>
 <li>
 <p>
-simplify (default T): whether or not to simplify cresc. and dim. in the result with simplify-dynamics. 
+simplify: whether or not to simplify cresc. and dim. in the result with simplify-dynamics. 
  </p>
 </li>
 </ul>
-<p>
-Example: 
- </p>
+<h4>
+Examples: </h4>
 <pre>
     (velocity-transform #'vector-add (list (get-velocity '(mf&gt; &gt; &gt; &gt; &gt; pp)) '(0.1))) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233335">
+<a id="_g248892">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -525,7 +536,7 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233336">
+<a id="_g248893">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -550,8 +561,9 @@ offset velocities <em>&amp;key</em> (simplify t)</td>
 Adds an offset to a list of OMN velocities. Quasi the dynamics equivalent of pitch transposition. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -565,13 +577,12 @@ velocities: list of velocities, can be nested.
 </li>
 <li>
 <p>
-simplify (default T): whether or not to simplify cresc. and dim. in the result with simplify-dynamics. 
+simplify: whether or not to simplify cresc. and dim. in the result with simplify-dynamics. 
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <pre>
     (velocity-add 0.1 '(mf&gt; &gt; &gt; &gt; &gt; pp)) 
      =&gt; (f&gt; &gt; &gt; &gt; &gt; p) </pre>
@@ -603,7 +614,7 @@ omn input
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233337">
+<a id="_g248894">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -626,7 +637,7 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233338">
+<a id="_g248895">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -650,8 +661,9 @@ alfa velocities <em>&amp;key</em> (simplify t)</td>
 <p>
 Smoothes velocity values. 
  
- Args: 
  </p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -665,14 +677,13 @@ velocities: list of velocities, can be nested.
 </li>
 <li>
 <p>
-simplify (default T): whether or not to simplify cresc. and dim. in the result with simplify-dynamics. 
+simplify: whether or not to simplify cresc. and dim. in the result with simplify-dynamics. 
  
  </p>
 </li>
 </ul>
-<p>
-Example: 
- </p>
+<h4>
+Examples: </h4>
 <pre>
     (velocity-smooth 0.7 '((ppp p mf ff p&lt; &lt; &lt;) (fff&gt; &gt; f&gt;&lt;p ff mf p ppp))) 
      =&gt; ((ppp&lt; &lt; &lt; mp&lt; &lt; mp&lt; &lt;) (f&lt; ff&gt; &gt; &lt; ff&gt; &gt; mp)) </pre>
@@ -690,6 +701,6 @@ Example:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-07-29 13:49:37</div>
+- 2018-07-29 18:14:23</div>
 </body>
 </html>

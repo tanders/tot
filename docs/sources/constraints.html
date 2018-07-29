@@ -49,7 +49,7 @@ Method summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233358">
+<a href="constraints.html#_g248915">
 _chords-to-gracenotes</a>
 </td>
 <td class="summary">
@@ -63,7 +63,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233357">
+<a href="constraints.html#_g248914">
 chords-&gt;domain</a>
 </td>
 <td class="summary">
@@ -71,7 +71,7 @@ chords <em>&amp;key</em> (transpositions '(0)) preview?</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233359">
+<a href="constraints.html#_g248916">
 chords-to-gracenotes</a>
 </td>
 <td class="summary">
@@ -79,7 +79,7 @@ sequence <em>&amp;optional</em> (root? t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233354">
+<a href="constraints.html#_g248911">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -87,7 +87,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233355">
+<a href="constraints.html#_g248912">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -95,7 +95,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233356">
+<a href="constraints.html#_g248913">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -103,7 +103,7 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g233360">
+<a href="constraints.html#_g248917">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
@@ -112,7 +112,7 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233358">
+<a id="_g248915">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -137,19 +137,26 @@ _chords-to-gracenotes&nbsp;&nbsp;</td>
 [Aux] Turns a chord into a a sequence of grace notes. 
  </p>
 <p>
-Args 
- grace-length (OMN length): the notated length assigned to the grace notes. 
- </p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
 <p>
-Example: 
- (_chords-to-gracenotes 'd2a2d3fs3bb3c4d4e4fs4gs4bb4c5) 
- (_chords-to-gracenotes 'c4) 
+grace-length (OMN length): the notated length assigned to the grace notes. 
  </p>
+</li>
+</ul>
+<h4>
+Examples: </h4>
+<pre>
+    (_chords-to-gracenotes 'd2a2d3fs3bb3c4d4e4fs4gs4bb4c5) 
+     (_chords-to-gracenotes 'c4) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233354">
+<a id="_g248911">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -174,8 +181,9 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 Transforms the results of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) into a headerless score so that the function `preview-score' can show and play it, and it can be processed by all functions supporting this format. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -188,35 +196,29 @@ instruments (list of keywords): Optional instrument labels for score parts -- le
  </p>
 </li>
 </ul>
+<h4>
+Examples: </h4>
 <p>
-Example: 
- </p>
-<p>
-(preview-score 
- (cluster-engine-score 
- ;; simple polyphonic constraint problem 
- (ce::ClusterEngine 10 t nil 
- ;; single rule: all rhythmic values are equal 
- (ce::R-rhythms-one-voice 
- #'(lambda (x y) (= x y)) '(0 1) <span class="keyword">
-:durations) </span>
-
- '((3 4)) 
- '(((1/4) (1/8)) 
- ((60) (61)) 
- ((1/4) (1/8)) 
- ((60) (61)))) 
- <span class="keyword">
-:instruments </span>
-'(:vln <span class="keyword">
-:vla))) </span>
-
- </p>
+</p>
+<pre>
+    (preview-score 
+      (cluster-engine-score 
+       ;; simple polyphonic constraint problem 
+       (ce::ClusterEngine 10 t nil  
+                          ;; single rule: all rhythmic values are equal 
+                          (ce::R-rhythms-one-voice  
+                           #'(lambda (x y) (= x y)) '(0 1) :durations) 
+                          '((3 4))  
+                          '(((1/4) (1/8)) 
+                            ((60) (61)) 
+                            ((1/4) (1/8)) 
+                            ((60) (61)))) 
+       :instruments '(:vln :vla))) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233355">
+<a id="_g248912">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -241,12 +243,13 @@ score cluster-engine-score</td>
 Carries over the pitches of cluster-engine-score found by reharmonisation with the Cluster Engine constraint solver into `score', the score used to shape `cluster-engine-score'. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
-score (headerless score): see <a href="score.html#_g233253">
+score (headerless score): see <a href="score.html#_g248810">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -257,18 +260,20 @@ cluster-engine-score: result of `cluster-engine:clusterengine' (https://github.c
  </p>
 </li>
 </ul>
+<h4>
+Notes: </h4>
 <p>
-NOTE: The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts). 
+The first two parts in `cluster-engine-score' must be a harmonic analysis (scales and chords parts). 
  </p>
 <p>
-NOTE: `cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
+`cluster-engine-score' must contain the same number and order of parts, notes and rhythmic structure as `score'. 
  
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233356">
+<a id="_g248913">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -296,7 +301,7 @@ Just shorthand for (preview-score (cluster-engine-score score))
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233357">
+<a id="_g248914">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -324,16 +329,16 @@ Translates `chords' (list of OMN chords) and `transpositions' (list of ints) int
 If `preview?' is T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus. 
  </p>
 <p>
-Example: 
- (chords-&gt;domain '(c4e4g4 b3d4g4) <span class="keyword">
-:transpositions </span>
-'(0 2 4)) 
- </p>
+</p>
+<h4>
+Examples: </h4>
+<pre>
+    (chords-&gt;domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4)) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233359">
+<a id="_g248916">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -358,14 +363,21 @@ sequence <em>&amp;optional</em> (root? t)</td>
 For notating underlying scales as sequence of grace notes. 
  </p>
 <p>
-Args: 
- root (OMN pitch): can be overwritten in case scales are notated on separate staffs and the treble clef portion does not contain the actual root. 
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+root (OMN pitch): can be overwritten in case scales are notated on separate staffs and the treble clef portion does not contain the actual root. 
  </p>
+</li>
+</ul>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233360">
+<a id="_g248917">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -390,12 +402,13 @@ score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrai
 CSP transforming the input `score' such that it follows the underlying harmony specified. 
  The rhythm of the input score is left unchanged. The pitches follow the melodic and intervallic profile of the input voices/parts, and various additional constraints are applied. 
  
- Args: 
  </p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g233253">
+score (headerless score): See <a href="score.html#_g248810">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -482,10 +495,10 @@ or simply T, the score is split at shared rests (see function `split-score-at-sh
 :at-bar-boundaries, </span>
 the score is split after every bar. 
  </p>
-</li>
+<ul>
 <li>
 <p>
-A list '(:at-bar-boundaries &lt;n&gt;), the score is split after every `n' bars (`n' must be an integer). 
+A list, the score is split after every `n' bars (`n' must be an integer). 
  </p>
 </li>
 <li>
@@ -494,6 +507,8 @@ A list '(:at-bar-boundaries &lt;list of integers&gt;), the score is split at the
  NOTE: You cannot use index rules if `split-score?' is not NIL -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
  If you want to split your score at different positions (e.g., in order to ensure that melodic rules towards the first note of the next bar are actually followed), then simply rebar your score before calling `revise-score-harmonically' (e.g., by calling `omn-to-time-signature') and rebar the result back to the original time signature afterwards. 
  </p>
+</li>
+</ul>
 </li>
 <li>
 <p>
@@ -522,8 +537,9 @@ For better readability and exportability to notation software, the underlying ha
 :scales-bass, </span>
 i.e., both underlying chords and scales are notated across two staves. For better readability, scale notes are notated as grace notes, with the root (first pitch) as the normal note. (Non-root placeholder tones in the treble are seemingly necessary, but marked like a flagolett tone with an 'o'). 
  
- Examples: 
  </p>
+<h4>
+Examples: </h4>
 <p>
 Lets first have some input polyphonic score, defined as a headerless score. For previewing this score at the same time saving it into a variable we first ensure that preview-score returns the given headerless score by setting `*preview-score-return-value*' acordingly. 
  </p>
@@ -598,6 +614,6 @@ TODO: demonstrate how default rules are overwritten.
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-07-29 13:49:37</div>
+- 2018-07-29 18:14:23</div>
 </body>
 </html>

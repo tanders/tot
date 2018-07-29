@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233315">
+<a href="pitch.html#_g248872">
 chord-multiplication</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ chord1 chord2</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233320">
+<a href="pitch.html#_g248877">
 fenv-&gt;pitches</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ fenv n</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233321">
+<a href="pitch.html#_g248878">
 fenv-transpose-pitch</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ sequence fenv <em>&amp;rest</em> args</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233324">
+<a href="pitch.html#_g248881">
 make-is-trill-length?</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ length</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233312">
+<a href="pitch.html#_g248869">
 pc-&gt;pitch</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ pc octave</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233313">
+<a href="pitch.html#_g248870">
 pcs-&gt;chord</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ pcs <em>&amp;optional</em> (octave 4)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233314">
+<a href="pitch.html#_g248871">
 pitch-&gt;pc</a>
 </td>
 <td class="summary">
@@ -105,7 +105,7 @@ pitch</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233322">
+<a href="pitch.html#_g248879">
 pitch-retrograde-omn</a>
 </td>
 <td class="summary">
@@ -113,7 +113,7 @@ sequence <em>&amp;key</em> (flat t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233319">
+<a href="pitch.html#_g248876">
 pitches-&gt;fenv</a>
 </td>
 <td class="summary">
@@ -121,7 +121,7 @@ pitches</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233318">
+<a href="pitch.html#_g248875">
 spectra-transpositions-fitting-in-scale</a>
 </td>
 <td class="summary">
@@ -129,7 +129,7 @@ spectra scale</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233316">
+<a href="pitch.html#_g248873">
 stretch-pitches</a>
 </td>
 <td class="summary">
@@ -137,7 +137,7 @@ pitches factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233317">
+<a href="pitch.html#_g248874">
 stretch-pitches2</a>
 </td>
 <td class="summary">
@@ -145,7 +145,7 @@ number chord factor <em>&amp;key</em> (round t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233325">
+<a href="pitch.html#_g248882">
 thomassen-accents</a>
 </td>
 <td class="summary">
@@ -153,7 +153,7 @@ sequence <em>&amp;optional</em> (format :omn)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="pitch.html#_g233323">
+<a href="pitch.html#_g248880">
 trill-selected-notes</a>
 </td>
 <td class="summary">
@@ -162,7 +162,7 @@ sequence test <em>&amp;key</em> (interval 2) (ignore-articulations '(marc))</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233312">
+<a id="_g248869">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -187,15 +187,17 @@ pc octave</td>
 Converts the pitch class `pc' into an OMN pitch in the given `octave'. 
  </p>
 <p>
-Example: 
- (pc-&gt;pitch 1 4) 
- =&gt; cs4 
- </p>
+</p>
+<h4>
+Examples: </h4>
+<pre>
+    (pc-&gt;pitch 1 4) 
+     =&gt; cs4 </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233313">
+<a id="_g248870">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -220,15 +222,17 @@ pcs <em>&amp;optional</em> (octave 4)</td>
 Expects a list of pitch class integers and returns an Opusmodus chord symbol. 
  </p>
 <p>
-Example: 
- (pcs-&gt;chord '(0 4 7)) 
- =&gt; c4e4g4 
- </p>
+</p>
+<h4>
+Examples: </h4>
+<pre>
+    (pcs-&gt;chord '(0 4 7)) 
+     =&gt; c4e4g4 </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233314">
+<a id="_g248871">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -256,7 +260,7 @@ Converts the OMN pitch `pitch' into a pitch class integer
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233315">
+<a id="_g248872">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -281,8 +285,9 @@ chord1 chord2</td>
 Boulez's multiplication of chords. The intervals of `chord1' are built over every pitch of `chord2'. 
  </p>
 <p>
-Example: 
- </p>
+</p>
+<h4>
+Examples: </h4>
 <p>
 Over every pitch of the C-major triad (chord2) the fifths of chord1 is created. 
  </p>
@@ -291,8 +296,9 @@ Over every pitch of the C-major triad (chord2) the fifths of chord1 is created.
 <pre>
     (chord-multiplication '(d4 a4) '(c4 e4 g4)) </pre>
 <p>
-References: 
- </p>
+</p>
+<h4>
+Notes: </h4>
 <p>
 Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz. 
  </p>
@@ -300,7 +306,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233316">
+<a id="_g248873">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -325,8 +331,9 @@ pitches factor <em>&amp;key</em> (round t)</td>
 Proportional streching/shrinking of intervals. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -344,9 +351,8 @@ round: whether or not to round the result to semitones. Must be T for now, but i
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 </p>
 <pre>
@@ -356,8 +362,9 @@ Examples:
       
      (stretch-pitches '(c4 e4 g4) 2/3)   </pre>
 <p>
-References: 
- </p>
+</p>
+<h4>
+Notes: </h4>
 <p>
 Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz. 
  </p>
@@ -365,7 +372,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233317">
+<a id="_g248874">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -390,8 +397,9 @@ number chord factor <em>&amp;key</em> (round t)</td>
 Creates `number' derivates from chord following a procedure suggested by Giacomo Manzoni where the chord intervals are systematically stretched or shrunk. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -409,9 +417,8 @@ factor (integer, float or fraction): controls the interval between resulting cho
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 </p>
 <pre>
@@ -419,8 +426,9 @@ Examples:
       
      (stretch-pitches2 5 '(c4 e4 g4) 1.5) </pre>
 <p>
-References: 
- </p>
+</p>
+<h4>
+Notes: </h4>
 <p>
 Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of Music from 26th of June to 1st of July, 1988. 
  </p>
@@ -428,7 +436,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233318">
+<a id="_g248875">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -453,16 +461,27 @@ spectra scale</td>
 Function for generating a chord/spectral domain. Returns all transpositions of the given spectral that fit in the given scale (i.e., all their pitch classes are contained in the scale). 
  </p>
 <p>
-Args: 
- spectra (OMN chords): a list of untransposed spectra 
- scale (OMN pitch list) 
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+spectra (OMN chords): a list of untransposed spectra 
+ </p>
+</li>
+<li>
+<p>
+scale (OMN pitch list) 
  
  </p>
+</li>
+</ul>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233319">
+<a id="_g248876">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -490,7 +509,7 @@ Translates a sequence of pitches into a fenv that linearily inerpolates between 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233320">
+<a id="_g248877">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -518,7 +537,7 @@ Translates a fenv into a sequence of pitches. Fenv values encode pitches by thei
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233321">
+<a id="_g248878">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -542,8 +561,9 @@ sequence fenv <em>&amp;rest</em> args</td>
 <p>
 Transposes pitches in sequence by their corresponding fenv value. 
  
- Args: 
  </p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -559,8 +579,9 @@ fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value 
 </li>
 </ul>
 <p>
-Examples: 
- </p>
+</p>
+<h4>
+Examples: </h4>
 <pre>
     (fenv-transpose-pitch '(c4 c4 g4 g4) (fenv:linear-fenv (0 0) (1 2))) 
      =&gt; (c4 cs4 gs4 a4) </pre>
@@ -578,7 +599,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233322">
+<a id="_g248879">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -606,7 +627,7 @@ My version of pitch-retrograde that is working until the original is fixed for O
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233323">
+<a id="_g248880">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -631,8 +652,9 @@ sequence test <em>&amp;key</em> (interval 2) (ignore-articulations '(marc))</td>
 Increases rhythmic interest by subdividing all notes that meet the function test and turning these into a trill. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -655,17 +677,19 @@ ignore-articulations: list of articulations not to repeat at inserted notes.
  </p>
 </li>
 </ul>
+<h4>
+Examples: </h4>
+<pre>
+    (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e)) 
+     =&gt; ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf)) </pre>
 <p>
-Example: 
- (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e)) 
- =&gt; ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf)) 
- 
+
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233324">
+<a id="_g248881">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -693,7 +717,7 @@ length</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233325">
+<a id="_g248882">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -718,14 +742,15 @@ sequence <em>&amp;optional</em> (format :omn)</td>
 Expects an OMN sequence (or a different format, see below), and returns a *flat* list of floats representing the associated melodic accent value of each pitch as defined by the Thomassen model. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
 format (keyword): sets the format of `sequence'. 
  </p>
-</li>
+<ul>
 <li>
 <p>
 <span class="keyword">
@@ -748,23 +773,38 @@ format (keyword): sets the format of `sequence'.
  </p>
 </li>
 </ul>
+</li>
+</ul>
 <p>
-NOTE: no accent values are available for the first two and the last pitch, therefor nil is return for those pitches. 
+Note that no accent values are available for the first two and the last pitch, therefor nil is return for those pitches. 
  </p>
+<p>
+</p>
+<h4>
+Notes: </h4>
 <p>
 Hack: Quick evaluation: strong melodic accents have an accent value greater than 0.4. 
  </p>
 <p>
-References: 
- Thomassen, J. M. (1982) Melodic accent: Experiments and a tentative model. The Journal of the Acoustical Society of America. 71 (6), 1596–1605. 
- Huron, D. &amp; Royal, M. (1996) What is melodic accent? Converging evidence from musical practice. Music Perception. 489–516. 
+</p>
+<ul>
+<li>
+<p>
+Thomassen, J. M. (1982) Melodic accent: Experiments and a tentative model. The Journal of the Acoustical Society of America. 71 (6), 1596–1605. 
  </p>
+</li>
+<li>
+<p>
+Huron, D. &amp; Royal, M. (1996) What is melodic accent? Converging evidence from musical practice. Music Perception. 489–516. 
+ </p>
+</li>
+</ul>
 </div>
 </div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-07-29 13:49:37</div>
+- 2018-07-29 18:14:23</div>
 </body>
 </html>

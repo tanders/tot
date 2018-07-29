@@ -49,7 +49,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233366">
+<a href="form.html#_g248923">
 alternate-fenvs</a>
 </td>
 <td class="summary">
@@ -57,7 +57,7 @@ ids ns fenv-lists <em>&amp;key</em> (interpolation :steps)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233370">
+<a href="form.html#_g248927">
 alternate-omn-fenvs</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ ids no-of-sublists omn-fenv-lists parameters sequence <em>&amp;key</em> (keep-ar
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233364">
+<a href="form.html#_g248921">
 alternate-omns</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ ids seqs-of-seqs <em>&amp;key</em> (append? nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233368">
+<a href="form.html#_g248925">
 alternate-subseq-fenvs</a>
 </td>
 <td class="summary">
@@ -81,7 +81,7 @@ ids no-of-sublists fenv-lists parameter sequence <em>&amp;key</em> (min-vel 'pp)
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233363">
+<a href="form.html#_g248920">
 condense</a>
 </td>
 <td class="summary">
@@ -89,7 +89,7 @@ sequence test <em>&amp;key</em> (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233362">
+<a href="form.html#_g248919">
 developing-substitute</a>
 </td>
 <td class="summary">
@@ -97,7 +97,7 @@ map sequence otherwise</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233369">
+<a href="form.html#_g248926">
 omn-&gt;fenv</a>
 </td>
 <td class="summary">
@@ -105,7 +105,7 @@ parameter sequence <em>&amp;key</em> (type :steps)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233371">
+<a href="form.html#_g248928">
 rotate-omn</a>
 </td>
 <td class="summary">
@@ -113,7 +113,7 @@ n sequence <em>&amp;key</em> (parameter :pitch) (flat t) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233365">
+<a href="form.html#_g248922">
 _alternate-omns-aux</a>
 </td>
 <td class="summary">
@@ -121,7 +121,7 @@ ids hash append?</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="form.html#_g233367">
+<a href="form.html#_g248924">
 _map-sublist-subseqs</a>
 </td>
 <td class="summary">
@@ -130,7 +130,7 @@ no-of-sublists sequence fn</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233362">
+<a id="_g248919">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -161,8 +161,9 @@ Note that sequence elements to replace can be arbitrary values, including subseq
  
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -180,9 +181,8 @@ otherwise: flat list of alternative replacements. Per sublist, only a single rep
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <pre>
     (developing-substitute '((1 (a b c)) 
        			     (2 (h i j))) 
@@ -193,7 +193,7 @@ Examples:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233363">
+<a id="_g248920">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -218,8 +218,9 @@ sequence test <em>&amp;key</em> (section nil)</td>
 Beethoven-like condensation of music. All notes for which a given test function returns `nil' are removed, and their preceeding note is extended by their duration. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -232,9 +233,8 @@ sequence: An OMN sequence
  </p>
 </li>
 </ul>
-<p>
-Example: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 </p>
 <pre>
@@ -249,7 +249,7 @@ Example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233364">
+<a id="_g248921">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -274,8 +274,9 @@ ids seqs-of-seqs <em>&amp;key</em> (append? nil)</td>
 This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -294,8 +295,9 @@ append? (Boolean): whether or not nested OMN sequences should be appended instea
 </li>
 </ul>
 <p>
-Examples: 
- </p>
+</p>
+<h4>
+Examples: </h4>
 <p>
 The following example demonstrates the use of the arguments `ids' and `seqs-of-seqs' with a flat sequence of note lengths. Note the nesting of `seqs-of-seqs', as explained by the comments. 
  
@@ -374,7 +376,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233365">
+<a id="_g248922">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -402,7 +404,7 @@ Aux def
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233366">
+<a id="_g248923">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -430,8 +432,9 @@ Alternate between fenvs and sample the fenvs; the result is a list of lists of n
 For convenience, fenvs can also be specified simply as lists of numbers (x-values). 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -457,9 +460,10 @@ or :linear): in case fenvs are specified as lists of numbers, the `interpolation
  </p>
 </li>
 </ul>
+<h4>
+Examples: </h4>
 <p>
-Examples: 
- Using lists of integers, internally translated into fenvs. The result here is rather similar to the input, but with lists of different lengths. 
+Using lists of integers, internally translated into fenvs. The result here is rather similar to the input, but with lists of different lengths. 
  </p>
 <pre>
     (alternate-fenvs '(0 1 0) '(3 3 4)  
@@ -504,7 +508,7 @@ For more examples with nested lists of fenvs in `fenv-lists' compare the use of 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233367">
+<a id="_g248924">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -533,7 +537,7 @@ aux
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233368">
+<a id="_g248925">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -570,8 +574,9 @@ For convenience, fenvs can also be specified simply as lists of numbers (x-value
 See also the function `alternate-omn-fenvs', which is similar but more easy to use. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -636,9 +641,8 @@ hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dyn
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 Lists of integers can be used instead of fenvs for convenience. 
  </p>
@@ -687,7 +691,7 @@ An example with double-nested lists.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233369">
+<a id="_g248926">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -718,8 +722,9 @@ This function is useful, e.g., for quasi motific variation, where the number of 
 Usually, you do not want to use this function directly, but instead use the function `alternate-omn-fenvs', which is less low-level and therefore more easy to use. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -745,9 +750,8 @@ type: how to interpolate between parameter values. Can be <span class="keyword">
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 A six-note OMN sequence with multiple parameters used for several examples 
  </p>
@@ -791,7 +795,7 @@ Translate the articulations of this six-note sequence into a sequence of 7 artic
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233370">
+<a id="_g248927">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -822,8 +826,9 @@ Like `alternate-omns', the present function is useful for switching between diff
 One of the particular expressive powers of this function is that characteristics defined by fenvs (`fenv-lists') can be applied to sublists (bars) in `sequence' of different lengths. For example, the same overall gestus can be applied to a bar of three but all four or five notes. (Nevertheless, it does not allow to change the number of elements in `sequence'.) 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -874,9 +879,8 @@ hairpins? (Boolean): In case `parameter' is `:velocity' you can set that the dyn
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 TODO: 
  </p>
@@ -886,7 +890,7 @@ TODO:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233371">
+<a id="_g248928">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -911,8 +915,9 @@ n sequence <em>&amp;key</em> (parameter :pitch) (flat t) (section nil)</td>
 Rotate the OMN `sequence' by `n' positions. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -948,9 +953,8 @@ section (list of ints): positions of sublists to process. This argument is ignor
  </p>
 </li>
 </ul>
-<p>
-Examples: 
- </p>
+<h4>
+Examples: </h4>
 <p>
 </p>
 <pre>
@@ -976,6 +980,6 @@ The following examples are rotating subsequences separately.
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-07-29 13:49:37</div>
+- 2018-07-29 18:14:23</div>
 </body>
 </html>

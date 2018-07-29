@@ -7,9 +7,10 @@
 
 (require :cldoc)
 
-(defparameter *doc-dir* (make-pathname :directory (append (pathname-directory *load-truename*) '("doc"))))
+(defparameter *doc-dir* (make-pathname :directory (append (pathname-directory *load-truename*) '("docs"))))
+
 
 (cldoc:extract-documentation 'cludg:html (format nil "~A" *doc-dir*)
     (asdf:find-system :tot)
-    :table-of-contents-title 
+    :table-of-contents-title
     "Torsten's Opusmodus Tools (TOT)")

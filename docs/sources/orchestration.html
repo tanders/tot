@@ -47,7 +47,7 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g233374">
+<a href="orchestration.html#_g248931">
 corresponding-rest</a>
 </td>
 <td class="summary">
@@ -55,7 +55,7 @@ event</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g233373">
+<a href="orchestration.html#_g248930">
 filter-notes-if</a>
 </td>
 <td class="summary">
@@ -63,7 +63,7 @@ test omn <em>&amp;key</em> (remain t) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g233377">
+<a href="orchestration.html#_g248934">
 insert-articulation</a>
 </td>
 <td class="summary">
@@ -71,7 +71,7 @@ flat-omn-list <em>&amp;rest</em> articulations</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g233378">
+<a href="orchestration.html#_g248935">
 remove-unless-parameters</a>
 </td>
 <td class="summary">
@@ -79,7 +79,7 @@ flat-omn-list parameter <em>&amp;key</em> (remove-non-matching? nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g233376">
+<a href="orchestration.html#_g248933">
 separate-parts</a>
 </td>
 <td class="summary">
@@ -87,7 +87,7 @@ sequence articulation-sets</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="orchestration.html#_g233375">
+<a href="orchestration.html#_g248932">
 _push-event-and-rests</a>
 </td>
 <td class="summary">
@@ -96,7 +96,7 @@ event matching-position result-omns articulation-sets-length</td>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233373">
+<a id="_g248930">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -121,8 +121,9 @@ test omn <em>&amp;key</em> (remain t) (section nil)</td>
 Extracts events in OMN for which a given test function returns true (or keeps only events for which the test function returns nils). All other notes are turned into rests. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -149,8 +150,9 @@ section: an integer or list of integers. Selected list or lists to process. The 
 See also Opusmodus builtin `filter-events'. 
  </p>
 <p>
-Examples: 
- </p>
+</p>
+<h4>
+Examples: </h4>
 <p>
 Keep only notes above middle C and turn other notes into rests 
  </p>
@@ -186,7 +188,11 @@ This also works with nested lists and you can process only selected bars (other 
 For musical application examples see also {https://opusmodus.com/forums/topic/867-opusmodus-1222292/}. 
  </p>
 <p>
-NOTE: This function could also be useful for Beethoven like motif condensation, where notes are first turned into rests with this function, and then their preceding notes are extended with length-legato, as demonstrated in the following example. 
+</p>
+<h4>
+Notes: </h4>
+<p>
+This function could also be useful for Beethoven like motif condensation, where notes are first turned into rests with this function, and then their preceding notes are extended with length-legato, as demonstrated in the following example. 
  </p>
 <p>
 </p>
@@ -198,7 +204,11 @@ NOTE: This function could also be useful for Beethoven like motif condensation, 
                        my-motif)) 
      =&gt; ((h c4 e4) (w g4)) </pre>
 <p>
-See also {https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-note/?tab=comments#comment-2713}. 
+</p>
+<h4>
+See Also: </h4>
+<p>
+https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-note/?tab=comments#comment-2713 
  </p>
 <p>
 </p>
@@ -206,7 +216,7 @@ See also {https://opusmodus.com/forums/topic/910-merge-rests-with-preceeding-not
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233374">
+<a id="_g248931">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -231,15 +241,16 @@ event</td>
 Turns a single OMN note into a rest of the same note value. Rests remain rests, and rest articulations are preserved. 
  </p>
 <p>
-Example: 
- </p>
+</p>
+<h4>
+Examples: </h4>
 <pre>
     (corresponding-rest '(h c4)) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233375">
+<a id="_g248932">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -262,7 +273,7 @@ event matching-position result-omns articulation-sets-length</td>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233376">
+<a id="_g248933">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -296,8 +307,9 @@ Remember that the result of this function is a list of multiple OMN sequences (m
 See also {https://opusmodus.com/forums/topic/849-towards-algorithmic-orchestration-and-customising-sound-playback-with-multiple-sound-libraries/}
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -313,8 +325,11 @@ articulation-sets: list of list of articulations. All notes with articulations c
 </li>
 </ul>
 <p>
-Examples: 
- </p>
+</p>
+<h4>
+Examples: </h4>
+<p>
+</p>
 <pre>
     (separate-parts '(h c4 pizz q arco) 
                      '((pizz) 
@@ -374,7 +389,7 @@ Full score example:
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233377">
+<a id="_g248934">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -399,8 +414,11 @@ flat-omn-list <em>&amp;rest</em> articulations</td>
 Merge in one or more lists of articulations to an OMN expression. 
  </p>
 <p>
-Example: 
- added nil for the rest 
+</p>
+<h4>
+Examples: </h4>
+<p>
+added nil for the rest 
  </p>
 <pre>
     (insert-articulation '(e c4 mp arco e. d4 -h e. p pizz e e4 arco)  
@@ -413,7 +431,7 @@ BUG: does not skip rests. Wait for omn-replace supports composite articulations 
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233378">
+<a id="_g248935">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -438,8 +456,9 @@ flat-omn-list parameter <em>&amp;key</em> (remove-non-matching? nil)</td>
 Checks every note whether it contains `parameter'. All notes containing the parameter are preserved, all other notes are turned into rests. If a note contains a combination of articulations, all of them are checked. 
  </p>
 <p>
-Args: 
- </p>
+</p>
+<h4>
+Arguments: </h4>
 <ul>
 <li>
 <p>
@@ -458,8 +477,9 @@ remove-rests? (default nil): if true, all notes that do not match are removed in
 </li>
 </ul>
 <p>
-Examples: 
- </p>
+</p>
+<h4>
+Examples: </h4>
 <pre>
     (remove-unless-parameters '(e c4 mp arco+ponte e. d4 mp tasto -h e. c4 p pizz+ponte e e4 p arco+tasto)  
                              'e.) 
@@ -487,6 +507,6 @@ Examples:
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-07-29 13:49:37</div>
+- 2018-07-29 18:14:23</div>
 </body>
 </html>
