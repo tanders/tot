@@ -189,6 +189,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
   Args:
   - sequence: (possibly nested) list of pitches or OMN expression
   - fenv: a fenv that ranges over the full sequence; mapping of notes to fenv value by position in sequence (not temporal position); intervals are specified in semitones; intervals are rounded to their closes integer
+  
   All arguments of pitch-transpose-n are supported as well.
 
 
@@ -219,6 +220,45 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
   (edit-omn :pitch sequence 
             #'(lambda (ps) (pitch-retrograde ps))
 	    :flat flat))
+
+
+
+;;; TODO:
+;; - consider rewriting using map-selected-events -- much shorter then
+;; - add args for number of trill notes (e.g., trill in triplets)
+(defun trill-selected-notes (sequence test &key (interval 2) (ignore-articulations '(marc)))
+  "Increases rhythmic interest by subdividing all notes that meet the function test and turning these into a trill.
+
+  Args:
+  - sequence: nested OMN sequence
+  - test: function expecting four arguments of a given note, its length, pitch, velocity and articulation.
+  - interval: integer specifying size and direction of trill interval (positive is up, negative is down).
+  - ignore-articulations: list of articulations not to repeat at inserted notes.
+
+  Example:
+  (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e))
+  => ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf))
+  "
+  (let ((remove-articulations (flatten (mapcar #'disassemble-articulations (tu:ensure-list ignore-articulations)))))
+    (loop for bar in (single-events sequence)
+       collect (loop for (l p v a) in bar
+		  append (remove nil 
+				 (cond 
+				   ((length-restp l) (list l))
+				   ((funcall test l p v a) 
+				    (let ((half-l (/ (omn-encode l) 2))) 
+				      (list half-l p v a
+					    half-l (first (pitch-transpose interval (list p))) v
+					    (merge-articulations
+					     (reduce #'(lambda (list art) (remove art list))
+						     '(marc ten) :initial-value (disassemble-articulations a)))
+					    )))
+				   (T (list l p v a))))))))
+
+
+(defun make-is-trill-length? (length)
+  "[Helper function for trill-selected-notes] Returns a function to be used as `test' argument for function `trill-selected-notes'. The returned function returns true for all notes of the given `length'."
+  #'(lambda (l p v a) (= (omn-encode length) (omn-encode l))))
 
 
 
