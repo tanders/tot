@@ -223,11 +223,21 @@
      (last ensured-lengths))))
 
 
-(defun divide-shortest (sequence &key (divide 2) (count nil) (section nil))
+(defun count-shortest (sequence)
+  "Count the number of the shortest notes in sequence. Helper function for using `divide-shortest'."
+  (let* ((flat-seq (flatten (omn :length sequence)))
+	 (shortest (apply #'min flat-seq)))
+    (count shortest flat-seq)))
+  
+; (count-shortest '(1/16 1/2 1/16)) 
+
+(defun divide-shortest (sequence &key (divide 2) (count nil) (section nil) (seed nil))
   "Increase rhythmic contrast by dividing the shortest notes in the given `sequence'.
 
-  Example:
+  Examples:
   ;;; (divide-shortest '(1/8 1/16 1/16))
+
+  ;;; (divide-shortest '(1/8 1/16 1/16) :count 1)
 
   Note that if sequence is a full OMN expression, then the added notes cause all other parameters to shift forward. Additional parameters are added at the end by circling.
   ;;; (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)))
@@ -237,15 +247,17 @@
    
   This function is a simplified variant of `length-divide'. For more control use that function instead."  
   (let ((shortest (apply #'min (flatten (omn :length sequence))))
-	(l (count-notes sequence)))
+	(l (count-shortest sequence)))
     (length-divide (if count count l) divide sequence :set shortest
 		   :section section
 		   ;; :flat T
 		   ;; :span :pitch -- changes the meter. I don't want that.
+		   :seed seed
 		   )))
 
-
 ; (divide-shortest (gen-karnatic-cell 4 4 2 :min-number 2))
+
+
 
 #|
 ;;; TODO: unfinished
