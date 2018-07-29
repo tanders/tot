@@ -10,6 +10,70 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun map-selected-events (fn sequence &key (test #'(lambda (&rest args) (declare (ignore args)) T)) flat section exclude)
+  "Every event for which the function `test' returns true is transformed by the function `fn'. In the background, sequence is transformed into a list of events, where each note is represented by a list of the parameters length, pitch, velocity, and articulation. 
+
+  Rests are skipped unprocessed
+
+  Args:
+  - fn: function expecting and returning a single event
+  - sequence: an OMN sequence
+  - test: Boolean function expecting a single event. By default, all elements are processed. 
+  - flat (Boolean): whether or not to flatten sequence before processing.
+  - section (list of ints): 0-based positions of bars (sublists) in nested `sequence' to which `fn' is applied.
+  - exclude (list of ints): 0-based positions of bars (sublists) in nested `sequence' to which `fn' is *not* applied. Only either `section' or `exclude' should be specified, otherwise `exclude' is ignored.
+
+  Example:
+
+  Reduce all events with velocity p to velocity pp
+;;; (map-selected-events
+;;;  #'(lambda (l p v a) (list l p 'pp a))
+;;;  '((-e s bb3 f marc a3 leg g3 p leg gs3 leg g3 leg a3 leg) (q fs3 f ten -q))
+;;;  :test #'(lambda (l p v a) (eql v 'p)))
+"
+  (let ((result 
+	 (if (and (listp (first sequence)) (not flat))
+	     ;; if first element in sequence is list assume it is nested and call recursively with map-section
+	     (map-section #'(lambda (sublist) (map-selected-events fn sublist :test test))
+			  sequence :section section :exclude exclude)
+	     ;; sequence is flat list. 
+	     (loop for (l p v a) in (single-events (if flat ;; if only for efficiency
+						       (flatten sequence)
+						       sequence))
+		append (remove nil ;; unset parameters in events are nil
+			       (cond
+				 ;; rests skipped unprocessed. Note that rests cannot have another other params 
+				 ((length-restp l) (list l))
+				 ;; process matching
+				 ((funcall test l p v a) 
+				  (funcall fn l p v a))
+				 ;; skip unprocessed all others
+				 (T (list l p v a)))))
+	     )))
+    (if flat 
+	(copy-time-signature sequence result)
+	result)))
+
+;;; TODO: map-consecutive-selected-events -- generalise above function for processing subsequences of consecutive elements
+
+
+
+(defun process-element (fn element args)
+  "Many Opusmodus functions are defined to work only with lists. This function is intended to help to keep when you want to instead process a single element with such a function.
+
+  Example
+  Transpose a single element with pitch-transpose
+  ;;; (process-element #'pitch-transpose 'c4 '(2 _))
+
+  Without this function, the call above would look as follows.
+  ;;; (first (pitch-transpose 2 (list 'c4)))
+
+  It is a matter of taste/style, which approach you prefer :)
+
+  Of course, it might be better if instead Opusmodus functions would simply support single OMN notation elements as well.  
+  "
+  (first (apply fn (substitute (list element) '_ args))))
+
 
 (defun map-omn (fn omn-expr)
   "Variant of mapcar for omn expressions, intended for creating variations of omn-expr. Applies function fn to every note in omn-expr (a flat OMN list). fn must exect four arguments (a length, pitch, velocity and articution) and returns a list of four values (a length, pitch, velocity and articution).
@@ -47,7 +111,9 @@
   BUG: does not work if omn-expr contains rest.
   Problem: omn does not provide any values for rests.
   Possible solution: couple note durations with their respective params, but leave rests without. Then skip rests in the processing unchanged. 
-  BTW: This process looses articulations on rests, like fermata."
+  BTW: This process looses articulations on rests, like fermata.
+
+  NOTE: see also function `single-events': looping (or mapping) over its result has similar effect."
   ;;; TMP
   ; (format T "map-omn ~A~%" omn-expr)
   (if (listp (first omn-expr))
