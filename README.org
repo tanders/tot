@@ -68,17 +68,19 @@ $ git pull
 
 * Usage 
 
-  This library is an [[https://common-lisp.net/project/asdf/][ASDF]] system (ASDF is the de facto standard for building Common Lisp software), and you can load it into your Lisp compiler as follows. All dependency libraries are loaded automatically as well. 
+  This library is an [[https://common-lisp.net/project/asdf/][ASDF]] system (ASDF is the de facto standard for building Common Lisp software), and you can load it into Opusmodus by evaluating the following line (e.g., make it part the code of your Opusmodus project). All dependency libraries are loaded automatically as well. The first time you do this, your Lisp compiler will show you a long list of compilation messages including various warnings, which you can savely ignore. Afterwards, you are ready to use whatever function etc. you want from this library (and its dependencies).
    
 #+begin_src lisp :tangle yes
 (require :tot)
 #+end_src  
 
-  For most convenient use within Opusmodus, you can drag and drop the whole folder of this library in the browser of an Opusmodus project. Then, visit the HTML documentation of this library from within Opusmodus: open the =tot=, and then its =doc= folder and click on an HTML file, say =index.html=. You can now browse the reference documentation of the library, which explains its individual definitions. Most importantly, you can directly run all example code in the documentation from within Opusmodus (thanks, Janusz Podrazik).
+  As already mentioned, for most convenient use within Opusmodus, you can drag and drop the whole folder of this library in the browser of an Opusmodus project. Then, visit the HTML documentation of this library from within Opusmodus: open the =tot= folder, and then its contained folder =docs= and click on an HTML file, say =index.html=. You can now browse the reference documentation of the library within Opusmodus, which explains its individual definitions. Most importantly, you can directly run all example code in the documentation from within Opusmodus (thanks, Janusz Podrazik).
     
-  This collection of definitions is roughly sorted in the file structure and documentation according to certain musical aspects.  
+  This collection of definitions is roughly sorted in the file structure and documentation according to certain musical aspects (rhythm, pitches, musical form...).  
 
-  The file =score= deserves a special mention, because it defines a little library in his own. It provides a collection of tools to transform polyphonic scores in various ways. 
+  The file =score= deserves a special mention, because it defines a little library in his own. It provides a collection of tools to transform polyphonic scores in various ways. The function =preview-score= notates and plays such scores, the other functions in this sub-library process it it various ways. Whenever elsewhere in the library (e.g., in the file =constraints.lisp=) the documentation mentions a score, it refers to the format expected by =preview-score=. 
+
+  Note that dependencies of this library are of interest on their own for computer-aided composition. This is particularly true for the constraint library [[https://github.com/tanders/cluster-engine][cluster engine]] and its extension [[https://github.com/tanders/cluster-rules][cluster rules]], as well as the library [[https://github.com/tanders/fenv][fenv]]. You can drag their folders in your Opusmodus projects as well to play around with the examples in their documentation. 
 
 
 * License
