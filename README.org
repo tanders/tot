@@ -4,7 +4,7 @@ This library provides a collection of definitions that extend the algorithmic co
 
 Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited :)  
 
-Nevertheless, I trust at least some of the various function here might be useful for others. Note that I always tried to document their purpose and limitations and included many usage examples. 
+Nevertheless, I trust at least some of the various functions here might be useful for others. Note that I always documented their purpose and limitations and included many usage examples. 
 
 
 * Documentation
