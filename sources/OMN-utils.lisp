@@ -708,6 +708,22 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
 |#
 
+(defun rnd-section (section-range probability &key seed)
+  "The function returns a list of random section numbers intended for the argument section of many Opusmodus functions. The list of returned sections is unsorted.
+
+* Arguments:
+  - section-range (pair of ints): the range of 0-based section positions (including boundaries) within which sections are returned.
+  - probability (float in interval 0-1): the likelyhood by which sections are return, where 0 means the result is nil, 1 means that the result contains all sections within the given range, and, e.g., 0.5 means a 50 percent probability that any section is selected.  
+
+* Examples:
+  ;;; (rnd-section '(0 9) 0.5 :seed 1)
+"
+  (rnd-seed seed)
+  (let ((section-no (1+ (- (second section-range) (first section-range)))))
+    (rnd-unique (* section-no probability)
+		(apply #'gen-integer section-range)
+		:seed (seed))
+    ))
 
 (defun mk-seed (&optional seed)
   "Generates a random seed value, prints and returns it. Useful for exploring different results of random processes, but then keeping a found solution.
