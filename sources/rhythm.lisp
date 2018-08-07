@@ -1097,7 +1097,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   - include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
   - seed (integer): the seed to use for the randomised position, is position is '?.
 
-  Examples:
+* Examples:
 
   The first position is always a single note per cell (if no other filtering is selected)
   ;;; (gen-karnatic-cell 4 4 0)
@@ -1121,7 +1121,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   ;;; (gen-karnatic-cell 4 4 '? :max-number 3)
 
   ... or the first note value in the cell can be set.
-  ;;; (gen-karnatic-cell 4 4 0 :first-length)
+  ;;; (gen-karnatic-cell 4 4 '(1 1 1) :first-length 1/8)
 
   All these filter arguments also support lists for setting different values for each sublist.
   ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
@@ -1132,11 +1132,22 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   Filtering can remove all options for cells, in which case nil returned.
   ;;; (gen-karnatic-cell 4 4 0 :min-number 5)
 
+  For more examples see also https://opusmodus.com/forums/topic/1097-updated-library-of-many-custom-opusmodus-functions/?tab=comments#comment-3497
+
 
   You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
 
-* Reference
-  Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+* BUGS:
+
+The argument min-number is seemingly not fully working yet:
+
+(gen-karnatic-cell 4 5 '(? ? ? ?) :min-number '(3 3 3 3) :seed 1)
+=>((1/8 1/8 1/16) (3/16 1/16 1/16) (1/16 1/16 1/16 1/16 1/16) (1/8 1/8 1/16)) 
+
+
+* Notes:
+
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
 "
       (rnd-seed seed)
       (if (listp position)
