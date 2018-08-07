@@ -264,6 +264,32 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Process chords
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun chord->line (sequence position)
+  "Transforms chords in `sequence' into single notes, extracting the chord pitch at `position' (or the closest pitch, if there is no pitch at `position').
+
+* Examples:
+
+  (chord->line '((h c4e4g4 q) (h.)) 0)"
+  (map-selected-events
+   #'(lambda (l p v a)
+       (list l
+	     (let* ((pitches (melodize p))
+		    (length-1 (1- (length pitches)))
+		    (pos (if (<= position length-1)
+			     position
+			     length-1)))
+	       (nth pos pitches))
+	     v a))
+   sequence))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Accent model
