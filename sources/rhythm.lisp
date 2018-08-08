@@ -85,12 +85,12 @@
   "Some custom algorithm to create rhythmic phrases that randomly walk across tuplet subdivisions and includes some rests.
 
 * Arguments:
-  - bar-no: number of bars to generate
+  - bar-no (int): number of bars to generate
   - bar-length: regular duration of resulting bars
   - subdivisions-ambitus: range of tuplet subdivisions
   - rest-distances: distances between rests 
   - rest-distance-order (:rnd or :seq): whether rest distances will be in the given order (:seq) or randomised (:rnd)
-  - last-bar: bar added at end after bar-no bars. If nil, no bar is added. 
+  - last-bar (flat or nested OMN expression, but typically only a rhythm): one or more bars added at end after bar-no bars. If nil, no bar is added. 
 
 * Examples: 
   ;;; (tuplet-walk-rhythm 7 :seed 569 :rest-distances '(9 1 13) :last-bar '(1/4 -1/4))
@@ -111,7 +111,8 @@
           (:seq rest-distances))
         my-rhythm)
        (when last-bar
-         `(,last-bar))))))
+	 (ensure-double-list last-bar))
+         ))))
 
 
 (defun even-length-rhythm (length &key total-duration prefix suffix (time-sig '(4 4)))
