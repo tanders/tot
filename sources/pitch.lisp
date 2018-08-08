@@ -276,7 +276,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 * Examples:
 
-  (chord->line '((h c4e4g4 q) (h.)) 0)"
+  ;;; (chord->line '((h c4e4g4 q) (h.)) 0)"
   (map-selected-events
    #'(lambda (l p v a)
        (list l
