@@ -290,6 +290,29 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
    sequence))
 
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Ambitus
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun gen-ambitus-sequence (lows highs)
+  "Returns a sequence of ambitus pairs, where the first element follows the given low and the second element the given high values. If one of the lists is shorter then it is circled.
+
+* Arguments:
+  lows (list of integers or pitches)
+  highs (list of integers or pitches)
+
+* Examples:
+
+  (gen-ambitus-sequence '(0 1 2 3) '(5))
+  => ((0 5) (1 5) (2 5) (3 5))
+"
+  (let ((l (max (length lows) (length highs))))
+    (matrix-transpose (list (circle-repeat lows l) (circle-repeat highs l)))))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Accent model
