@@ -49,7 +49,15 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233876">
+<a href="articulations.html#_g229406">
+articulate-bars</a>
+</td>
+<td class="summary">
+sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="articulations.html#_g229402">
 articulation-at-beginning</a>
 </td>
 <td class="summary">
@@ -57,7 +65,7 @@ articulation sequence <em>&amp;key</em> (default 'default)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233877">
+<a href="articulations.html#_g229403">
 articulation-at-end</a>
 </td>
 <td class="summary">
@@ -65,7 +73,7 @@ articulation sequence <em>&amp;key</em> (default 'default)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233878">
+<a href="articulations.html#_g229404">
 articulation-up-to-end</a>
 </td>
 <td class="summary">
@@ -73,7 +81,7 @@ articulation sequence <em>&amp;key</em> (default 'default)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233873">
+<a href="articulations.html#_g229399">
 disassemble-articulations</a>
 </td>
 <td class="summary">
@@ -81,7 +89,7 @@ art</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233875">
+<a href="articulations.html#_g229401">
 get-full-articulations</a>
 </td>
 <td class="summary">
@@ -89,15 +97,15 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233872">
+<a href="articulations.html#_g229398">
 merge-articulations</a>
 </td>
 <td class="summary">
-arts <em>&amp;key</em> (empty-articulations '(default -))</td>
+arts <em>&amp;key</em> (empty-articulations '(- default))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233879">
+<a href="articulations.html#_g229405">
 text-attribute</a>
 </td>
 <td class="summary">
@@ -105,7 +113,7 @@ text-attribute</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g233874">
+<a href="articulations.html#_g229400">
 zip-articulations</a>
 </td>
 <td class="summary">
@@ -114,7 +122,7 @@ zip-articulations</a>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233872">
+<a id="_g229398">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -127,7 +135,7 @@ zip-articulations</a>
 <td class="symbol-name">
 merge-articulations&nbsp;&nbsp;</td>
 <td class="lambda-list">
-arts <em>&amp;key</em> (empty-articulations '(default -))</td>
+arts <em>&amp;key</em> (empty-articulations '(- default))</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -170,13 +178,18 @@ Examples: </h4>
     (merge-articulations '(default default)) 
      =&gt; default </pre>
 <p>
+</p>
+<pre>
+    (merge-articulations '(- -)) 
+     =&gt; -   </pre>
+<p>
 
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233873">
+<a id="_g229399">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -211,7 +224,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233874">
+<a id="_g229400">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -244,12 +257,14 @@ If arts are list of lists, the result follows the nesting organisation of the fi
 Examples: </h4>
 <pre>
     (zip-articulations '(default leg leg default) '(breathy)) 
+     (zip-articulations '(- leg leg -) '(breathy)) 
+     (zip-articulations '(- leg leg -) '(-)) 
      =&gt; (breathy leg+breathy leg+breathy breathy) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233875">
+<a id="_g229401">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -291,7 +306,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233876">
+<a id="_g229402">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -328,7 +343,7 @@ BUG: May not work for OMN sequence.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233877">
+<a id="_g229403">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -378,7 +393,7 @@ May not work for OMN sequence.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233878">
+<a id="_g229404">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -412,7 +427,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g233879">
+<a id="_g229405">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -467,10 +482,84 @@ All these examples are not working.
  </p>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g229406">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+articulate-bars&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Add articulations at the first notes of bars, e.g, a tenuto on every first beat, and staccato otherwise. 
+ 
+ </p>
+<h4>
+Arguments: </h4>
+<p>
+</p>
+<ul>
+<li>
+<p>
+sequence (sequence of length values or full OMN expression, must be nested): an accent is positioned on every first note in a bar (sublist). 
+ </p>
+</li>
+<li>
+<p>
+parameter (:articulation or :velocity): which parameter to use for the articulations 
+ </p>
+</li>
+<li>
+<p>
+accent (symbol): accent to use on first notes of bars. 
+ </p>
+</li>
+<li>
+<p>
+default (symbol): accent to use for all other notes. 
+ </p>
+</li>
+</ul>
+<h4>
+Examples: </h4>
+<p>
+</p>
+<pre>
+    (articulate-bars '((h h) (q q q q) (q q q q) (-q q) (q q q q)) :accent 'marc) </pre>
+<p>
+An example with a tie: existing articulations are preserved. However, in that case `sequence' must be a full OMN expression (i.e. include length and pitch values). 
+ </p>
+<pre>
+    (articulate-bars '((h c4 h) (q q q q tie) (q q q q) (-q q) (q q q q)) :accent 'marc) </pre>
+<p>
+
+ </p>
+<pre>
+    (articulate-bars (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity) </pre>
+<p>
+
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2018-08-08 01:21:37</div>
+- 2018-08-10 00:13:04</div>
 </body>
 </html>
