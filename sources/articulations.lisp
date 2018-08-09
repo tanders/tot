@@ -10,7 +10,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun merge-articulations (arts &key (empty-articulations '(default -)))
+(defun merge-articulations (arts &key (empty-articulations '(- default)))
   "Merges list of OMN articulations to a combined attribute.
 
 * Arguments:
@@ -26,6 +26,9 @@
 
   ;;; (merge-articulations '(default default))
   ;;; => default
+
+  ;;; (merge-articulations '(- -))
+  ;;; => -  
   "
   #|
   (assert (every #'articulationp arts)
