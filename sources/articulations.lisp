@@ -264,3 +264,123 @@
 |#
 
 
+;;; TODO: add arg section (its a bit tricky...)
+(defun articulate-bars (sequence &key (accent 'ten) (default '-)
+				   (parameter :articulation)
+				   )
+  "Add articulations at the first notes of bars, e.g, a tenuto on every first beat, and staccato otherwise.
+  
+* Arguments:
+
+  - sequence (sequence of length values or full OMN expression, must be nested): an accent is positioned on every first note in a bar (sublist).
+  - parameter (:articulation or :velocity): which parameter to use for the articulations 
+  - accent (symbol): accent to use on first notes of bars.
+  - default (symbol): accent to use for all other notes. 
+
+* Examples:
+
+  ;;; (articulate-bars '((h h) (q q q q) (q q q q) (-q q) (q q q q)) :accent 'marc)
+
+  An example with a tie: existing articulations are preserved. However, in that case `sequence' must be a full OMN expression (i.e. include length and pitch values).
+  ;;; (articulate-bars '((h c4 h) (q q q q tie) (q q q q) (-q q) (q q q q)) :accent 'marc)
+  
+  ;;; (articulate-bars (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity)
+  "
+  (assert (if (eql parameter :velocity)
+	      (velocityp default)
+	      T))
+  (let* ((new (gen-swallow (omn :length sequence)		
+			   (flatten (loop for bar in (span (length-rest-invert sequence)
+							   `(,default))
+				       collect (cons accent (rest bar))))))
+	 (new2 (case parameter
+		 ;; don't overwrite existing articulations
+		 (:articulation
+		  (if (omn-formp sequence)
+		      (zip-articulations (omn parameter sequence) new)
+		      new))
+		 ;; but overwrite existing dynamics (velocities)
+		 (:velocity new))))
+    (omn-replace parameter new2 sequence)))
+
+ 
+#|
+;;; OLD:
+;;; TODO:
+;; - implement arg default
+;; - don't overwrite existing articulations (e.g., ties)
+;; - implement arg section
+;; - process first bar extra (use local function to avoid repetition?)
+;; OK - If there is only a single note and a tie them combine them
+(defun articulate-phrase (sequence &key (accent 'ten)   
+                                    ; (parameter :articulation)
+                                    ; (default nil)
+                                    ; (section nil)
+                                   )
+  "Add articulations to phrase for more clear rhythmic accents, e.g, tenuto on every first beat, and stacc otherwise.
+  
+  NOTE: This function assumes that `sequence' is a purely rhythmic OMN expression with only length values and perhaps ties. A full sequence with added articulations and also (constant) pitches is returned (certain Opusmodus functions do not support an OMN sequence with articulations but without pitches).
+
+  Examples:
+  (articulate-phrase '((h h) (q q q q tie) (q q q q) (-q q) (q q q q)) :accent 'marc)
+  => ((h marc h) (q marc q q q tie) (q q q q) (-q q) (q marc q q q))
+  
+  ;; currently not supported anymore
+  ; (articulate-phrase (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity)
+  "
+  (cons 
+   ;; First bar
+   ;;; NOTE: code repetition...
+   (let ((bar1 (first sequence)))
+     (if (length-notep (first bar1))
+       (if (and (= (count-notes bar1) 1)
+                (eql (first (last bar1)) 'tie))
+         (tu:replace-element (merge-articulations (list accent 'tie)) 1 bar1)
+         (tu:insert-after bar1 0 accent))
+       bar1))
+   ;; other bars
+   (loop :for (bar1 bar2) :on sequence :while bar2
+     ;;; NOTE: code repetition
+     :collect (if (and (length-notep (first bar2))
+                       (not (eql (first (last bar1)) 'tie)))
+                (if (and (= (count-notes bar2) 1)
+                         (eql (first (last bar2)) 'tie))
+                  (tu:replace-element (merge-articulations (list accent 'tie)) 1 bar2)
+                  (tu:insert-after bar2 0 accent))
+                bar2))))
+|#
+
+#|
+(articulate-phrase '((1/16 1/16 1/16) (1/16 1/16 1/16) (1/16 1/16 1/16)) :accent 'marc)
+
+(let ((sequence '((h h) (q q q q tie) (q q q q) (-q q) (q q q q))))
+  (zip-articulations (omn :articulation (omn-replace :pitch '(c4) sequence))
+                     '(stacc)))
+|#
+
+;;; TODO:
+;; - don't overwrite existing articulations (e.g., ties)
+;; - only add articulation on first note of bar if it does not start with rest nor it is a tied over note 
+;;
+
+#|
+; Very hard to overcome limitation of map-position-in-bar to handle rests and ties, so I just start from scratch
+(defun articulate-phrase (phrase &key (accent 'ten) (default nil) (section nil) (parameter :articulation))
+  "Add articulations to phrase for more clear rhythmic accents, e.g, tenuto on every first beat, and stacc otherwise.
+
+  Examples:
+  (articulate-phrase (gen-repeat 3 '((s s s))) :accent 'marc)
+  (articulate-phrase (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity)
+  "
+  (map-position-in-bar 0 parameter 
+                       (if default
+                         (omn-replace parameter default phrase)
+                         (if (omn-formp phrase)
+                           phrase 
+                           ;; assume phrase is only lengths
+                           (make-omn :length phrase :pitch '(c4))))
+                       #'(lambda (ignore)
+                           accent)
+                       :section section))
+|#
+
