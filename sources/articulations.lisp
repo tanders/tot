@@ -103,6 +103,8 @@
 
 * Examples:
   ;;; (zip-articulations '(default leg leg default) '(breathy))
+  ;;; (zip-articulations '(- leg leg -) '(breathy))
+  ;;; (zip-articulations '(- leg leg -) '(-))
   ;;; => (breathy leg+breathy leg+breathy breathy)"
   (let* ((flat-arts (mapcar #'flatten arts))
          (max-length (apply #'max (mapcar #'length flat-arts))))
