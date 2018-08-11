@@ -1474,4 +1474,11 @@ An accordingly revised score is returned as first, and the full duration of `sco
   '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q -q)) 
     :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))
     :ped ((h c3))))
+
+;; BUG:
+;; If some part is only single bar or flat list (e.g., underlying harmony), then other parts may be changed to same time sig. That part must not be longest part.
+(unify-part-durations
+  '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q -q)) 
+    :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))
+    :ped ((wwww c3))))
 |#
