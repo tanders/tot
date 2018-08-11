@@ -118,7 +118,6 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
 			 part-omn
 			 ;;; omn-replace not work with ties -- use make-omn instead
 			 (let ((flat-omn (flatten part-omn)))
-			   ;; (break)
 			   (make-omn :length (omn-merge-ties flat-omn)
 				     :pitch (flatten 
 					     (tu:mappend #'(lambda (p) 
@@ -329,7 +328,15 @@ TODO: demonstrate how default rules are overwritten.
 "
   ;; TMP: unused arg doc
   ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
-  (let* (;; unify part durations: shorter parts looped until they have same length as longest part of score
+ ;;
+ ;; Inefficient, but to ensure that time sigs of score are used, and not time sigs of harmonies or scales, which may not be correct
+ (let ((score-duration (score-duration score)))
+    (assert (>= score-duration
+                (total-duration harmonies)))
+    (when scales
+      (assert (>= score-duration
+                  (total-duration scales)))))
+ (let* (;; unify part durations: shorter parts looped until they have same length as longest part of score
          (unified-full-score-aux (multiple-value-list
 				  (unify-part-durations
 				   (append score
