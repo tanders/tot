@@ -264,6 +264,46 @@
 |#
 
 
+#|
+(defmacro add-multiple-attributes (numbers)
+  "
+
+The symbol for each attribute starts with 'A_' 
+"
+  `(add-text-attributes
+    ,@(loop for num in numbers
+	 collect `(quote (,(intern (format nil "A_~A" num))
+			  ,(format nil "~A" num))))
+    ))
+
+(add-multiple-attributes (1 2 3 4 5 6 7))
+
+
+(defun add-multiple-attributes (numbers)
+  "
+
+The symbol for each attribute starts with 'A_' 
+"
+  (apply #'add-text-attributes
+	  (loop for num in numbers
+	     collect (list (intern (format nil "A_~A" num))
+			   (format nil "~A" num)))
+	  ))
+
+(add-multiple-attributes '(1 2 3 4 5 6 7))
+'(q c4 p a_1)
+
+(add-text-attributes
+ '(nr0 "0") 
+ '(nr1 "1") 
+ '(nr2 "2") 
+ '(nr3 "3") 
+ '(nr4 "4") 
+ '(nr5 "5"))﻿﻿
+ 
+|#
+
+
 ;;; TODO: add arg section (its a bit tricky...)
 (defun articulate-bars (sequence &key (accent 'ten) (default '-)
 				   (parameter :articulation)
@@ -274,8 +314,8 @@
 
   - sequence (sequence of length values or full OMN expression, must be nested): an accent is positioned on every first note in a bar (sublist).
   - parameter (:articulation or :velocity): which parameter to use for the articulations 
-  - accent (symbol): accent to use on first notes of bars.
-  - default (symbol): accent to use for all other notes. 
+  - accent (symbol): articulation to use on first notes of bars.
+  - default (symbol): articulation to use for all other notes. 
 
 * Examples:
 
@@ -383,4 +423,5 @@
                            accent)
                        :section section))
 |#
+
 
