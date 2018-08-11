@@ -313,6 +313,62 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
     (matrix-transpose (list (circle-repeat lows l) (circle-repeat highs l)))))
 
 
+(defun ambitus-field-fenv (sequence ambitus-low ambitus-range &key (chord-ambitus 13) section)
+  "Variant of built-in function `ambitus-field': this function compresses or expanded the pitch range of the given `sequence', and the boundaries how much this compression/expansion happens can be changed over time with fenvs or value lists. This is a useful function for shaping musical results before harmonic revision.
+
+Note that a change of ambitus values happens only per sublist (bar), which is not really a restriction, as multiple pitches are required to fill a given range.
+
+* Arguments:
+
+  - sequence (nested OMN expression)
+  - ambitus-low (fenv or list of integers or pitches): specifies the evolving lower boundary 
+  - ambitus-range (fenv, int or list of ints): specifies the evolving distance between the lower and upper boundary 
+  - chord-ambitus (integer): max interval between lowest and highest tone of chords to restrict chords to playable range for keyboard player.
+
+If the argument section is given, then only `(length section)' samples are taken from ambitus-low ambitus-range (if these are fenvs). In other words, in that case the fenv does not range across the full `sequence', but only the selected sections. 
+
+
+* Examples:
+
+;;; (ambitus-field-fenv (gen-repeat 4 '((q c4 e4 g4)))
+;;; 		    (fenv:linear-fenv (0 0) (1 12)) 12)
+
+Note that the spread of chords is adapted to the given range
+;;; (ambitus-field-fenv (gen-repeat 4 '((q c4e4g4 b4)))
+;;; 		    (fenv:linear-fenv (0 0) (1 12)) 12)
+
+;;; (ambitus-field-fenv (gen-repeat 4 '((q c4e4g4 b4)))
+;;; 		    (fenv:linear-fenv (0 0) (1 12)) 7)
+
+However, the spread intervals within chords is automatically adapted to stay within a keyboard players hands.
+;;; (ambitus-field-fenv (gen-repeat 4 '((q c4e4g4 b4)))
+;;; 		    (fenv:linear-fenv (0 0) (1 12)) 25)
+
+This setting can be adjusted with the argument `chord-ambitus'
+;;; (ambitus-field-fenv (gen-repeat 4 '((q c4e4g4 b4)))
+;;; 		    (fenv:linear-fenv (0 0) (1 12))
+;;; 		    25 :chord-ambitus 15)
+"
+  (let* ((l (if section
+		(length section)
+		(length sequence)))
+	 (lows (if (listp ambitus-low)
+		   ambitus-low
+		   (fenv:fenv->list ambitus-low l)))
+	 (highs (cond
+		  ((integerp ambitus-range)
+		   (loop for low in lows
+		      collect (+ low ambitus-range)))
+		  ((listp ambitus-range)
+		   (vector-add lows ambitus-range))
+		  ((fenv:fenv? ambitus-range)
+		   (vector-add lows (fenv:fenv->list ambitus-range l))))))
+    (ambitus-chord chord-ambitus
+		   (ambitus-field (gen-ambitus-sequence lows highs)
+				  sequence :section section)
+		   :section section)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Accent model
