@@ -29,7 +29,6 @@
   )
 |#
 
-;; Useful project-wide definition, but likely no need to store it more generally.
 (defun tuplet-rhythm (lengths subdivisions &rest args 
                               &key (length-dividend 1/2) (count-offset 0) (position 'e) (type '?)
                               &allow-other-keys)
@@ -75,7 +74,8 @@
 |#
 
 
-;; Originally inspired by reading rhythm of v. Schweinitz scores :)
+;; Originally inspired by reading rhythm of some v. Schweinitz scores, but an approach like this is not typical for him only.
+;;; TODO: Consider to allow specifying subdivisions-ambitus with two fenvs (or one int and one fenv) for greater control.
 ;;; TODO: consider allowing bar-length to be a list of values.
 (defun tuplet-walk-rhythm (bar-no &key (bar-length 1/2) (subdivisions-ambitus '(2 7)) 
                                   (rest-distances '(7 8 9)) 
