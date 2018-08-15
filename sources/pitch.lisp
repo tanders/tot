@@ -271,12 +271,53 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun line->chord (sequence chord &key (position :top) flat section)
+  "Builds `chord' over every note in `sequence'.
+
+* Arguments:
+
+  - sequence (OMN sequence)
+  - chord (OMN chord or list of chords): in the latter case, the chords are circled through.
+  - position (either :top or :bottom): whether the pitches of `sequence' are the top or bottom pitch of the transposed chords.
+
+* Examples: 
+
+;;; (line->chord '(h c4 ten q d4 stacc e4 stacc) 'c4e4g4)
+
+;;; (line->chord '((h c4 ten) (q d4 stacc e4 stacc)) 'c4e4g4 :position :bottom :section '(0))
+
+Using a list of different chords
+;;; (line->chord '(h c4 ten q d4 stacc e4 stacc) '(c4e4g4bb4 c4e4a4 c4))
+"
+  (edit-omn :pitch sequence 
+            #'(lambda (pitches)
+                (let* ((all-chords (circle-repeat (tu:ensure-list chord) (length pitches)))
+                       (ps (pitch-transpose-n pitches all-chords)))
+                  (case position
+                    (:top (pitch-transpose-n 
+                           (mapcar #'- (pitch-to-integer
+                                        (omn :pitch (chord->line all-chords 
+                                                                 ;; very high position: top pitch
+                                                                 1000))))
+                           ps))
+                    (:bottom ps))
+                  ))
+            :flat flat
+            :section section))
+
+
 (defun chord->line (sequence position)
   "Transforms chords in `sequence' into single notes, extracting the chord pitch at `position' (or the closest pitch, if there is no pitch at `position').
+  
+* Arguments:
+
+  - sequence (OMN seq)
+  - position (0-based integer)
 
 * Examples:
 
-  ;;; (chord->line '((h c4e4g4 q) (h.)) 0)"
+  ;;; (chord->line '((h c4e4g4 q) (h.)) 0)
+"
   (map-selected-events
    #'(lambda (l p v a)
        (list l
