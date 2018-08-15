@@ -115,21 +115,21 @@
          ))))
 
 
-(defun even-length-rhythm (length &key total-duration prefix suffix (time-sig '(4 4)))
+(defun even-length-rhythm (total-duration pattern &key prefix suffix (time-sig '(4 4)))
   "Custom algorithm to create rhythmic phrases consisting of even note durations over a certain time. 
 
 * Arguments:
-  - length (length value or list of length values): rhythmic value(s) to repeat
   - total-duration (length value): duration of the generated phrase including the prefix and suffix length.
-  - prefix (length value or length sequence): preceeding phrase
-  - suffix (length value or length sequence): succeeding phrase
+  - pattern (length value, list of length values, or OMN sequence): rhythmic value(s) to repeat
+  - prefix (length value, list of length values, or OMN sequence): preceeding phrase
+  - suffix (length value, list of length values, or OMN sequence): succeeding phrase
   - time-sig: time signature
 
 * Examples:
-  ;;; (even-length-rhythm '5q :total-duration 'w_w :prefix '-w_5h :suffix '-5q_5h_q)
+  ;;; (even-length-rhythm 'w_w '5q :prefix '-w_5h :suffix '-5q_5h_q)
 
-  Lists can be specified specified for length, prefix and suffix
-  ;;; (even-length-rhythm '(3q c4 stacc 3e) :total-duration 'w_w_w :prefix '-3h :suffix '(q -q))"  
+  Lists and OMN sequences can be specified for pattern, prefix and suffix
+  ;;; (even-length-rhythm 'w_w_w '(3q c4 stacc 3e) :prefix '-3h :suffix '(q b3d4 -q))"  
   (let* ((pre-and-suffix-dur (apply #'length-add 
                                     (length-rest-invert (append (tu:ensure-list prefix)
                                                                 (tu:ensure-list suffix)))))
@@ -141,7 +141,7 @@
     (omn-to-time-signature
      (append 
       (when prefix (tu:ensure-list prefix))
-      (length-span (list repetition-dur) (list length))
+      (length-span (list repetition-dur) (list pattern))
       (when suffix (tu:ensure-list suffix))
       ) 
      time-sig)))
@@ -911,7 +911,7 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   - divide-prob (default 0.5): probability value between 0.0 and 1.0, controlling whether a note that could be subdivided for creating a durational accent actually will be. Higher values make durational accents more likely.
   - tie-n (integer): maximum number of subdivided notes at end of bars (before the next durational accent) that are potentially tied together. Should not be larger than divide * divide-n. (The returned notes are not necessarily tied but can instead be notated, e.g., as dotted note values.)
   - tie-previous-beat? (Bool): whether or not the first subdivided note before the durational accent is tied to the preceeding note (e.g., the preceeding accent). Such tie never occurs across bar lines. 
-    NOTE: If tie-previous-beat? is T, then you may want the argument divide to be 3 or larger, and tie-n to be only 1 (or slightly larger for large values of divide), because otherwise you also turn the preceeding note into a durational accent.
+    -- NOTE: If tie-previous-beat? is T, then you may want the argument divide to be 3 or larger, and tie-n to be only 1 (or slightly larger for large values of divide), because otherwise you also turn the preceeding note into a durational accent.
   - tie-prob: probability value controlling whether subdivided notes are tied. 
   - merge-n (integer): number of notes at beginning of bars that are potentially subdivided.
   - merge-prob (default 0.5): probability value controlling whether notes at the beginning of a bar are merged.
