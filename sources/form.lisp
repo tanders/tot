@@ -94,7 +94,7 @@
    (filter-notes-if test sequence :section section)))
 
 
-
+;;; TODO: revise (or define variant function alternate-scores) to allow for appending score sections 
 ;;; TODO: revise to allow for seqs-of-seqs only nested once
 (defun alternate-omns (ids seqs-of-seqs &key (append? nil))
   "This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level.
@@ -262,6 +262,22 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
    :span :pitch)))
 
 |#
+
+(defun alternate-scores (ids seqs-of-scores)
+  "Variant of alternate-omns for scores.
+
+* Arguments:
+  - ids (list of 0-based integers): indicating the position of scores in `seqs-of-scores'.
+  - seqs-of-seqs (list of lists of scores): specifies material between which to switch. The top-level list positions indicate the different materials pointed to by `ids'. The next level specifies the order in which material will be included when `ids' contains repetitions of an id. This order is circling.
+
+* Examples
+
+;;; (alternate-scores '(0 0 1)
+;;; 		  '(((:vln ((h c4 q d4 e4))) (:vln ((h e4 q d4 c4))))
+;;; 		    ((:vln ((e b3d4g4 stacc stacc stacc stacc))))))
+"
+  (apply #'append-scores (alternate-omns ids seqs-of-scores)))
+
 
 (defun alternate-fenvs (ids ns fenv-lists &key (interpolation :steps))
   "Alternate between fenvs and sample the fenvs; the result is a list of lists of numbers (fenv values). A fenv is a particularly flexible envelope, see my fenv library for details. 
