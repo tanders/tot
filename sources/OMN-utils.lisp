@@ -10,13 +10,13 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun map-selected-events (fn sequence &key (test #'(lambda (&rest args) (declare (ignore args)) T)) flat section exclude)
+(defun map-events (fn sequence &key (test #'(lambda (&rest args) (declare (ignore args)) T)) flat section exclude)
   "Every event for which the function `test' returns true is transformed by the function `fn'. In the background, sequence is transformed into a list of events, where each note is represented by a list of the parameters length, pitch, velocity, and articulation. 
 
-  Rests are skipped unprocessed
+  Rests are skipped unprocessed.
 
 * Arguments:
-  - fn: function expecting and returning a single event
+  - fn: function expecting and returning a single event, i.e. the function expects the arguments length, pitch, velocity and articulation of individual elements. 
   - sequence: an OMN sequence
   - test: Boolean function expecting a single event. By default, all elements are processed. 
   - flat (Boolean): whether or not to flatten sequence before processing.
@@ -26,7 +26,7 @@
 * Examples:
 
   Reduce all events with velocity p to velocity pp
-;;; (map-selected-events
+;;; (map-events
 ;;;  #'(lambda (l p v a) (list l p 'pp a))
 ;;;  '((-e s bb3 f marc a3 leg g3 p leg gs3 leg g3 leg a3 leg) (q fs3 f ten -q))
 ;;;  :test #'(lambda (l p v a) (eql v 'p)))
