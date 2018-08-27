@@ -323,7 +323,7 @@ Using a list of different chords
 
   ;;; (chord->line '((h c4e4g4 q) (h.)) 0)
 "
-  (map-selected-events
+  (map-events
    #'(lambda (l p v a)
        (list l
 	     (let* ((pitches (melodize p))
