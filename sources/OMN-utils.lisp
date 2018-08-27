@@ -620,34 +620,6 @@ Counts tied notes as multiple notes.
 |#
 
 
-(defun insert-at-position (position item list &key seed)
-  "Insert item(s) at given position into list.
-
-* Arguments:
-  - position: either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
-  - item: value or list of values to be inserted.
-  - list: flat list of values.
-
-* Examples:
-  ;;; (insert-at-position 'e 'x '(a a a a))
-  ;;; (insert-at-position 's 'x '(a a a a))
-  ;;; (insert-at-position '? 'x '(a a a a))
-  ;;; (insert-at-position 'e '(x y) '(a a a a))
-  ;;; (insert-at-position '0 '(x y) '(a a a a))
-"
-  (rnd-seed seed)
-  (let* ((pos1 (case position
-		 (s 0)
-		 (e (length list))
-		 (? (round (rnd1 :low 0 :high (length list) :seed (seed))))
-		 (otherwise (if (numberp position)
-				position
-				(error "~A is not a valid position" position)))))
-	 (pos (if (listp item)
-		  (gen-integer pos1 (+ pos1 (1- (length item))))
-		  pos1)))
-    (position-insert pos item list)))
-
 
 (defun length-subtract (&rest length-values)
   "Subtraction for OMN length values. 
