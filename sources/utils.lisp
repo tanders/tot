@@ -22,7 +22,7 @@
   ;;; (mapcar-nested #'(lambda (x) (* x 2)) '((1/4 1/8 1/8) (1/2)))
   ;;; => ((1/2 1/4 1/4) (1))
 
-  ;;; Using the built-in Opusmodus function `span' to ensure an equal nesting of value lists
+  Using the built-in Opusmodus function `span' to ensure an equal nesting of value lists
   ;;; (let* ((ls '((1/4 1/8 1/8) (1/2)))
   ;;;        (factors (span ls '(2 3))))
   ;;;   (mapcar-nested #'* ls factors))
@@ -68,6 +68,35 @@ See also Opusmodus buildin gen-trim, which does the same, but is overall more fl
 ; (circle-repeat '(bb4 g4 f4) 20)
 ; (circle-repeat nil 3)
 
+
+
+(defun insert-at-position (position item list &key seed)
+  "Insert item(s) at given position into list.
+
+* Arguments:
+  - position: either symbol 's (start), 'e (end) or '? (random position), or integer specifying position.
+  - item: value or list of values to be inserted.
+  - list: flat list of values.
+
+* Examples:
+  ;;; (insert-at-position 'e 'x '(a a a a))
+  ;;; (insert-at-position 's 'x '(a a a a))
+  ;;; (insert-at-position '? 'x '(a a a a))
+  ;;; (insert-at-position 'e '(x y) '(a a a a))
+  ;;; (insert-at-position '0 '(x y) '(a a a a))
+"
+  (rnd-seed seed)
+  (let* ((pos1 (case position
+		 (s 0)
+		 (e (length list))
+		 (? (round (rnd1 :low 0 :high (length list) :seed (seed))))
+		 (otherwise (if (numberp position)
+				position
+				(error "~A is not a valid position" position)))))
+	 (pos (if (listp item)
+		  (gen-integer pos1 (+ pos1 (1- (length item))))
+		  pos1)))
+    (position-insert pos item list)))
 
 
 (defun keyword-to-om-symbol (key)
