@@ -199,7 +199,7 @@
 
 * Arguments:
   - sequence (nested OMN length sequence): input rhythm to process.
-  - tie-prob (number or list of numbers): Probability whether 'whole' notes (notes filling a whole sublist) are tied or note. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
+  - tie-prob (number or list of numbers): Probability whether 'whole' notes (notes filling a whole sublist) are tied or not. If 1, all whole notes are tied; if 0, no note is tied; any number in between sets the probability. If a list of numbers, it sets the probability of individual whole notes in order to be tied over. For example, `tie-prob' can be a list of binary numbers generated with Openmodus' binary number functions. 
   - seed (integer): random seed for probability.
 
 * Examples:
