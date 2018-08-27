@@ -34,7 +34,7 @@
   (let ((result 
 	 (if (and (listp (first sequence)) (not flat))
 	     ;; if first element in sequence is list assume it is nested and call recursively with map-section
-	     (map-section #'(lambda (sublist) (map-selected-events fn sublist :test test))
+	     (map-section #'(lambda (sublist) (map-events fn sublist :test test))
 			  sequence :section section :exclude exclude)
 	     ;; sequence is flat list. 
 	     (loop for (l p v a) in (single-events (if flat ;; if only for efficiency
@@ -120,6 +120,11 @@
 * Notes: 
 
   See also the Opusmodus built-in function `single-events': looping (or mapping) over its result has similar effect.
+
+
+* See Also:
+
+  {defun map-events}
 
 "
   ;;; TMP
