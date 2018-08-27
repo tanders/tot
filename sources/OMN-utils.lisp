@@ -59,7 +59,7 @@
 
 
 (defun process-element (fn element args)
-  "Many Opusmodus functions are defined to work only with lists. This function is intended to help to keep when you want to instead process a single element with such a function.
+  "Many Opusmodus functions are defined to work only with lists. This function is intended to help when you want to instead process a single element with such a function.
 
 * Examples:
 
@@ -210,8 +210,8 @@
   - sequence: nested list of OMN parameters or full OMN expressions
   - section (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is applied.
   - exclude (list of ints): 0-based positions of bars (sublists) in `sequence' to which `function' is *not* applied. Only either `section' or `exclude' should be specified, otherwise `exclude' is ignored.
-  - shared-args (list): Further arguments to `function' added behind the current sublist of `sequence' and potentially `section-args'. 
   - section-args (list or list of lists): Further arguments to `function' added behind the current sublist of `sequence'. If not a nested list, then only a single additional argument is specified for each bar (sublist) to which `function' is applied.
+  - shared-args (list): Further arguments to `function' added behind the current sublist of `sequence' and potentially `section-args'. 
 
 * Examples:
   ;;; (map-section #'(lambda (seq) (pitch-transpose 7 seq)) '((c4 c4 c4) (c4 c4 c4) (c4 c4 c4)) :section '(1 2))
@@ -238,6 +238,9 @@
   ;;;              :section '(1 2 3)
   ;;;              :section-args '((1 2) (2 3))
   ;;;              :shared-args '(:ignore h.))
+
+
+* See Also:
 
 This function is a generalised and somewhat more clean variant of the Opusmodus builtin `do-section'.
 
@@ -285,22 +288,24 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
 * Examples: 
 
-  roll your own transposition supporting omn input
-  first aux def supporting only pitches
+  Roll your own transposition function.
+
+  First define an aux def supporting only a flat list of pitches.
+
   ;;; (defun my-transposition-aux (interval pitches)
   ;;;   (midi-to-pitch (loop for p in (pitch-to-midi pitches)
   ;;;                        collect (+ p interval))))
   
-  test
+  Test that function.
   ;;; (my-transposition-aux 7 '(c4 e4 g4)) 
   ;;;  => (g4 b4 d5)
 
-  variant supporting also omn expressions
+  Now, based on that aux function, define a function that supports also full OMN sequences. You can later expand this new function further with edit-omn to also support arguments like section and flat (see below).
   ;;; (defun my-transposition (interval omn)
   ;;;   (edit-omn :pitch omn
   ;;;             #'(lambda (ps) (my-transposition-aux interval ps))))
 
-  test with nested OMN including a rest
+  Test the new function with nested OMN including rests. 
   ;;; (my-transposition 7 '((q c4 mp -q q e4 q f4) (h g4 tr2)))
   ;;;  => ((q g4 mp - b4 c5) (h d5 mp tr2))
 
@@ -489,11 +494,14 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 * Examples:
   Apply the articulation tenuto to every first note in all bars except the last bar.
   ;;; (map-position-in-bar 0 :articulation 
-  ;;;                      '((-q c4 c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
+  ;;;                      '((-q c4 c4) (q c4 c4 c4) (q c4 c4 c4)) 
   ;;;                      #'(lambda (ignore) 'ten)
   ;;;                      :section '(0 1))
 
-  NOTE: Currently, rests are simply not counted when estimating the position of a parameter other then :length. Potential workaround: use argument `section'."
+
+* Notes: 
+
+Currently, rests are simply not counted when estimating the position of a parameter other then :length. Potential workaround: use argument `section'."
   (edit-omn type sequence 
             #'(lambda (params)
 		(when params ; skip in case a bar only contains a rest and some other param except :length is processed
@@ -505,7 +513,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
 
 (defun total-duration (sequence)
-  "Return the total duration (sum of all note and rest values) of `sequence'."
+  "Returns the total duration (sum of all note and rest values) of `sequence'."
   (reduce #'+ (mapcar #'abs (flatten (omn :length sequence))) :initial-value 0))
 
 ;; (total-duration '((-h q c4) (q. f4 e g4 q a4) (h. g4)))
@@ -528,17 +536,28 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
 
 
-
-;;; TODO: keep as global fun
-;;; TODO: see count-notes -- do I need both?
+#|
 (defun note-no (music)
-  "Returns the number of notes in music, which is a list of lengths values of OMN expressions."
+  "Returns the number of notes in music, which is a list of lengths values of OMN expressions.
+
+* Examples:
+
+;;; (note-no '((q c4 c4 c4) (q g4 g4 g4)))
+"
   (count-if #'length-notep (flatten (omn :length music))))
+|#
 
-
-;;; TODO: see note-no -- do I need both?
 (defun count-notes (notes)
-  "Returns number of notes (ignoring rests) in length list or other OMN expression."
+  "Returns number of notes (ignoring rests) in length list or other OMN expression.
+
+* Examples:
+
+;;; (count-notes '((q c4 c4 c4) (q g4 g4 g4)))
+
+* BUG:
+
+Counts tied notes as multiple notes.
+"
   (get-count notes :length :note :sum T))
 
 
@@ -732,6 +751,8 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
 (defun mk-seed (&optional seed)
   "Generates a random seed value, prints and returns it. Useful for exploring different results of random processes, but then keeping a found solution.
+
+This function is now rather redundant, as Opusmodus automatically prints seed values of all function calls.
 
 * Arguments:
   - seed (int): optionally fixes generated seed.
