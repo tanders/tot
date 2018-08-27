@@ -744,9 +744,12 @@ This function is now rather redundant, as Opusmodus automatically prints seed va
 (defun ensure-double-list (x)
   "Ensures that `x' is a duble-wrapped list. If not, a list (or two) are wrapped around it. 
   
-  As a precaution, if `x' is inconsistently nested, then the result is a flattened version of it wth a double list wrapped around."
+  As a precaution, if `x' is inconsistently nested, then the result is a flattened version of it with a double list wrapped around."
   (if (listp x)
     (if (every #'listp x)
-      x
-      (list (flatten x)))
+	x
+	(progn
+	  (warn "ensure-double-list: inconsistent nesting of ~A" x)
+	  (list (flatten x))))
     (list (list x))))
+
