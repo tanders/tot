@@ -169,6 +169,11 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
      for i from 0 to 1 by (/ 1 (1- (length pitches)))
      for pitch in (pitch-to-midi (flatten pitches))
      collect (list i pitch))))
+
+(defun pitches->integers->fenv (pitches)
+  "Variant of pitches->fenv where pitches are first translated into transposition intervals before turning them into fenvs."
+  (fenv:list->fenv (pitch-to-integer pitches)))
+
 (defun fenv->pitches (fenv n)
   "Translates a fenv into a sequence of pitches. Fenv values encode pitches by their corresponding MIDI note."
   (midi-to-pitch (mapcar #'round (fenv:fenv->list fenv n))))
