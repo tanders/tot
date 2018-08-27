@@ -30,8 +30,9 @@
 |#
 
 (defun tuplet-rhythm (lengths subdivisions &rest args 
-                              &key (length-dividend 1/2) (count-offset 0) (position 'e) (type '?)
-                              &allow-other-keys)
+		      &key (length-dividend 1/2) (count-offset 0) (position 'e) (type '?)
+			seed
+			&allow-other-keys)
   "Subdivides given note `lengths'.  
 
 * Arguments:
@@ -54,12 +55,14 @@
 * BUGS: 
 
   Seed argument not working as expected -- it is not even used in this function!"
-  (apply #'length-divide2 (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
+  (apply #'length-divide2
+	 (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
          (mapcar #'(lambda (x) (/ length-dividend x)) subdivisions)
          lengths
          :position position
          :type type
          :allow-other-keys t
+	 :seed seed
          args))
 
 #|
