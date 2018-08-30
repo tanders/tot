@@ -231,7 +231,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 
 ;;; TODO:
-;; - consider rewriting using map-selected-events -- much shorter then
+;; - consider rewriting using map-events -- much shorter then
 ;; - add args for number of trill notes (e.g., trill in triplets)
 (defun trill-selected-notes (sequence test &key (interval 2) (ignore-articulations '(marc)))
   "Increases rhythmic interest by subdividing all notes that meet the function test and turning these into a trill.
@@ -376,8 +376,15 @@ If the argument section is given, then only `(length section)' samples are taken
 
 * Examples:
 
+Static ambitus-range
 ;;; (ambitus-field-fenv (gen-repeat 4 '((q c4 e4 g4)))
 ;;; 		    (fenv:linear-fenv (0 0) (1 12)) 12)
+
+Evolving range
+;;; (ambitus-field-fenv (gen-repeat 4 '((q c4 e4 g4)))
+;;; 		    (fenv:linear-fenv (0 0) (1 12))
+;;; 		    (fenv:linear-fenv (0 12) (1 4)))
+
 
 Note that the spread of chords is adapted to the given range
 ;;; (ambitus-field-fenv (gen-repeat 4 '((q c4e4g4 b4)))
