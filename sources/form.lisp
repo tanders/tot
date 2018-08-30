@@ -184,6 +184,21 @@ Now, the power of algorithmic composition lies in the fact that each of these ar
 ;;;    :velocity '(ff)
 ;;;    :span :pitch)))
 
+
+Below is a more concise algorithmic example demonstrating motivic variation. Here, IDs are generated randomly and motifs/phrases are specified manually. The function {defun vary-motif} is then used for transforming these motifs multiple times. Note that each motif consists of multiple bars, and results are appended using the argument `append?' (see below for more details on this argument).
+
+;;; (alternate-omns (gen-binary-rnd 1 10 3 1 :start 0)
+;;;                 `(,(vary-motif
+;;;                     '((q c5 p leg q e4 stacc) (q. f4 leg e g4 leg) (h a4))
+;;;                     #'rotate-omn
+;;;                     '((0 _) (-1 _) (-2 _)))
+;;;                   ,(vary-motif
+;;;                     '((q e3c4 ff marc+stacc s c3 stacc e3 stacc f3 stacc g3 stacc))
+;;;                     #'pitch-transpose
+;;;                     '((-6 _) (-4 _) (-2 _) (0 _) (2 _) (4 _))))
+;;;                 :append? T)
+
+
 Remember that resulting OMN expressions can be 're-barred'. This is useful, e.g., for gestures that exceed a single bar but are still stored in a flat list (again, nested within two list levels).
 
 ;;; (omn-to-time-signature 
@@ -210,6 +225,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
 ;;;                   (;; one nested gestures
 ;;; 		       ((q g4 f leg c5 leg e c4 stacc d4 stacc e4 f4 stacc) (q g4 stacc -h.))))
 ;;;                 :append? T)
+
 "
   (let ((omn-no (length seqs-of-seqs)))
     (assert (every #'(lambda (x) (and (integerp x) (< x omn-no))) ids)
@@ -302,6 +318,7 @@ Alternatively, it is possible to use gestures that consists of nested lists for 
    :span :pitch)))
 
 |#
+
 
 (defun alternate-scores (ids seqs-of-scores)
   "Variant of alternate-omns for scores.
