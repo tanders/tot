@@ -405,17 +405,19 @@ This setting can be adjusted with the argument `chord-ambitus'
   (let* ((l (if section
 		(length section)
 		(length sequence)))
-	 (lows (if (listp ambitus-low)
-		   ambitus-low
-		   (fenv:fenv->list ambitus-low l)))
-	 (highs (cond
-		  ((integerp ambitus-range)
-		   (loop for low in lows
-		      collect (+ low ambitus-range)))
-		  ((listp ambitus-range)
-		   (vector-add lows ambitus-range))
-		  ((fenv:fenv? ambitus-range)
-		   (vector-add lows (fenv:fenv->list ambitus-range l))))))
+	 (lows (mapcar #'round
+		       (if (listp ambitus-low)
+			   ambitus-low
+			   (fenv:fenv->list ambitus-low l))))
+	 (highs (mapcar #'round
+			(cond
+			  ((integerp ambitus-range)
+			   (loop for low in lows
+			      collect (+ low ambitus-range)))
+			  ((listp ambitus-range)
+			   (vector-add lows ambitus-range))
+			  ((fenv:fenv? ambitus-range)
+			   (vector-add lows (fenv:fenv->list ambitus-range l)))))))
     (ambitus-chord chord-ambitus
 		   (ambitus-field (gen-ambitus-sequence lows highs)
 				  sequence :section section)
