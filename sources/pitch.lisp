@@ -343,26 +343,12 @@ Using a list of different chords
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun gen-ambitus-sequence (lows highs)
-  "Returns a sequence of ambitus pairs, where the first element follows the given low and the second element the given high values. If one of the lists is shorter then it is circled.
-
-* Arguments:
-  lows (list of integers or pitches)
-  highs (list of integers or pitches)
-
-* Examples:
-
-  (gen-ambitus-sequence '(0 1 2 3) '(5))
-  => ((0 5) (1 5) (2 5) (3 5))
-"
-  (let ((l (max (length lows) (length highs))))
-    (matrix-transpose (list (circle-repeat lows l) (circle-repeat highs l)))))
-
-
 (defun ambitus-field-fenv (sequence ambitus-low ambitus-range &key (chord-ambitus 13) section)
-  "Variant of built-in function `ambitus-field': this function compresses or expanded the pitch range of the given `sequence', and the boundaries how much this compression/expansion happens can be changed over time with fenvs or value lists. This is a useful function for shaping musical results before harmonic revision.
+  "Variant of built-in function `ambitus-field': this function compresses or expanded the pitch range of the given `sequence', and the boundaries how much this compression/expansion happens can be changed over time with fenvs or value lists. This is a useful function for shaping musical results.
 
 Note that a change of ambitus values happens only per sublist (bar), which is not really a restriction, as multiple pitches are required to fill a given range.
+
+If you plan to harmonically revise your music (e.g., with `tonality-map') then you obviously better apply this function before the harmonic revision.
 
 * Arguments:
 
@@ -419,7 +405,7 @@ This setting can be adjusted with the argument `chord-ambitus'
 			  ((fenv:fenv? ambitus-range)
 			   (vector-add lows (fenv:fenv->list ambitus-range l)))))))
     (ambitus-chord chord-ambitus
-		   (ambitus-field (gen-ambitus-sequence lows highs)
+		   (ambitus-field (matrix-transpose* lows highs)
 				  sequence :section section)
 		   :section section)))
 

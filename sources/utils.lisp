@@ -31,6 +31,28 @@
   (apply #'mapcar #'(lambda (&rest lists) (apply #'mapcar fn lists))
 	 nested-lists))
 
+(defun matrix-transpose* (&rest lists)
+  "Variant of matrix-transpose that is more allowing in terms of its input. The function performs a matrix transformation, but input lists can be of different length (shorter lists are then circled through) or even mere elements (internally turned into a list by repeating the element).
+
+* Arguments:
+  - lists: individual elements or lists
+
+* Examples:
+
+  (matrix-transpose* '(0 1 2 3) 5)
+  => ((0 5) (1 5) (2 5) (3 5))
+
+
+  (matrix-transpose* '(0 1 2 3) '(a b) '_)
+  => ((0 a _) (1 b _) (2 a _) (3 b _))
+
+"
+  (let* ((full-lists (mapcar #'tu:ensure-list lists))
+	 (l (apply #'max (mapcar #'length full-lists))))
+    (matrix-transpose (mapcar #'(lambda (list)
+				  (circle-repeat list l))
+			      full-lists))))
+
 
 (defun circle-repeat (pattern n)
   "Circle through elements in pattern (a list) until n elements are collected.
