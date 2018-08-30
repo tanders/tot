@@ -94,10 +94,50 @@
    (filter-notes-if test sequence :section section)))
 
 
-;;; TODO: revise (or define variant function alternate-scores) to allow for appending score sections 
-;;; TODO: revise to allow for seqs-of-seqs only nested once
+(defun section-id-seq (pairs)
+  "Expects a list of pairs (<id> <no of repetitions>) and generates out of that a flat list of integers intended as ids for {defun alternate-omns}.
+
+* Examples: 
+
+;;; (section-id-seq '((0 2) (1 1) (0 3)))
+;;; -> (0 0 1 0 0 0)
+"
+  (mappend #'(lambda (sym+par) ; write out repetitions
+               (gen-repeat (second sym+par) (first sym+par)))
+           pairs))
+
+
+(defun vary-motif (motif fn argss)
+  "Generates one or more variations of given motif or phrase. As this function generates multiple variations, its result has one more list nesting level than `motif'.
+
+The result can be used, e.g., as input for {defun alternate-omns} (alongside other motifs and their variations, which are possibly also generated with `vary-motif').  
+
+* Arguments:
+  
+  - motif (OMN sequence or plain OMN parameter, depends on fn): a motif to vary
+  - fn (function): arbitrary function transforming motif multiple times
+  - argss (list of lists): lists of argument lists for `fn'. The argument `_' is a placeholder for `motif'.
+
+
+* Examples:
+
+;;; (tu:one-level-flat 
+;;;  (vary-motif '((h. b3g4 fp tie 3q g4 3e f4 stacc+leg g4 stacc+leg a4 stacc+leg b4 stacc+leg) (h. e4c5 marc))
+;;;              #'pitch-transpose
+;;;              '((-4 _) (-2 _) (0 _))))
+"
+  (let ((result (loop 
+                  repeat (length argss)
+                  for args in argss
+                  collect (apply fn (substitute motif '_ args)))))
+    result))
+
+
+;;; TODO: revise to allow for seqs-of-seqs only nested once (i.e. no variations of motifs)
 (defun alternate-omns (ids seqs-of-seqs &key (append? nil))
   "This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level.
+
+  The argument `seqs-of-seqs' can be written by hand or generated with other functions such as {defun vary-motif} and `ids' with functions like `gen-binary-rnd' or {defun section-id-seq}.
 
 * Arguments:
   - ids (list of 0-based integers): indicating the position of OMN expressions in seqs-of-seqs.
