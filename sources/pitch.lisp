@@ -277,12 +277,12 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun line->chord (sequence chord &key (position :top) flat section)
-  "Builds `chord' over every note in `sequence'.
+  "Builds `chord' over or under every note in `sequence'.
 
 * Arguments:
 
   - sequence (OMN sequence)
-  - chord (OMN chord or list of chords): in the latter case, the chords are circled through.
+  - chord (OMN chord or list of chords): if a list, the chords are circled through.
   - position (either :top or :bottom): whether the pitches of `sequence' are the top or bottom pitch of the transposed chords.
 
 * Examples: 
