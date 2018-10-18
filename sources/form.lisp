@@ -549,12 +549,12 @@ An example with double-nested lists.
 
   This function is useful, e.g., for quasi motific variation, where the number of notes in the result changes but the result still follows the overall shape (profile) of the given music. 
 
-  Usually, you do not want to use this function directly, but instead use the function `alternate-omn-fenvs', which is less low-level and therefore more easy to use.
+  Usually, you do not want to use this function directly, but instead use the function {defun alternate-omn-fenvs} , which is less low-level and therefore more easy to use.
 
 * Arguments:
   - parameter: an OMN parameter keyword like :length or :pitch
   - sequence: either full OMN sequence or sequence of the respective OMN parameters
-  - type: how to interpolate between parameter values. Can be :steps (a step function, i.e. parameter values are hold by the fenv unti the next value) or :linear (linear interpolation). 
+  - type: how to interpolate between parameter values. Can be :steps (a step function, i.e. parameter values are hold by the fenv until the next value) or :linear (linear interpolation). 
 
 * Examples:
 
@@ -612,6 +612,41 @@ An example with double-nested lists.
 
 ; (omn->fenv :articulation '(q g4 f legno q c5 p stacc q c3 pp stacc) :type :steps)
 
+
+(defun omn->fenvs (sequence &key (parameters '(:length :pitch :velocity)) (type :steps))
+   "Translates all parameters of the OMN `sequence' into a number sequences, which are then translated into a fenvs. Returns a plist of pairs <parameter> <fenv>. For further details on how the individual fenvs are generated see function `omn->fenv'
+
+* Arguments:
+  - sequence: OMN sequence
+  - parameters: which parameters to translate. By default, leaves out :articulation, because interpreting articulations in a fenv takes some extra measures.
+  - type: see doc of omn->fenv above  
+"
+
+  (loop for param in parameters
+     append (list param (omn->fenv param sequence :type type))))
+
+; (omn->fenvs '(q g4 f legno q c5 p stacc q c3 pp stacc) :type :steps)
+
+
+
+(defun fenv->omn-parameter (fenv parameter n &key arts-set)
+  "Translates a fenv into one of the OMN parameters. This is the inverse of the above function {defun omn->fenv}. For translating fenvs into OMN attributes, a list of attributes must be given. 
+
+* Arguments:
+  - fenv (a fenv)
+  - parameter: an OMN parameter keyword like :length or :pitch
+  - n (integer): how many values to generate from fenv.
+  - arts-set (list of articulation symbols): this list maps number (fenv values) into the attributes at the corresponding position in `arts-set'.
+"
+  (ccase parameter
+    ;;; TODO: rationalise
+    (:length (fenv:fenv->list fenv n))
+    (:pitch (midi-to-pitch (mapcar #'round (fenv:fenv->list fenv n))))
+    (:velocity (get-velocity (mapcar #'round (fenv:fenv->list fenv n)) :type :symbol))
+    (:articulation ;; NOTE: inefficient with long list arts-set, array might be better
+     (mapcar #'(lambda (i) (nth i arts-set)) 
+	     (mapcar #'round (fenv:fenv->list fenv n))))
+     ))
 
 
 ;;; TODO: allow for nested omn-fenv-lists for articulations as well
