@@ -95,7 +95,7 @@
 
 
 (defun section-id-seq (pairs)
-  "Expects a list of pairs (<id> <no of repetitions>) and generates out of that a flat list of integers intended as ids for {defun alternate-omns}.
+  "Expects a list of pairs (<id> <no of repetitions>) and generates out of that a flat list of integers intended as ids for {defun alternate-omns} .
 
 * Examples: 
 
@@ -137,7 +137,7 @@ The result can be used, e.g., as input for {defun alternate-omns} (alongside oth
 (defun alternate-omns (ids seqs-of-seqs &key (append? nil))
   "This function alternates between sublists of multiple omn sequences. It can be useful, e.g., to switch between different musical characteristics, but have some kind of development within each characteristic. This is a powerful function for organising musical form on a higher level.
 
-  The argument `seqs-of-seqs' can be written by hand or generated with other functions such as {defun vary-motif} and `ids' with functions like `gen-binary-rnd' or {defun section-id-seq}.
+  The argument `seqs-of-seqs' can be written by hand or generated with other functions such as {defun vary-motif} and `ids' with functions like `gen-binary-rnd' or {defun section-id-seq} .
 
 * Arguments:
   - ids (list of 0-based integers): indicating the position of OMN expressions in seqs-of-seqs.
@@ -630,7 +630,7 @@ An example with double-nested lists.
 
 
 (defun fenv->omn-parameter (fenv parameter n &key arts-set)
-  "Translates a fenv into one of the OMN parameters. This is the inverse of the above function {defun omn->fenv}. For translating fenvs into OMN attributes, a list of attributes must be given. 
+  "Translates a fenv into one of the OMN parameters. This is the inverse of the above function {defun omn->fenv} . For translating fenvs into OMN attributes, a list of attributes must be given. 
 
 * Arguments:
   - fenv (a fenv)
