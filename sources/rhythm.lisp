@@ -1082,77 +1082,10 @@ While `durational-accent' only supports accents of the first beat of each bar, y
   ;; - ?? More generic filter function called filter expecting a Boolean function -- add it when you really need it.
   ;; - I can in principle also have very many possible transformations, e.g., turning some notes into rests (e.g., the first n of a cell), or adding some tie (e.g., tie to the very beginning of the cell), though these might be less effecting
 ;;;   => Do that with separate functions
-    (defun gen-karnatic-cell (gati jathi position
-			      &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
-				(include-length nil) (exclude-length nil) (seed nil))
-      "Returns a karnatic rhythmic cell (list of rhythmic values) or a list of such cells (if `position' is a list). The shape of the resulting cell(s) can be controlled in many ways, allowing to generate, e.g., rhythms that are similar even if they are in different gatis or jathis.
-
-  See Reina (2016) for details on terms like gati, jathi and matra.
-
-* Arguments:
-  - gati (integer or list of them): gati for the cell(s) to generate.
-  - jathi (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
-  - position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
-    If `position' is '? then the position is randomised.
-  - accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
-    Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
-  - max-number/min-number (integer or list of them): max/min number of notes in the cell(s).
-  - first-length (ratio or OMN length, or list of either): length of the first note in cell(s).
-  - include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
-  - seed (integer): the seed to use for the randomised position, is position is '?.
-
-* Examples:
-
-  The first position is always a single note per cell (if no other filtering is selected)
-  ;;; (gen-karnatic-cell 4 4 0)
-
-  Generating multiple cells, and showing the order of cells in this gati and jathi without filtering (only cells carrying poteentially a durational accent on the first note of the cell).
-  ;;; (gen-karnatic-cell 4 4 '(0 1 2 3 4))
-
-  Setting a different jathi.
-  ;;; (gen-karnatic-cell 4 5 '(0 1 2 3 4))
-
-  If position exceeds the range of possible cell, the last cell is chosen (which is always an even subdivision of the full cell length into `yati' matras.
-  ;;; (gen-karnatic-cell 4 4 100)
-
-  If position receives a list, also all other arguments can be lists (of the same length), e.g., different jathis. Note that equal positions in different jathis tend to result in similar cells.
-  ;;; (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
-
-  Filtering arguments can further shape the result. The meaning of the position argument changes accordingly, always depending on the remaining number of rhythmic options for cells. E.g., the minimum number of notes per cell can be set...
-  ;;; (gen-karnatic-cell 4 4 0 :min-number 2)
- 
-  ... or the maximum number of notes. Note that the position is randomised here.
-  ;;; (gen-karnatic-cell 4 4 '? :max-number 3)
-
-  ... or the first note value in the cell can be set.
-  ;;; (gen-karnatic-cell 4 4 '(1 1 1) :first-length 1/8)
-
-  All these filter arguments also support lists for setting different values for each sublist.
-  ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
-
-  Again, an example with randomised positions, but here the seed is fixed.
-  ;;; (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
-
-  Filtering can remove all options for cells, in which case nil returned.
-  ;;; (gen-karnatic-cell 4 4 0 :min-number 5)
-
-  For more examples see also https://opusmodus.com/forums/topic/1097-updated-library-of-many-custom-opusmodus-functions/?tab=comments#comment-3497
-
-
-  You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
-
-* BUGS:
-
-The argument min-number is seemingly not fully working yet:
-
-(gen-karnatic-cell 4 5 '(? ? ? ?) :min-number '(3 3 3 3) :seed 1)
-=>((1/8 1/8 1/16) (3/16 1/16 1/16) (1/16 1/16 1/16 1/16 1/16) (1/8 1/8 1/16)) 
-
-
-* Notes:
-
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-"
+    (defun gen-karnatic-cell-nested (gati jathi position
+				     &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
+				       (include-length nil) (exclude-length nil) (seed nil))
+      "[Aux function called by gen-karnatic-cell, which only calls this function] Two functions are necessary here simply because (i) I do not want to define all the variables like accented-3 and friends (see above) globally and (ii) the automatic documentation generation I currently use (cldoc) skips nested function definitions."
       (rnd-seed seed)
       (if (listp position)
 	  ;; generate sequence of cells (list of lists)
@@ -1230,6 +1163,82 @@ The argument min-number is seemingly not fully working yet:
 		  (aref all-filtered pos)))
 	    ))))
 
+
+(defun gen-karnatic-cell (gati jathi position
+			  &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
+			    (include-length nil) (exclude-length nil) (seed nil))
+  "Returns a karnatic rhythmic cell (list of rhythmic values) or a list of such cells (if `position' is a list). The shape of the resulting cell(s) can be controlled in many ways, allowing to generate, e.g., rhythms that are similar even if they are in different gatis or jathis.
+
+See Reina (2016) for details on terms like gati, jathi and matra.
+
+* Arguments:
+- gati (integer or list of them): gati for the cell(s) to generate.
+- jathi (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
+- position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
+If `position' is '? then the position is randomised.
+- accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
+Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
+- max-number/min-number (integer or list of them): max/min number of notes in the cell(s).
+- first-length (ratio or OMN length, or list of either): length of the first note in cell(s).
+- include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
+- seed (integer): the seed to use for the randomised position, is position is '?.
+
+* Examples:
+
+The first position is always a single note per cell (if no other filtering is selected)
+  ;;; (gen-karnatic-cell 4 4 0)
+
+Generating multiple cells, and showing the order of cells in this gati and jathi without filtering (only cells carrying poteentially a durational accent on the first note of the cell).
+  ;;; (gen-karnatic-cell 4 4 '(0 1 2 3 4))
+
+Setting a different jathi.
+  ;;; (gen-karnatic-cell 4 5 '(0 1 2 3 4))
+
+If position exceeds the range of possible cell, the last cell is chosen (which is always an even subdivision of the full cell length into `yati' matras.
+  ;;; (gen-karnatic-cell 4 4 100)
+
+If position receives a list, also all other arguments can be lists (of the same length), e.g., different jathis. Note that equal positions in different jathis tend to result in similar cells.
+  ;;; (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
+
+Filtering arguments can further shape the result. The meaning of the position argument changes accordingly, always depending on the remaining number of rhythmic options for cells. E.g., the minimum number of notes per cell can be set...
+  ;;; (gen-karnatic-cell 4 4 0 :min-number 2)
+									       
+... or the maximum number of notes. Note that the position is randomised here.
+  ;;; (gen-karnatic-cell 4 4 '? :max-number 3)
+
+... or the first note value in the cell can be set.
+  ;;; (gen-karnatic-cell 4 4 '(1 1 1) :first-length 1/8)
+
+All these filter arguments also support lists for setting different values for each sublist.
+  ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
+
+Again, an example with randomised positions, but here the seed is fixed.
+  ;;; (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
+
+Filtering can remove all options for cells, in which case nil returned.
+  ;;; (gen-karnatic-cell 4 4 0 :min-number 5)
+
+For more examples see also https://opusmodus.com/forums/topic/1097-updated-library-of-many-custom-opusmodus-functions/?tab=comments#comment-3497
+
+
+You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
+
+* BUGS:
+
+The argument min-number is seemingly not fully working yet:
+
+;;; (gen-karnatic-cell 4 5 '(? ? ? ?) :min-number '(3 3 3 3) :seed 1)
+;;; => ((1/8 1/8 1/16) (3/16 1/16 1/16) (1/16 1/16 1/16 1/16 1/16) (1/8 1/8 1/16)) 
+
+
+* Notes:
+
+- Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+"
+  (gen-karnatic-cell-nested
+   gati jathi position
+   :accented? accented? :max-number max-number :min-number min-number :first-length first-length
+   :include-length include-length :exclude-length exclude-length :seed seed))
 
 
 
