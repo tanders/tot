@@ -29,6 +29,35 @@
   )
 |#
 
+
+(defun replace-rhythm-fenved (sequence new-rhythm &key (type :steps))
+  "Replaces the rhythm in `sequence' with the given `new-rhythm' in such a way that the number of notes can change while the overall development of the other parameters is retained. The resulting sequence using the time signature of `new-rhythm' as well (if `new-rhythm' is a nested list).
+
+Internally, the function represents other parameter values with fenvs to retain their overall development, hence the function name.
+
+* Arguments:
+  - sequence: OMN sequence
+  - new-rhythm: length list or OMN sequence where only the lengths are used
+  - type: how to interpolate between parameter values for fenvs. Can be :steps (a step function, i.e. parameter values are hold by the fenv until the next value) or :linear (linear interpolation). 
+"
+  (let* ((flat-seq (flatten sequence))
+	 (n (count-notes new-rhythm))
+	 ;; pitches and velocities
+	 (most-fenvs (omn->fenvs flat-seq :type type :parameters '(:pitch :velocity)))
+	 (most-params (loop for (param fenv) in (tu:plist->pairs most-fenvs)
+			 append (list param (fenv->omn-parameter fenv param n))))
+	 ;; articulations
+	 (arts-params `(:articulation
+			,(multiple-value-bind (arts-fenv arts-set)
+			     (omn->fenv :articulation flat-seq :type type)			
+			   (fenv->omn-parameter arts-fenv :articulation n :arts-set arts-set)))))
+    (apply #'make-omn
+	   (append `(:length ,(omn :length new-rhythm))
+		   most-params
+		   arts-params))
+    ))
+
+
 (defun tuplet-rhythm (lengths subdivisions &rest args 
 		      &key (length-dividend 1/2) (count-offset 0) (position 'e) (type '?)
 			seed
