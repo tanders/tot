@@ -554,6 +554,21 @@ All rests are merged into the following note. This function can be useful for pr
 
 ;;; (merge-rest-into-note '((-w) (-h h e4 pp)) :flat T)
 ;;; => ((w e4 pp tie) (w e4 pp))
+
+* BUGS:
+
+Plain length lists are not properly processed.
+
+;;; (merge-rest-into-note '(1/4 -1/8 1/16 1/16))
+;;; => (1/4 3/16 1/16 1/4)
+Should be instead
+;;; => (1/4 3/16 1/16)
+
+But if some other parameter is added, then the function works as documented.
+
+;;; (merge-rest-into-note '(1/4 c4 -1/8 1/16 1/16))
+;;; => (q c4 e. s)
+
 "
   (edit-omn :length sequence 
             #'(lambda (ls) (_merge-rest-into-note ls))
