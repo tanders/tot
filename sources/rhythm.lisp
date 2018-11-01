@@ -30,7 +30,7 @@
 |#
 
 
-(defun replace-rhythm-fenved (sequence new-rhythm &key (type :steps))
+(defun replace-rhythm-fenved (sequence new-rhythm &key (type :steps) (x-values :rhythm))
   "Replaces the rhythm in `sequence' with the given `new-rhythm' in such a way that the number of notes can change while the overall development of the other parameters is retained. The resulting sequence using the time signature of `new-rhythm' as well (if `new-rhythm' is a nested list).
 
 Internally, the function represents other parameter values with fenvs to retain their overall development, hence the function name.
@@ -38,18 +38,24 @@ Internally, the function represents other parameter values with fenvs to retain 
 * Arguments:
   - sequence: OMN sequence
   - new-rhythm: length list or OMN sequence where only the lengths are used
-  - type: how to interpolate between parameter values for fenvs. Can be :steps (a step function, i.e. parameter values are hold by the fenv until the next value) or :linear (linear interpolation). 
+  - type (either :steps or :linear): how to interpolate between parameter values for fenvs. Can be :steps (a step function, i.e. parameter values are hold by the fenv until the next value) or :linear (linear interpolation). 
+  - x-values (either :rhythm or :equidistant): whether the x-values of internal fenvs follow the rhythm of `sequence' or are equidistant, where points are spread evenly across the x axis.
+
+* BUGS:
+
+Seemingly arg x-values not quite working yet as intended.
 "
   (let* ((flat-seq (flatten sequence))
 	 (n (count-notes new-rhythm))
-	 ;; pitches and velocities
-	 (most-fenvs (omn->fenvs flat-seq :type type :parameters '(:pitch :velocity)))
+	 ;; NOTE: :gliss variants like gliss2, gliss3, gliss4, kgliss and kgliss-ch currently not supported
+	 (most-fenvs (omn->fenvs flat-seq :parameters '(:pitch :velocity :leg :gliss)
+				 :type type :x-values x-values))
 	 (most-params (loop for (param fenv) in (tu:plist->pairs most-fenvs)
 			 append (list param (fenv->omn-parameter fenv param n))))
 	 ;; articulations
 	 (arts-params `(:articulation
 			,(multiple-value-bind (arts-fenv arts-set)
-			     (omn->fenv :articulation flat-seq :type type)			
+			     (omn->fenv :articulation flat-seq :type type :x-values x-values)		
 			   (fenv->omn-parameter arts-fenv :articulation n :arts-set arts-set)))))
     (apply #'make-omn
 	   (append `(:length ,(omn :length new-rhythm))
@@ -538,7 +544,6 @@ All rests are merged into the following note. This function can be useful for pr
 ;; (_merge-rest-into-note '(-1/2 3/2 -1/2 3/2 -1/2 3/2 -1/2 -1/2 -1/2 3/2 -1/2 -1 -1/2 1/2 -1/2 3/2 -1/2 -47/2 -1/2 3/2 -1/2 3/2 -1/2 3/2 -1/2 1/2 -1/2 3/2))
 
 	
-
 (defun merge-rest-into-note (sequence &key (flat nil) (section nil))
   "All rests are merged into the following note. This function can be useful for producing harmonic rhythms.
 
