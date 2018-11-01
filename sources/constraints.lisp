@@ -41,7 +41,7 @@
 ;;;   :instruments '(:vln :vla)))
 "
  (case cluster-engine-score
-  ;; in case of failure return score that displays (preview-score"no solution"
+  ;; in case of failure return score that displays score with label "no solution"
   (:no-solution '(:1 ((w no-solution)))) 
   (otherwise
    (let* ((cluster-engine-score-without-time-sigs (butlast cluster-engine-score))
@@ -128,6 +128,8 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
 				     :velocity (omn :velocity flat-omn)
 				     :articulation (omn :articulation flat-omn)
 				     :leg (omn :leg flat-omn)
+				     ;; NOTE: :gliss variants like gliss2, gliss3, gliss4, kgliss and kgliss-ch currently not supported
+				     :gliss (omn :gliss flat-omn)
 				     :swallow nil))
 			 #|
 			 (omn-replace :pitch  (flatten 
