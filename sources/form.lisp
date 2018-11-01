@@ -543,8 +543,20 @@ An example with double-nested lists.
     ))
 
 
-;;; TODO: consider whether to additionally have the option that y-values of the resulting fenv reflect the rhythm of the sequence.
-(defun omn->fenv (parameter sequence &key (type :steps))
+
+
+(defun _counters-to-1s (xs)
+  "[Aux] Expects a list returned by an expression like (omn :leg sequence), which expresses TRUE with 1 and FALSE with -1, but consecutive TRUE or FALSE values are accuulated, so that '(1 1 1 -1 1) is represented more concisely as '(3 -1 1). The present function translates this more concise representation into the longer representation consisting only of 1 and -1, so that results of an expression like (omn :leg sequence) can be turned into a fenv."
+  (loop for x in xs
+    append (if (> (abs x) 1)
+             (gen-repeat (abs x) (signum x)) 
+             (list x)
+             )))
+; (_counters-to-1s '(-1 8))
+; (_counters-to-1s nil)
+
+
+(defun omn->fenv (parameter sequence &key (type :steps) (x-values :rhythm))
   "Translates one of the parameters of the OMN `sequence' into a number sequence, which is then translated into a fenv. A fenv is a particularly flexible envelope, see my fenv library for details. 
 
   This function is useful, e.g., for quasi motific variation, where the number of notes in the result changes but the result still follows the overall shape (profile) of the given music. 
@@ -554,7 +566,8 @@ An example with double-nested lists.
 * Arguments:
   - parameter: an OMN parameter keyword like :length or :pitch
   - sequence: either full OMN sequence or sequence of the respective OMN parameters
-  - type: how to interpolate between parameter values. Can be :steps (a step function, i.e. parameter values are hold by the fenv until the next value) or :linear (linear interpolation). 
+  - type (either :steps or :linear): how to interpolate between parameter values. Can be :steps (a step function, i.e. parameter values are hold by the fenv until the next value) or :linear (linear interpolation). 
+  - x-values (either :rhythm or :equidistant): whether the x-values of the resulting fenv follow the rhythm of `sequence' or are equidistant, where points are spread evenly across the x axis.
 
 * Examples:
 
@@ -588,9 +601,9 @@ An example with double-nested lists.
     (multiple-value-bind (num-seq arts-set)
 	;; in case parameter is :articulation (and only in that case), I have to additionally store the "set" of articulations that are possible.
 	(ccase parameter
-	  (:length (omn parameter (if (every #'lengthp flat-seq)
-				      flat-seq
-				      (omn parameter flat-seq))))
+	  (:length (if (every #'lengthp flat-seq)
+		       flat-seq
+		       (omn parameter flat-seq)))
 	  (:pitch (pitch-to-midi (if (every #'pitchp flat-seq)
 				     flat-seq
 				     (omn parameter flat-seq))))
@@ -604,29 +617,58 @@ An example with double-nested lists.
 			   (values 
 			    (loop for art in arts
 			       collect (position art arts-set))
-			    arts-set))))
-      (let ((fenv (fenv:list->fenv num-seq :type type)))
+			    arts-set)))
+	 ;; NOTE: :gliss variants like gliss2, gliss3, gliss4, kgliss and kgliss-ch currently not supported
+	  ((:leg :gliss) (_counters-to-1s (omn parameter flat-seq)))
+	  )
+      (let ((fenv (when num-seq ;; params like :leg can be nil
+		    (ccase x-values
+		      (:equidistant (fenv:list->fenv num-seq :type type))
+		      ;; !!! TODO: for fenvs of lengths, lengths are best processed positionally as before to preserve the rests?
+		      (:rhythm (let* (;; Rests merged in, they should not count as extra rhythmic values in fenv
+				      (lengths (omn :length (merge-rest-into-note flat-seq)))
+				      (xs (ccase type
+					    (:linear (tu:dx->x (tu:scale-sum lengths 1) 0))
+					    (:steps (butlast (tu:dx->x (tu:scale-sum lengths 1) 0))))))
+				 (fenv:list->fenv (ccase type
+						    ;; NOTE: Hack: last fenv value is constant over last note dur (otherwise number of y values one less than x values because I had to perform tu:dx->x on rhythmic values representing x values)
+						    (:linear (append num-seq (last num-seq)))
+						    (:steps num-seq))
+						  :type type :xs xs)))))))
 	(case parameter
 	  (:articulation (values fenv arts-set))
 	  (otherwise fenv))))))
 
 ; (omn->fenv :articulation '(q g4 f legno q c5 p stacc q c3 pp stacc) :type :steps)
 
+;; ;;; TODO:
+;; ;; - scale rhythmic values so that their sum = 1: tu:scale-sum   
+;; ;; - find a way to have values for all rhythmic positions -- should last value be repeated, so that end of fenv is some section with last value?? OK if type is steps, but not for linear interpolation...
+;; (setf seq '(h g4 f legno q c5 p stacc q c3 pp stacc))
+;; ;; use this method for :type :steps
+;; (butlast (tu:dx->x (tu:scale-sum (omn :length seq) 1) 0))
+;; (omn :pitch seq)
+;; ;; for :type :linear instead use
+;; ;;; BUG: not correct (same as above)
+;; (let ((time-positions (tu:dx->x (omn :length seq) 0)))
+;;   (tu:rescale time-positions 0 (first (last time-positions)) 0 1))
 
-(defun omn->fenvs (sequence &key (parameters '(:length :pitch :velocity)) (type :steps))
+(defun omn->fenvs (sequence &key (parameters '(:length :pitch :velocity)) (type :steps) (x-values :rhythm))
    "Translates all parameters of the OMN `sequence' into a number sequences, which are then translated into a fenvs. Returns a plist of pairs <parameter> <fenv>. For further details on how the individual fenvs are generated see function `omn->fenv'
 
 * Arguments:
   - sequence: OMN sequence
   - parameters: which parameters to translate. By default, leaves out :articulation, because interpreting articulations in a fenv takes some extra measures.
   - type: see doc of omn->fenv above  
+  - x-values: see doc of omn->fenv above  
 "
 
   (loop for param in parameters
-     append (list param (omn->fenv param sequence :type type))))
+     append (let ((fenv (omn->fenv param sequence :type type :x-values x-values)))
+	      (when fenv 
+		(list param fenv)))))
 
 ; (omn->fenvs '(q g4 f legno q c5 p stacc q c3 pp stacc) :type :steps)
-
 
 
 (defun fenv->omn-parameter (fenv parameter n &key arts-set)
@@ -640,7 +682,7 @@ An example with double-nested lists.
 "
   (ccase parameter
     ;;; TODO: rationalise
-    (:length (fenv:fenv->list fenv n))
+    ((:length :leg :gliss) (fenv:fenv->list fenv n))
     (:pitch (midi-to-pitch (mapcar #'round (fenv:fenv->list fenv n))))
     (:velocity (get-velocity (mapcar #'round (fenv:fenv->list fenv n)) :type :symbol))
     (:articulation ;; NOTE: inefficient with long list arts-set, array might be better
