@@ -229,6 +229,80 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 	    :flat flat))
 
 
+;;; TODO: interval can be list if flat is nil. Just set arg :additional-args of edit-omn accordingly.
+(defun set-ambitus (interval sequence &key section OMN flat)
+  "This function is similar to the build-in function `ambitus-field', but this function only compresses or expandes a given sequence without transposing it (the originally lowest pitch remains unchanged). Therefore, instead of a range only an interval is specified (by an integer).
+
+* Arguments:
+  - interval (int): resulting ambitus interval.
+  - sequence: OMN sequence, can be nested.
+  - section (list of ints or nil): sublists (bars) to process. Arg is ignored if `flat' is T.
+  - flat (Boolean): whether or not a flat list is processed.
+  - omn	(Boolean): whether or not to force OMN style output. 
+
+
+* Examples:
+
+;;; (set-ambitus 12 '(q bb4 a4 c5 b4))
+
+If interval is a negative number, the formerly lowest pitch becomes the highest pitch (the music is inverted).
+;;; (set-ambitus -12 '(q bb4 a4 c5 b4))
+
+Special case: if interval is 0, then the original sequence is returned (instead of forcing all pitches to the same note).
+;;; (set-ambitus 0 '(q bb4 a4 c5 b4))
+"
+  (if (= interval 0)
+      sequence
+      (let ((amb-low (first (find-ambitus sequence))))
+	(edit-omn :pitch sequence
+		  #'(lambda (seq)	
+		      (ambitus-field (list amb-low (+ amb-low interval))
+				     seq :OMN OMN))
+		  :flat flat
+		  :section section))))
+
+;;; TODO: 
+;;; - Define related function for processing of score, where either given parts or the whole score is processed
+(defun close-variations (sequence &key (transposition 0) (ambitus 0) (invert? 0) (append? nil))
+  "This functions conveniently combines several common pitch variation techniques that retain a high degree of recognisability to the original input.
+
+The input `sequence' for this function could be generated, e.g., with the function `alternate-omns' such that more remote variations are controlled with  `alternate-omns' and closer variations with the present function. 
+
+* Arguments:
+  - sequence (OMN expression that is either flat, single or double nested): input music. Double nesting is supported to allow for processing sections/motifs that consist of multiple bars.
+  - transposition (int, or list of ints): transposition interval of individual resulting motifs/sections
+  - ambitus (int, or list of ints): ambitus interval of resulting motifs. The lowest pitch of a motif is not affected by this argument, only its highest pitch, as the lowest pitch change be shifted separately with the transposition interval. Negative values result in an inversion of a motif. If 0, ambitus processing is skipped.
+  - invert (0, or 1, or list of such binary numbers): binary numbers indicate whether motifs are inverted or not
+  - append? (Boolean): whether or not nested OMN sequences should be appended instead of been combined in a list. 
+
+  If you need more detailed control (e.g., a section argument for some of the variations), then simply use the original build-in function like pitch-transpose, pitch-invert and ambitus-field (or set-ambitus).
+
+* Examples:
+
+;;; (setf motif '((q c3 ff snap+gliss q g3 cue) (-e s e3 > pizz gs3 > pizz g3 > pizz e3 > pizz eb3 > pizz gs3 p pizz) (h c4 f pizz)))
+
+;;; (close-variations (gen-repeat 3 (list motif)) :transposition '(0 12 2) :invert? '(0 1 0) :append? T)
+
+;;; (close-variations (gen-repeat 3 (list motif)) :transposition '(0 1 2) :ambitus '(12 11 10) :append? T)
+"
+  (let* ((l (length sequence))
+         (result (loop 
+                   for motif in sequence
+                   for tr in (circle-repeat (tu:ensure-list transposition) l)
+                   for amb in (circle-repeat (tu:ensure-list ambitus) l)
+                   for inv? in (circle-repeat (tu:ensure-list invert?) l) 
+                   collect (pitch-transpose tr
+                                            (set-ambitus amb 
+                                                         (if (= inv? 1) 
+                                                           (pitch-invert motif :flatten T)
+                                                           motif)
+                                                         :flat T))
+                   )))
+    (if append?
+      (tu:one-level-flat result)
+      result)))
+
+
 
 ;;; TODO:
 ;; - consider rewriting using map-events -- much shorter then
