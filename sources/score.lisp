@@ -78,7 +78,7 @@
 ;;;  :header `(:layout (,(bracket-group (violin-layout 'vln)
 ;;;                                     (violoncello-layout 'vlc)))))
 
-  The return value is controlled by {defparameter *preview-score-return-value*}.
+  The return value is controlled by {defparameter *preview-score-return-value*}
 
   Polyphonic parts can be expressed by simply using the same instrument name multiple times (again using default instrument names).
 
