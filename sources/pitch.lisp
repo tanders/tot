@@ -261,6 +261,33 @@ Special case: if interval is 0, then the original sequence is returned (instead 
 		  :flat flat
 		  :section section))))
 
+(defun invert-in-ambitus (sequence)
+  "Inverts the pitches of given sequence by preserving its original overall ambitus (instead of inverting around its first pitch or some given pitch). 
+
+* Examples:
+
+;;; (invert-in-ambitus '(c4 e4 g4))
+;;; => (g4 eb4 c4)
+
+Contrast: `pitch-invert' inverts around first note of `sequence'.  
+;;; (pitch-invert '(c4 e4 g4))
+;;; => (c4 gs3 f3)
+
+Processing of full OMN sequences supported.
+;;; (invert-in-ambitus '((q c3 ff snap+gliss q g3 cue) (-e s e3 > pizz gs3 > pizz g3 > pizz e3 > pizz eb3 > pizz gs3 p pizz) (h c4 f pizz)))
+"
+  (pitch-transpose 
+   (- (tu:last-element (find-ambitus sequence))
+      (pitch-to-integer 
+       ;; inefficient: whole sequence processed, while actually I only need first note, 
+       ;; but I currently don't have way to extract first note.
+       (let ((flat-seq (flatten sequence)))
+         (first (if (every #'pitchp flat-seq)
+                  flat-seq
+                  (omn :pitch flat-seq))))))
+   (pitch-invert sequence :flatten T)))
+
+
 ;;; TODO: 
 ;;; - Define related function for processing of score, where either given parts or the whole score is processed
 (defun close-variations (sequence &key (transposition 0) (ambitus 0) (invert? 0) (append? nil))
@@ -293,8 +320,8 @@ The input `sequence' for this function could be generated, e.g., with the functi
                    for inv? in (circle-repeat (tu:ensure-list invert?) l) 
                    collect (pitch-transpose tr
                                             (set-ambitus amb 
-                                                         (if (= inv? 1) 
-                                                           (pitch-invert motif :flatten T)
+                                                         (if (= inv? 1)
+							     (invert-in-ambitus motif)
                                                            motif)
                                                          :flat T))
                    )))
