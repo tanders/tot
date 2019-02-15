@@ -124,7 +124,7 @@
 
 ;;; BUG: not working for flat lists
 (defun get-full-articulations (sequence)
-  "[Aux function] Similar to (omn :articulation sequence), but the result includes `leg' symbols for legato 'articulation', which are handled seperately by the function `omn'.
+  "[Aux function] Similar to (omn :articulation sequence), but the result includes `leg' and `gliss' symbols for legato 'articulation', which are handled seperately by the function `omn'.
 
   NOTE: as the implementation of omn is not necessarily stable, this function is breakable.
 
