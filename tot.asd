@@ -7,7 +7,7 @@
 
 (asdf:defsystem tot
   :description "Torsten's Opusmodus Tools (TOT) is a collection of definitions that extend the algorithmic composition system Opusmodus (http://opusmodus.com/). Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicabiliy) for other projects might be limited. Nevertheless, at least I tried to document their purpose and limitations." 
-  :author "Torsten Anders <torsten.anders@beds.ac.uk>"
+  :author "Torsten Anders <torstenanders@gmx.de>"
   :licence "GNU General Public License, Version 3"
   :source-control "https://github.com/tanders/tot"
   :version "0.3"
