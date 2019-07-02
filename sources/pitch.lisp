@@ -230,12 +230,13 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 
 ;;; TODO: interval can be list if flat is nil. Just set arg :additional-args of edit-omn accordingly.
-(defun set-ambitus (interval sequence &key section OMN flat)
-  "This function is similar to the build-in function `ambitus-field', but this function only compresses or expandes a given sequence without transposing it (the originally lowest pitch remains unchanged). Therefore, instead of a range only an interval is specified (by an integer).
+(defun set-ambitus (interval sequence &key (direction :keep-high) section OMN flat)
+  "This function is similar to the build-in function `ambitus-field', but this function only compresses or expandes a given sequence without transposing it (the originally lowest or highest pitch remains unchanged). Therefore, instead of a range only an interval is specified (by an integer).
 
 * Arguments:
   - interval (int): resulting ambitus interval.
   - sequence: OMN sequence, can be nested.
+  - direction (either :keep-low or :keep-high): whether the lowest or highest pitch is kept unchanged.
   - section (list of ints or nil): sublists (bars) to process. Arg is ignored if `flat' is T.
   - flat (Boolean): whether or not a flat list is processed.
   - omn	(Boolean): whether or not to force OMN style output. 
@@ -245,7 +246,9 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 
 ;;; (set-ambitus 12 '(q bb4 a4 c5 b4))
 
-If interval is a negative number, the formerly lowest pitch becomes the highest pitch (the music is inverted).
+;;; (set-ambitus 12 '(q bb4 a4 c5 b4) :direction :keep-low)
+
+If interval is a negative number, the music is inverted, while the kept highest note is now the lowest (or vice versa, depending on `direction`).
 ;;; (set-ambitus -12 '(q bb4 a4 c5 b4))
 
 Special case: if interval is 0, then the original sequence is returned (instead of forcing all pitches to the same note).
@@ -253,13 +256,24 @@ Special case: if interval is 0, then the original sequence is returned (instead 
 "
   (if (= interval 0)
       sequence
-      (let ((amb-low (first (find-ambitus sequence))))
+      (let ((amb (ecase direction
+                   (:keep-high (let ((high (second (find-ambitus sequence))))
+                                 (list (- high interval) high)))
+                   (:keep-low (let ((low (first (find-ambitus sequence))))
+                                 (list low (+ low interval)))))))
 	(edit-omn :pitch sequence
 		  #'(lambda (seq)	
-		      (ambitus-field (list amb-low (+ amb-low interval))
-				     seq :OMN OMN))
+		      (ambitus-field amb seq :OMN OMN))
 		  :flat flat
 		  :section section))))
+
+
+(defun adjust-ambitus (interval sequence &key (direction :keep-high) section OMN flat)
+  "Variant of set-ambitus that contracts or expands the existing ambitus of seq by interval"
+  (let* ((amb (find-ambitus sequence))
+         (amb-interval (+ (- (second amb) (first amb)) interval)))
+    (set-ambitus amb-interval sequence :direction direction :section section :omn omn :flat flat)))
+
 
 (defun invert-in-ambitus (sequence)
   "Inverts the pitches of given sequence by preserving its original overall ambitus (instead of inverting around its first pitch or some given pitch). 
