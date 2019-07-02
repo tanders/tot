@@ -87,6 +87,9 @@
 ;;;    :vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5)) 
 ;;;    :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
 
+
+  NOTE: the new builtin Opusmodus function `ps' does something very similar, see 
+https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
   "
   ;; Using eval is problematic (https://stackoverflow.com/questions/2571401/why-exactly-is-eval-evil/),
   ;; but hard to avoid for a dynamically created def-score expression that requires splicing with ,@.
