@@ -89,6 +89,11 @@
 ;;; (condense my-motif
 ;;;           #'(lambda (dur pitch &rest other-args)  
 ;;;               (> (omn-encode dur) 1/4)))
+
+
+* Bugs:
+
+Currently, when first note does not meet the test, the result starts with a rest. It might be better to revise the function that in that case the first note is still preserved, as otherwise the result is too much changed compared with the input.
 "
   (length-legato
    (filter-notes-if test sequence :section section)))
