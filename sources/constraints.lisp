@@ -199,17 +199,20 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
  (copy-time-signature 
   sequence
    (loop for (len pitch vel art) in (single-events (flatten sequence))
-      append (append (list (_chords-to-gracenotes pitch)) 
-		     (list len)
-		     (if root?
-			 (list (first (melodize pitch)))
-			 ;; constant placeholder pitch in case root is not shown
-			 (list 'c4))
-		     (when root? (list vel)) 
-		     (cond ((and art root?) (list art))
-			   ;; root note place holders to ignore are marked with a "o" like harmonics 
-			   ((not root?) (list 'harm))
-			   (T nil))))
+      append (if pitch
+		 (append (list (_chords-to-gracenotes pitch)) 
+			 (list len)
+			 (if root?
+			     (list (first (melodize pitch)))
+			     ;; constant placeholder pitch in case root is not shown
+			     (list 'c4))
+			 (when root? (list vel)) 
+			 (cond ((and art root?) (list art))
+			       ;; root note place holders to ignore are marked with a "o" like harmonics 
+			       ((not root?) (list 'harm))
+			       (T nil)))
+		 ;; rest
+		 (list len)))
   ))
 
 #|
