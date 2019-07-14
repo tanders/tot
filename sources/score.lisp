@@ -1117,22 +1117,38 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 |#
 
 
-;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return
+;;; TODO: add optional arg specifying which 0-based number of equally-named parts to return (if the list-based naming format is not used)
 (defun get-part-omn (instrument score)
   "Returns the part (OMN expression) of `instrument' in `score', a headerless score (see {defun preview-score} for its format).
 
-BUG: does not yet allow access to higher position of equally named parts."
-  (getf score instrument))
+NOTE: If `score` contains multiple parts with the same label, only the first is returned. However, it is possible to label instruments in the score not only with a keyword, but also with a list (<keyword> <position>), and then to use such a list to select one part out of multiple parts that have otherwise equal names. 
+
+* Examples:
+
+(get-part-omn  '(:vln 1)
+`((:vln 0) ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+  (:vln 1) ,(pitch-transpose 12 '((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
+  :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+"
+  ;; (getf score instrument)
+  (let ((pos (position instrument score :test #'equal)))
+    (nth (1+ pos) score)))
 
 #|
-(get-part-omn  :vlc
-'(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+(get-part-omn  :vln
+`(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+  :vln ,(pitch-transpose 12 '((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
 
 (get-part-omn  :test
 '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+
+;; NOTE: getf does not work with lists as labels for elements
+(getf '(:vl 1) '((:vl 1) '(1 2 3)))
 |#
+
+ 
 
 (defun get-parts-omn (score)
   "Returns a list of all OMN parts of `score', a headerless score (see {defun preview-score} for its format)."
