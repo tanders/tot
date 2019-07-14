@@ -685,8 +685,46 @@ length-expansion-variant
                       score)))
 
 
+(defun number-instruments (score)
+  "The instrument keyword labels in `score` are replaced by a pair (<keyword> <int>) with a unique int for each of these instruments counting from 0. This allows to clearly distinguish multiple parts with the same instrument label.
+
+* Examples:
+
+;;; (setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
+;;; (number-instruments 
+;;;  `(:vl1 ,material
+;;;    :vl1 ,(pitch-transpose 12 material)))
+"
+  (let* (;; store for each instrument a counter
+	 (hash (make-hash-table))
+	 (pairs (tu:plist->pairs score))
+	 (result (loop for (instrument omn) in pairs 
+		    collect (let ((idx (gethash instrument hash)))
+			      ;; (break)
+			      (if idx
+				  (let ((new-idx (1+ idx)))
+				    (setf (gethash instrument hash) new-idx)
+				    (list (list instrument new-idx) omn))
+				  (progn
+				    (setf (gethash instrument hash) 0)
+				    (list (list instrument 0) omn)))))))
+    (tu:pairs->plist result)))
+
+#|
+(setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
+
+(number-instruments 
+ `(:vl1 ,material
+   :vl1 ,(pitch-transpose 12 material)))
+|#
 
 
+(defun un-number-instruments (score)
+  "The opposite of `number-instruments`: the numbered instruments labels of the form (<keyword> <int>) are replaced by the corresponding keyword."
+  (let* ((pairs (tu:plist->pairs score))
+	 (result (loop for (instrument omn) in pairs
+		      collect (list (first instrument) omn))))
+    (tu:pairs->plist result)))
 
 
 (defun _append-two-parts (score1 score2)
