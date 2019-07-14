@@ -257,9 +257,9 @@ Special case: if interval is 0, then the original sequence is returned (instead 
   (if (= interval 0)
       sequence
       (let ((amb (ecase direction
-                   (:keep-high (let ((high (second (find-ambitus sequence))))
+                   (:keep-high (let ((high (second (get-ambitus sequence))))
                                  (list (- high interval) high)))
-                   (:keep-low (let ((low (first (find-ambitus sequence))))
+                   (:keep-low (let ((low (first (get-ambitus sequence))))
                                  (list low (+ low interval)))))))
 	(edit-omn :pitch sequence
 		  #'(lambda (seq)	
@@ -270,7 +270,7 @@ Special case: if interval is 0, then the original sequence is returned (instead 
 
 (defun adjust-ambitus (interval sequence &key (direction :keep-high) section OMN flat)
   "Variant of set-ambitus that contracts or expands the existing ambitus of seq by interval"
-  (let* ((amb (find-ambitus sequence))
+  (let* ((amb (get-ambitus sequence))
          (amb-interval (+ (- (second amb) (first amb)) interval)))
     (set-ambitus amb-interval sequence :direction direction :section section :omn omn :flat flat)))
 
@@ -291,7 +291,7 @@ Processing of full OMN sequences supported.
 ;;; (invert-in-ambitus '((q c3 ff snap+gliss q g3 cue) (-e s e3 > pizz gs3 > pizz g3 > pizz e3 > pizz eb3 > pizz gs3 p pizz) (h c4 f pizz)))
 "
   (pitch-transpose 
-   (- (tu:last-element (find-ambitus sequence))
+   (- (tu:last-element (get-ambitus sequence))
       (pitch-to-integer 
        ;; inefficient: whole sequence processed, while actually I only need first note, 
        ;; but I currently don't have way to extract first note.
@@ -437,6 +437,8 @@ Using a list of different chords
 * Examples:
 
   ;;; (chord->line '((h c4e4g4 q) (h.)) 0)
+
+;;; BUG: What to output in case of rests -- a rest (which I would expect) or a pitch? See example above...
 "
   (map-events
    #'(lambda (l p v a)

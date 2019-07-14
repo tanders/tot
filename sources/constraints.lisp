@@ -391,7 +391,7 @@ TODO: demonstrate how default rules are overwritten.
 			 split-scores
 			 split-harmonies
 			 split-scales)))
-	;; 
+	;; not split-score?
 	(let* ((parts (get-parts-omn unified-score))
 	       (pitch-domain-extension-specs (if (listp pitch-domains-extension)
 						 pitch-domains-extension
@@ -468,7 +468,7 @@ TODO: demonstrate how default rules are overwritten.
 							       (if
 								(omn :pitch (flatten part))
 								;; part contains pitches
-								(find-ambitus part)
+								(get-ambitus part)
 								;; otherwise return some default domain 
 								'(0 1))))
 					      (pitch-dom-ambitus (cond ((integerp pitch-dom-extension-spec)
