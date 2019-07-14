@@ -43,15 +43,17 @@
 
 (defun preview-score (score &key (name 'test-score)    
 			      (instruments *default-preview-score-instruments*)
-			      (header *default-preview-score-header*))
+			      (header *default-preview-score-header*)
+                              (display :window))
   "Notates and plays a score in a format slightly simpler than expected by def-score, i.e., without its header. 
     
-    Args: 
+* Arguments:
     - score (plist): a headerless score. See below for its format.
     - name (symbol): The score name.
     - instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn. This list can contain more instruments than actually contained in score (e.g., settings for a full orchestra), but only the instruments actually contained in `score' are actually given to the internal `def-score' call. 
     - header (plist): The format is the same as the header settings for `def-score' with keywords like :title, :composer, :key-signature etc. 
       Note: any time signature sequence given in the `header' that is not long enough for the full score is automatically cycled as a sequence to the required length (i.e., not only the last time signature but the whole sequence is repeated). 
+    - display (either :assistant, :quick-view or :window): Specifies in which part of the Opusmodus interface to show the score, in the assistant pane, the quickview pane or a separate windown (which can be pulled to a separate monitor). 
 
     Score format: 
     ;;; (<part1-name-keyword> <part1-OMN>
@@ -174,7 +176,10 @@ https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
 		       (tu:plist->pairs (merge-equal-instrument-parts score))))))
     ;; (break)
     (eval full-score)
-    (audition-musicxml-last-score)
+    ; (audition-musicxml-last-score)
+    (display-musicxml *last-score* :display display)
+    ; (display-midi *last-score* :display display)
+    (audition-last-score)
     (case *preview-score-return-value*
       (:headerless-score score)
       (:full-score full-score)
@@ -660,7 +665,7 @@ length-expansion-variant
   - parameter (omn parameter, e.g., :length or :pitch, default nil means processing full OMN expression): If `fn' expects only single parameter to process, then it can be set here. 
   
   
-  Example:
+* Examples:
 
 ;;; (apply-part
 ;;;  :vlc
