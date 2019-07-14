@@ -1524,6 +1524,7 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
       (* result 1.0)
       result)))
 
+
 (defun bpm->duration (beats tempo)
   "Converts a duration in number of beats and the corresponding tempo in BPM into a duration in seconds."
   (* (* (/ 1 tempo) beats) 60.0))
