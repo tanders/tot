@@ -732,10 +732,11 @@ length-expansion-variant
     (tu:pairs->plist result)))
 
 
-(defun _append-two-parts (score1 score2)
+(defun _append-two-scores (score1 score2)
   (let ((instruments (remove-duplicates 
                       (append (get-instruments score1)
-                              (get-instruments score2))))
+                              (get-instruments score2))
+		      :test #'equal))
         ;; dur of longest part in score 1 as rest
         (score1-dur-rest (copy-time-signature 
                           ;;; first instrument, assuming all instruments share same metric structure
@@ -760,6 +761,25 @@ length-expansion-variant
                                 part-omn2
                                 score2-dur-rest))))))))
 
+#|
+;; testing
+(setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
+
+(setf my-score 
+      `((:vl1 0) ,material
+        (:vl1 1) ,(pitch-transpose 12 material)))
+
+(get-part-omn '(:vl1 1) my-score)
+
+
+(setf my-score 
+      `(:vl1 ,material
+        :vl1 ,(pitch-transpose 12 material)))
+
+(get-instruments my-score)
+|#
+
+
 ;;; TODO: 
 ;;; - Introduce offset arg for rests before 2nd score. Offset can be negative, resulting in removing rests or even notes (no polyphony)
 ;;; - see bug below
@@ -776,6 +796,8 @@ length-expansion-variant
 ;;; (setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
 ;;;     
 ;;; (append-scores `(:vl1 ,material
+;;;                  ;; Multiple parts with the same name for expressing polyphony are supported
+;;;                  :vl1 ,(pitch-transpose 12 material)
 ;;;                  :vl2 ,(gen-retrograde material :flatten T))
 ;;;                `(:vl1 ,material
 ;;;                  :vlc ,(gen-retrograde material :flatten T))
@@ -783,11 +805,9 @@ length-expansion-variant
 ;;;                  :vlc ,(gen-retrograde material :flatten T)))
 
 BUG: If one part misses hierarchic nesting in contrast to others, then this lating nesting is preserved, which can lead to inconsistent nesting (some sections of a part being nested, others are not).
-
-BUG: Does not yet work with scores that express polyphony with multiple instances of the same instrument.
 "
-  (reduce #'_append-two-parts scores))
-  
+  ;; for supporting multiple parts with the same keyword label, these labels are internally numbered 
+  (un-number-instruments (reduce #'_append-two-scores (mapcar #'number-instruments scores))))
 
 #|
 ;; testing
@@ -800,6 +820,15 @@ BUG: Does not yet work with scores that express polyphony with multiple instance
                  :vlc ,(gen-retrograde material :flatten T))
                `(:vl2 ,material
                  :vlc ,(gen-retrograde material :flatten T))))
+
+;; appending multiple scores with repeated part labels 
+(preview-score
+ (append-scores
+  `(:vl1 ,material
+    :vl1 ,(pitch-transpose 12 material))
+  `(:vl1 ,material
+    :vl1 ,(gen-retrograde material :flatten T))
+  ))
 |#
 
 
