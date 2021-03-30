@@ -64,6 +64,7 @@ Seemingly arg x-values not quite working yet as intended.
     ))
 
 
+;;; ? BUG: Some bug here somewhere
 (defun tuplet-rhythm (lengths subdivisions &rest args 
 		      &key (length-dividend 1/2) (count-offset 0) (position 'e) (type '?)
 			seed
@@ -76,7 +77,7 @@ Seemingly arg x-values not quite working yet as intended.
   - length-dividend (default 1/2): duration ratio divided by subdivisions. Default case are half note subdivisions, ie. a subdivision of 3 results 3h notes (triplets splitting a half note). 
   - count-offset (default -1): `subdivisions' also specifies number of equally spaced notes per tuplet plus amount of `count-offset' . I.e., if `count-offset' = 0 then each note is split into subdivision notes.
   
-  All keyword args from `length-divide2' are inherited, but some with different default.
+  All keyword args from `length-subdivision' are inherited, but some with different default.
 
 * Examples:
   ;;; (tuplet-rhythm '(1/2 1/2 1/2) '(3 4 5))
@@ -90,15 +91,16 @@ Seemingly arg x-values not quite working yet as intended.
 * BUGS: 
 
   Seed argument not working as expected -- it is not even used in this function!"
-  (apply #'length-divide2
-	 (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
-         (mapcar #'(lambda (x) (/ length-dividend x)) subdivisions)
+  ;; (break)
+  (apply #'length-subdivision
+	 (matrix-transpose (list (mapcar #'(lambda (x) (+ x count-offset)) subdivisions) 
+				 (mapcar #'(lambda (x) (/ length-dividend x)) subdivisions)))
          lengths
          :position position
          :type type
-         :allow-other-keys t
+         ;; :allow-other-keys t
 	 :seed seed
-         args))
+         (tu:remove-properties '(:length-dividend :count-offset :seed) args)))
 
 #|
 (tuplet-rhythm (gen-repeat 8 '(1/2)) '(3 4 5 6 5 4 3 2))
@@ -138,6 +140,7 @@ Seemingly arg x-values not quite working yet as intended.
   (do-verbose ("")
     (rnd-seed seed)
     (let* ((underlying-rhythm (gen-repeat bar-no `((,bar-length))))
+	   ;; ?? BUG: ambitus-integer seemingly not quite reliable for scaling ambitus (uses transposition and inversion). Probably better replace with scaling function from Common Music.
            (subdivisions (ambitus-integer subdivisions-ambitus 
                                           (gen-integer-step 3 bar-no (gen-walk bar-no :seed (seed)))))
            (my-rhythm (tuplet-rhythm underlying-rhythm subdivisions 
@@ -264,40 +267,56 @@ Seemingly arg x-values not quite working yet as intended.
      (last ensured-lengths))))
 
 
-(defun count-shortest (sequence)
-  "Count the number of the shortest notes in sequence. Helper function for using `divide-shortest'."
-  (let* ((flat-seq (flatten (omn :length sequence)))
-	 (shortest (apply #'min flat-seq)))
-    (count shortest flat-seq)))
-  
-; (count-shortest '(1/16 1/2 1/16)) 
+(defun divide-selected (sequence &key (select #'min) (divide 2) (count 1) section seed)
+  "Transform the rhythm (e.g., increase or reduce rhythmic contrast) by dividing selected notes in the given `sequence' (e.g., the shortest or longest note).
 
-(defun divide-shortest (sequence &key (divide 2) (count nil) (section nil) (seed nil))
-  "Increase rhythmic contrast by dividing the shortest notes in the given `sequence'.
+* Arguments:
+  - sequence: OMN length sequence
+  - select: function expecting 1 or more numbers (length values) and returning the rhythmic value to subdivide.
+
+All other arguments are inherited from the Opusmodus buildin `length-divide`, see its documentation for more details.
+
+
+NOTE: For simple cases, this function is not really needed: the Opusmodus buildin `length-divide` arg `set` also supports values `min` and `max` (which can be combined with the arg `ignore` set to `min` or `max`). However, here `select` is a function, which provides more flexibility.
 
 * Examples:
-  ;;; (divide-shortest '(1/8 1/16 1/16))
 
-  ;;; (divide-shortest '(1/8 1/16 1/16) :count 1)
+By default, the shortest notes are subdivided.
 
-  Note that if sequence is a full OMN expression, then the added notes cause all other parameters to shift forward. Additional parameters are added at the end by circling.
-  ;;; (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)))
-  ;;; => ((E C4 T D4 E4 F4 E4) (E D4 T G4 C4 D4 E4) (Q F4))
+;;; (divide-selected '(1/8 1/16 1/16))
 
-  ;;; (divide-shortest '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)) :section '(1))
-   
-  This function is a simplified variant of `length-divide'. For more control use that function instead."  
-  (let ((shortest (apply #'min (flatten (omn :length sequence))))
-	(l (count-shortest sequence)))
-    (length-divide (if count count l) divide sequence :set shortest
+;; BUG: 
+;;; (divide-selected '(1/8 1/16 1/16 1/16 1/16) :count 2)
+
+A different note value can be set with the argument select. The next example divides instances of the longest notes value. 
+;;; (divide-selected '(1/8 1/16 1/16 1/8) :count 1 :select #'max)
+
+
+Note that if `sequence` is a full OMN expression, then the added notes cause all other parameters to shift forward. Additional parameters are added at the end by circling.
+;;; (divide-selected '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)))
+
+;;; (divide-selected '((e c4 s d4 e4) (e f4 s e4 d4) (q g4)) :section '(1))
+  
+"  
+  (let* ((flat-lengths (flatten (omn :length sequence)))
+	 (selected (apply select flat-lengths))
+	 ; (l (count selected flat-lengths))
+	 )
+    (length-divide (list count divide) sequence
+		   :set selected
+		   ;; :ignore ignore
 		   :section section
-		   ;; :flat T
-		   ;; :span :pitch -- changes the meter. I don't want that.
+		   ;; :exclude exclude
+		   ;; :omn omn
 		   :seed seed
 		   )))
 
-; (divide-shortest (gen-karnatic-cell 4 4 2 :min-number 2))
 
+(defun divide-shortest (sequence &key (divide 2) (count nil) (section nil) (seed nil))
+  "Simplified variant of divide-selected kept only for backwards compatibility."  
+  (divide-selected sequence :divide divide :count count :section section :seed seed))
+  
+; (divide-shortest (gen-karnatic-cell 4 4 2 :min-number 2))
 
 
 #|
@@ -416,7 +435,7 @@ Additional arguments can be given to fn by specifying further argument lists to 
   ;;; => ((1/8 1/8) (1/12 1/12 1/12))"
   (rnd-seed seed)
   (mapcar #'(lambda (div l)
-              (apply #'length-divide count div l (append (list :seed (seed)) args)))
+              (apply #'length-divide (list count div) l (append (list :seed (seed)) args)))
           (circle-repeat divide (length length))
           length))
 
@@ -738,14 +757,15 @@ But if some other parameter is added, then the function works as documented.
 			     (length-notep (first bar2))
 			     (every #'length-notep (last bar1 divide-no)))
 			;; subdivide last note of bar
+			(progn ; (break)
 			(append
 			 (butlast bar1 divide-no)
 			 (let* ((divided-lengths (length-divide
 						  ;; random control for how many notes subdivision happens
-						  divide-no
-						  (if (listp divide)
-						      (rnd-pick divide :seed (seed))
-						      divide) 
+						  (list divide-no
+							(if (listp divide)
+							    (rnd-pick divide :seed (seed))
+							    divide)) 
 						  (last bar1 divide-no)
 						  :set set
 						  :ignore ignore
@@ -771,7 +791,7 @@ But if some other parameter is added, then the function works as documented.
 				       (loop for l in (first-n tie-no divided-lengths)
 					  append (list l 'tie))
 				       (nthcdr tie-no divided-lengths))
-			       divided-lengths)))
+			       divided-lengths))))
 			;; otherwise leave bar unchanged
 			bar1)))
 	      lengths)
@@ -1073,342 +1093,11 @@ While `durational-accent' only supports accents of the first beat of each bar, y
 |#
 
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;
-;;; Karnatic rhythmical techniques
-;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; List of all possible combinations of note subdivisions in a group of n notes.
-;; These are sorted into potentially accented (starting with a durational accent and/or leading to an accent if the next following note is longer, even though that is not really a karnatic concept) and non-accented
-(let* ((accented-3 ; tisra 
-	(apply #'vector '((3) (2 1) (1 1 1))))
-       (unaccented-3 ; tisra 
-	(apply #'vector '((1 2))))
-       (both-3 (vector accented-3 unaccented-3))
-       (accented-4 ; chatusra 
-	(apply #'vector '((4) (3 1) (2 2) (2 1 1) (1 1 1 1))))
-       (unaccented-4 ; chatusra 
-	(apply #'vector '((1 3) (1 2 1) (1 1 2))))
-       (both-4 (vector accented-4 unaccented-4))
-       (accented-5; khanda 
-	(apply #'vector '((5) (4 1) (3 2) (3 1 1) (2 2 1) (2 1 1 1) (1 1 1 1 1))))
-       (unaccented-5 ; kanda 
-	(apply #'vector
-	       '((2 3) (1 4)
-		 (2 1 2) (1 3 1) (1 2 2) (1 1 3)
-		 (1 2 1 1) (1 1 2 1) (1 1 1 2))))
-       (both-5 (vector accented-5 unaccented-5))
-       (accented-6 ; tisra 
-	(apply #'vector
-	       '((6) (5 1) (4 2) (3 3) (4 1 1) (3 2 1) (2 2 2) (3 1 1 1) (2 2 1 1) (2 1 1 1 1) (1 1 1 1 1 1))))
-       (unaccented-6 ; tisra
-	(apply #'vector
-	       '((2 4) (1 5)
-		 (3 1 2) ; this one is borderline
-		 (2 3 1) (2 1 3) (1 4 1) (1 3 2) (1 2 3) (1 1 4) 
-		 (2 1 2 1) (2 1 1 2)
-		 (1 3 1 1)
-		 (1 2 2 1) (1 2 1 2) 
-		 (1 1 3 1) (1 1 2 2) (1 1 1 3)
-		 (1 2 1 1 1) (1 1 2 1 1) (1 1 1 2 1) (1 1 1 1 2)
-		 )))
-       (both-6 (vector accented-6 unaccented-6))
-       #|
-;;; TODO: see (Reina, 2016, p. 24)
-       (defconstant accented-7 ; misra
-       )
-       
-       (defconstant unaccented-7 ; misra
-       )
-       (both-7 (vector accented-7 unaccented-7))
-
-       |#
-       )
-  ;; TODO:
-  ;; - ? Args prefix and suffix
-  ;; - ?? More generic filter function called filter expecting a Boolean function -- add it when you really need it.
-  ;; - I can in principle also have very many possible transformations, e.g., turning some notes into rests (e.g., the first n of a cell), or adding some tie (e.g., tie to the very beginning of the cell), though these might be less effecting
-;;;   => Do that with separate functions
-    (defun gen-karnatic-cell-nested (gati jathi position
-				     &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
-				       (include-length nil) (exclude-length nil) (seed nil))
-      "[Aux function called by gen-karnatic-cell, which only calls this function] Two functions are necessary here simply because (i) I do not want to define all the variables like accented-3 and friends (see above) globally and (ii) the automatic documentation generation I currently use (cldoc) skips nested function definitions."
-      (rnd-seed seed)
-      (if (listp position)
-	  ;; generate sequence of cells (list of lists)
-	  (let ((n (length position)))
-	    (mapcar #'(lambda (gati jathi position accented? max-number min-number first-length include-length exclude-length)
-			(gen-karnatic-cell gati jathi position
-					   :accented? accented? :max-number max-number :min-number min-number
-					   :first-length first-length :include-length include-length :exclude-length exclude-length
-					   :seed (seed)))
-		    (circle-repeat gati n)
-		    (circle-repeat jathi n)
-		    position
-		    (circle-repeat accented? n)
-		    (circle-repeat max-number n)
-		    (circle-repeat min-number n)
-		    (circle-repeat first-length n)
-		    (circle-repeat include-length n)
-		    (circle-repeat exclude-length n)))
-	  ;; generate a single cell (list)
-	  (let* ((all-accented-and-unaccented (case jathi
-						(3 both-3)
-						(4 both-4)
-						(5 both-5)
-						(6 both-6)
-						;; (7 both-7)      
-						))
-		 (all-accented/unaccented-selected
-		  (cond ((or (eql accented? T)
-			     (eql accented? 1))
-			 (aref all-accented-and-unaccented 0))
-			((or (eql accented? nil)
-			     (eql accented? 0))
-			 (aref all-accented-and-unaccented 1))))
-		 (all-in-gati
-		  (map 'vector #'(lambda (seq)
-				   (mapcar #'(lambda (x) (/ x gati 4)) seq))
-		       all-accented/unaccented-selected))
-		 (all-filtered
-		  (tu:filter
-		   (let ((first-l (when first-length
-				    (omn-encode first-length)))
-			 (include-l (when include-length
-				      (omn-encode (tu:ensure-list include-length))))
-			 (exclude-l (when exclude-length
-				      (omn-encode (tu:ensure-list exclude-length)))))
-		     #'(lambda (seq)
-			 (and (if min-number
-				  (<= min-number (length seq))
-				  T)
-			      (if max-number
-				  (>= max-number (length seq))
-				  T)
-			      (if first-length
-				  (= (first seq) first-l)
-				  T)
-			      (if include-length
-				  (every #'(lambda (x) (member x seq)) include-l)
-				  T)
-			      (if exclude-length
-				  (notany #'(lambda (x) (member x seq)) exclude-l)
-				  T)
-			      )))
-		   all-in-gati))
-		 (last-possible-position (1- (length all-filtered)))
-		 )
-	    (if (= last-possible-position -1)
-		;; filtering removed all options
-		nil
-		;;
-		(let ((pos (if (eql position '?)
-			       (rnd1 :low 0 :high last-possible-position :seed (seed))
-			       (if (<= position last-possible-position)
-				   position
-				   last-possible-position))))
-		  (aref all-filtered pos)))
-	    ))))
-
-
-(defun gen-karnatic-cell (gati jathi position
-			  &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
-			    (include-length nil) (exclude-length nil) (seed nil))
-  "Returns a karnatic rhythmic cell (list of rhythmic values) or a list of such cells (if `position' is a list). The shape of the resulting cell(s) can be controlled in many ways, allowing to generate, e.g., rhythms that are similar even if they are in different gatis or jathis.
-
-See Reina (2016) for details on terms like gati, jathi and matra.
-
-* Arguments:
-- gati (integer or list of them): gati for the cell(s) to generate.
-- jathi (integer in range 3-7, or list of them): jathi for the cell(s) to generate.
-- position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
-If `position' is '? then the position is randomised.
-- accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
-Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
-- max-number/min-number (integer or list of them): max/min number of notes in the cell(s).
-- first-length (ratio or OMN length, or list of either): length of the first note in cell(s).
-- include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
-- seed (integer): the seed to use for the randomised position, is position is '?.
-
-* Examples:
-
-The first position is always a single note per cell (if no other filtering is selected)
-  ;;; (gen-karnatic-cell 4 4 0)
-
-Generating multiple cells, and showing the order of cells in this gati and jathi without filtering (only cells carrying poteentially a durational accent on the first note of the cell).
-  ;;; (gen-karnatic-cell 4 4 '(0 1 2 3 4))
-
-Setting a different jathi.
-  ;;; (gen-karnatic-cell 4 5 '(0 1 2 3 4))
-
-If position exceeds the range of possible cell, the last cell is chosen (which is always an even subdivision of the full cell length into `yati' matras.
-  ;;; (gen-karnatic-cell 4 4 100)
-
-If position receives a list, also all other arguments can be lists (of the same length), e.g., different jathis. Note that equal positions in different jathis tend to result in similar cells.
-  ;;; (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
-
-Filtering arguments can further shape the result. The meaning of the position argument changes accordingly, always depending on the remaining number of rhythmic options for cells. E.g., the minimum number of notes per cell can be set...
-  ;;; (gen-karnatic-cell 4 4 0 :min-number 2)
-									       
-... or the maximum number of notes. Note that the position is randomised here.
-  ;;; (gen-karnatic-cell 4 4 '? :max-number 3)
-
-... or the first note value in the cell can be set.
-  ;;; (gen-karnatic-cell 4 4 '(1 1 1) :first-length 1/8)
-
-All these filter arguments also support lists for setting different values for each sublist.
-  ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
-
-Again, an example with randomised positions, but here the seed is fixed.
-  ;;; (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
-
-Filtering can remove all options for cells, in which case nil returned.
-  ;;; (gen-karnatic-cell 4 4 0 :min-number 5)
-
-For more examples see also https://opusmodus.com/forums/topic/1097-updated-library-of-many-custom-opusmodus-functions/?tab=comments#comment-3497
-
-
-You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
-
-* BUGS:
-
-The argument min-number is seemingly not fully working yet:
-
-;;; (gen-karnatic-cell 4 5 '(? ? ? ?) :min-number '(3 3 3 3) :seed 1)
-;;; => ((1/8 1/8 1/16) (3/16 1/16 1/16) (1/16 1/16 1/16 1/16 1/16) (1/8 1/8 1/16)) 
-
-
-* Notes:
-
-- Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-"
-  (gen-karnatic-cell-nested
-   gati jathi position
-   :accented? accented? :max-number max-number :min-number min-number :first-length first-length
-   :include-length include-length :exclude-length exclude-length :seed seed))
-
-
-
-(defun gen-matras (gati jathi jathi-number &key prefix suffix)
-  "Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `jathi' the number of matras per 'bar' (sublist) and `jathi-number' the resulting number of sublists.
-
-* Arguments:
-  - gati (int)
-  - jathi (int)
-  - yat-number (int)
-  - prefix (length value or length sequence, possibly nested): preceeding phrase
-  - suffix (length value or length sequence, possibly nested): succeeding phrase
-
-* Examples:
-  gati 5 (quintuplets), jathi 4
-  ;;; (gen-matras 5 4 3)
-
-  gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest.
-  ;;; (gen-matras 5 4 3 :prefix '-q)
-
-* Notes:
-
-  See Reina (2016) for details on the terms matras, gati and jathi.
-  
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-
-"
-  (append 
-   (when prefix (ensure-double-list prefix))
-   (gen-repeat jathi-number (list (gen-repeat jathi (/ 1/4 gati))))
-   (when suffix (ensure-double-list suffix))   
-   ))
-
-
-
-
-;;; TODO: consider revising (or an alternative function) definition by using gen-karnatic-cell: stored are then not actual cells, but args for gen-karnatic-cell. E.g., in such a revision I would not be limited to have a durational accent on every cell/pala
-(defun accented-yati-phrase (gati pala-lengths gap &rest args &key (type '(:srotovahayati :at-end)) &allow-other-keys)
-  "Generates the matras sequence for a yati phrase, see Reina (2016, p. 205ff) for details. Resulting sublists are jathis for potential post-processing (e.g., adding an accent on their first notes) before redefining the metric structure (usually to follow the tala, e.g., with `omn-to-time-signature'). 
-
-  NOTE: In contrast to Karnatic music, resulting accents are expressed by durational accents by this function. Hence the word `accented' in the  function name.
-  
-* Arguments:
-  - gati (OMN length): beat subdivision 
-  - pala-lengths (list of ints): number of matras per pala 
-  - gap (OMN length, typically a rest): length of gaps between palas (always constant). For mridangamyati phrases, when you need different gap lengths, simply append two calls to the present function.
-  - type (list of two keywords): specifies first the type of the yati phrase (:srotovahayati, where matras are added or :gopuchayati, where matras are removed over time). Secondly, it sets at which side the pala matras are added or removed  (:at-end :at-front). There are four combinations in total. You can compose mridangamyati and damaruyati yati phrases by combining the results of two calls of this function. Note that inserting matras in the middle is currently not supported.
-
-  Additionally, all `durational-accent' key args are supported.
-
-* Examples:
-  ;;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-end) :divide-prob 0.3 :merge-prob 0.7 :seed 1)
-
-  ;;; (accented-yati-phrase '3q '(4 7 10 13) '-3e :type '(:gopuchayati :at-front) :divide-prob 0.7 :merge-prob 0.5 :seed 3)
-
-* Notes:
-
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-  "
-  (let* ((gati-ratio (omn-encode gati))
-         (longest-pala-jathis (cons (first pala-lengths) (tu:x->dx pala-lengths)))
-         (longest-pala-time-sigs (length->time-signature
-                                  (loop for jathi in longest-pala-jathis
-				     collect (* jathi gati-ratio))))
-         (longest-pala-lengths (apply #'max pala-lengths))
-         (longest-pala-matras 
-          (omn :length (even-length-rhythm gati 
-                                           :total-duration (* gati-ratio longest-pala-lengths) 
-                                           :time-sig longest-pala-time-sigs)))
-         (longest-pala (apply #'durational-accent longest-pala-matras (tu:remove-property :type args))))
-    (cond 
-      ((equal type '(:srotovahayati :at-end))          ; grows at end
-       (reverse 
-        (loop for palas on (reverse longest-pala)
-	   if (rest palas)
-	   append (append palas `((,gap)))
-	   else append  palas)))
-      ((equal type '(:srotovahayati :at-front))        ; grows at front
-       (tu:one-level-flat 
-        (reverse 
-         (loop for palas on longest-pala
-	    unless (equal palas longest-pala)
-	    collect (append palas `((,gap)))
-	    else collect palas))))
-      ((equal type '(:gopuchayati :at-end))            ; reduced at end
-       (loop for palas on (reverse longest-pala)
-	  if (rest palas)
-	  append (append (reverse palas) `((,gap)))
-	  else append (reverse palas)))
-      ((equal type '(:gopuchayati :at-front))          ; reduced at front
-       (loop for palas on longest-pala
-	  if (rest palas)
-	  append (append palas `((,gap)))
-	  else append  palas))
-      (T (error "Yati phrase type note supported: ~A. Note that the order of keywords must not be swapped. The type is a pair like the following example: (:srotovahayati :at-end)." type)))))
-
-;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-front))
-
-#|
-;;; TODO:
-(defun change-gati (sequence in-gati out-gati)
-  "Changes the duration of notes in `sequence' to fit into the given gati without changing their jathi."
-  )
-
-;;; TODO:
-(defun change-jathi (sequence jathi)
-  "Changes the grouping of notes in `sequence' to follow the given jathi but adding removing notes.
-
-The sequence is supposed to be arranged such that each sublist is one jathi."
-  )
-|#
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Rhythm utilities
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 
 (defun _remove-rest-articulations (sequence)
   "Strips all articulations from rests. 
@@ -1510,19 +1199,6 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
                                 'tie))
                           (mapcar #'disassemble-articulations 
                                   (omn :articulation (flatten-omn sequence)))))))))
-
-(defun total-duration (sequence &optional float?)
-  "Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests. 
-
-  If `float?' is true the result is a float.
-
-* Examples:
-  ;;; (total-duration '((h c4 q) (q h tie) (h.)))
-  ;;; => 9/4"
-  (let ((result (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence))))))
-    (if float?
-      (* result 1.0)
-      result)))
 
 
 (defun bpm->duration (beats tempo)
