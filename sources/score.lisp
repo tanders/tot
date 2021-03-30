@@ -11,6 +11,132 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; TODO: Move to utils
+(defun map-every-2nd (fn list)
+  (loop
+     for (a b) on list by #'cddr
+     collect a
+     when b collect (funcall fn b)))
+
+(defun double-nested? (x)
+  "Return T is x is a double (but not triple) nested list (only checks the first element)."
+  (and (listp x) (listp (first x))
+       (not (listp (first (first x))))))
+
+(defparameter *default-instrument-set* 'gm
+  "Default instrument set name used by the function ps*.")
+
+(defparameter *default-tempo* 60
+  "Default tempo used by the function ps*.")
+
+(defparameter *default-title* NIL
+  "Default title used by the function ps*.")
+
+(defun _ps* (score &key (set-name *default-instrument-set*) (key-signature '(c maj)) time-signature
+		     (tempo 60) (accidentals :natural) (ignore-velocity NIL) (ignore-tempo NIL)
+		     (octave-shift NIL) (flexible-clef T) (start NIL) (end NIL)
+		     (title NIL) (output :midi) (display :window))
+  "Aux version of `ps*', which `ps*' simply calls.  By this design, it is possible to define custom `ps*' definitions with their own argument defaults. 
+
+For example, you might want to define a custom version for a specific piece where the tempo of the piece is specified only once in your custom definition, and all your custom calls to your custom `ps*' definitions inherit that so you do not need to specify a shared tempo multiple times."
+  (apply #'ps set-name
+         :key-signature key-signature :time-signature time-signature
+         :tempo tempo :accidentals accidentals 
+         :ignore-velocity ignore-velocity :ignore-tempo ignore-tempo
+         :octave-shift octave-shift :flexible-clef flexible-clef 
+         :start start :end end
+         :title title :output output :display display
+         (map-every-2nd #'(lambda (part)
+			    (if (double-nested? part)
+				(list part)
+				part))
+			(merge-equal-instrument-parts score :list))))
+
+#|| ;; TODO: 
+Some global variable for defaults of often-used args: tempo, title... Or some way to define versions of this function with different defaults that are then somehow set to be used by my Slime snippet/score output functions. 
+
+TODO: Add arg for the type arg of the function merge-equal-instrument-parts called internally.
+||#
+(defun ps* (score &key (set-name *default-instrument-set*) (key-signature '(c maj)) time-signature
+		    (tempo *default-tempo*) (accidentals :natural) (ignore-velocity NIL) (ignore-tempo NIL)
+		    (octave-shift NIL) (flexible-clef T) (start NIL) (end NIL)
+		    (title *default-title*) (output :midi) (display :window))
+  "Variant of the Opusmodus builtin function `ps' that supports the same score format as the function `preview-score' in the tot library, so that it can be used in conjunction with all the available score processing functions in that library (e.g., `append-scores').
+
+* Arguments:
+  - score (headerless score): See {defun preview-score} for format description. Instrument sets and thus the keywords for parts in this format are defined by `def-instrument-set` (like for `ps'). 
+  All other parameters are the same as for `ps'.
+
+The OMN lists in the `score' can be double nested (for single parts) or triple nested (for divisi, polyphonic instruments or instrument groups such as`:sq' for string quartet). By contrast, the tot library score functions (including `preview-score') require double-nested OMN lists, and  `ps' triple nested OMN lists. 
+
+An instrument can occur multiple times in the score (e.g., to easily denote divisi). The function internally automatically wraps the OMN sequences of such equal instruments into a single triple-nested sequence given to `ps'. How this is notated depends on the layout definition of the instrument in `set-name'.
+BUG: This feature is currently only supported for double-nested instruments in `score'.
+
+In contrast to `ps`, the argument `set-name` is an optional keyword argument, which can also be specified by binding the variable `*default-instrument-set*' (to set it only once and not for every call).
+
+* Examples:
+
+Example using the two default instrument names specified in the default and predefined instrument set name `gm'. Note that the violoncello is double nested (a single part) while the violins are triple nested (divisi). 
+
+;;; (ps*
+;;;  '(:vn (((q g4) (q. e5 e f5 q g5 a5) (h. g5))
+;;; 	    ((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
+;;;    :vc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+;;;  :tempo 80 :set-name 'gm) 
+
+Example with multiple OMN-sequences of the same instrument notated as divisi instruments (with the default set-name `gm'). 
+
+;;; (ps*
+;;;  '(:vn ((q g4) (q. e5 e f5 q g5 a5) (h. g5))
+;;;    :vn ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;    :vc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+;;;  :tempo 80 :set-name 'gm)
+
+Example with multiple OMN-sequences of the same instrument combined all on a single grand staff (with the default set-name `gm').
+
+;;; (ps*
+;;;  '(:vc ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;    :pg ((q g3) (q. e4 e f4 q g4 a4) (h. g4))
+;;;    :pg ((q g3) (q c4 b3 a3 g3) (h. c3))
+;;;    :pg ((-q) (h c2c3 -h) (h. c3)))
+;;;  :tempo 80 :set-name 'gm)
+
+
+BUG: This function is not automatically adapting nesting levels for parts that are triple-nested because of attributes spanning over multiple notes. In such a case, the correct additional nesting level must always be specified explicitly (as for `ps'). The following is working: 
+;;; (ps* '(:vc ((((acc e e e) q_5h 5q 5q 5q) (q_5h 5q 5q 5q 5h 5h 5q q -q)))))
+
+But this is not (instead, multiple bars are interpreted as separate parts):
+;;; (ps* '(:vc (((acc e e e) q_5h 5q 5q 5q) (q_5h 5q 5q 5q 5h 5h 5q q -q))))
+"
+  (_ps* score :set-name set-name
+	:key-signature key-signature :time-signature time-signature
+	:tempo tempo :accidentals accidentals 
+	:ignore-velocity ignore-velocity :ignore-tempo ignore-tempo
+	:octave-shift octave-shift :flexible-clef flexible-clef 
+	:start start :end end
+	:title title :output output :display display))
+#||
+(ps*
+ '(:vn (((q g4) (q. e5 e f5 q g5 a5) (h. g5))
+	((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
+   :vc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+ :tempo 80 :set-name 'gm)
+
+(ps*
+ '(:vn ((q g4) (q. e5 e f5 q g5 a5) (h. g5))
+   :vn ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+   :vc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+ :tempo 80 :set-name 'gm)
+
+(ps*
+ '(:vc ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+   :pg ((q g3) (q. e4 e f4 q g4 a4) (h. g4))
+   :pg ((q g3) (q c4 b3 a3 g3) (h. c3))
+   :pg ((-q) (h c2c3 -h) (h. c3)))
+ :tempo 80 :set-name 'gm)
+||#
+
+
 
 ;; NOTE: just some dummy settings for now
 (defparameter *default-preview-score-instruments*
