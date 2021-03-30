@@ -76,11 +76,14 @@
 
 
 (defun condense (sequence test &key (section nil))
-  "Beethoven-like condensation of music. All notes for which a given test function returns `nil' are removed, and their preceeding note is extended by their duration.
+  "Beethoven-like condensation of music. All notes for which a given test function returns `nil'
+are removed, and their preceding note is extended by their duration.
+
+NOTE: The first note of sequence cannot be removed (turned into a rest) by condensation.
 
 * Arguments:
-  - test: Boolean function expecting individual parameters of each note in `OMN'
   - sequence: An OMN sequence
+  - test: Boolean function expecting individual parameters of each note in `OMN'
 
 * Examples:
 
@@ -168,7 +171,7 @@ The following example demonstrates the use of the arguments `ids' and `seqs-of-s
 ;;; ; => ((h q q) (h. e e) (e e e e e e e e) (e e e e e e e e) (h q q) (h. e e))
 
 
-Now, the power of algorithmic composition lies in the fact that each of these arguments can be algorithmically generated. The next example demontrates that. It also demonstrates how the materials/gestures can be OMN expressions with multiple parameters. Still, each of these gestures consist in a single bar (gestures are not nested, though they are nested within two list levels).
+Now, the power of algorithmic composition lies in the fact that each of these arguments can be algorithmically generated. The next example demonstrates that. It also demonstrates how the materials/gestures can be OMN expressions with multiple parameters. Still, each of these gestures consist in a single bar (gestures are not nested, though they are nested within two list levels).
 
 ;;; (alternate-omns 
 ;;;  ;; random sequence of IDs
@@ -178,7 +181,7 @@ Now, the power of algorithmic composition lies in the fact that each of these ar
 ;;;   (make-omn
 ;;;    :length (length-rest-series
 ;;; 	    (rnd-sample 7 '(7 8 9))
-;;; 	    (length-divide 3 2
+;;; 	    (length-divide '(3 2)
 ;;; 			   (rnd-sample 7 '((q q q) (h e e) (h.) (h q)))))
 ;;;    :pitch '(d4 e4 f4 g4)
 ;;;    :velocity '(pp))
