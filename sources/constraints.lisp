@@ -155,19 +155,44 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
   (preview-score (cluster-engine-score score)))
 
 
-(defun chords->domain (chords &key (transpositions '(0)) preview?)
-  "Translates `chords' (list of OMN chords) and `transpositions' (list of ints) into a domain of chords for Cluster Engine (list of lists of MIDI note numbers), where every given spectrum is contained in all given transpositions. 
+(defun chords->domain (chords &key (transpositions '(0))
+				scale (scale-tone-comparison #'pitch->pc) chord-size-to-check
+				preview?)
+  "Translates `chords' and `transpositions' into a domain of chords for Cluster Engine (list of lists of MIDI note numbers), where every given chord/spectrum is contained in all given transpositions. 
 
-  If `preview?' is T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus.
+* Arguments:
+ - chords (list of OMN chords): the chords to use. 
+ - transpositions (list of ints): transposition intervals for all chords. For example, if `transpositions' is (gen-integer 0 11), then `chords' are quasi chord types of which all 12-ET transpositions are considered (before scale filtering).
+ - scale (list of OMN pitches): list of OMN pitches used for filtering the result. All resulting chord PCs must be contained in the given scale.
+ - scale-tone-comparison (unary function): function for transforming each chord and scale tone before checken. The default results in checking that the chord PCs fit into the scale PCs.
+ - chord-size-to-check (int): if given, only the `chord-size-to-check' lowest chord pitches are checked whether they fit into scale. 
+ - preview? (Boolan): if T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus.
 
 * Examples:
-  ;;; (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4))
+  ;;; (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4) :preview? T)
+
+  Ensure that the resulting chords fit into the given scale.
+  ;;; (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4) :scale '(c4 d4 e4 fs4 g4 a4 b4) :preview? T)
+
+  Only the first chord pitch should fit into the given scale.
+  ;;; (chords->domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4) :scale '(c4 d4 e4 fs4 g4 a4 b4) :chord-size-to-check 1 :preview? T)
 "
-  (let ((result (loop for transposition in transpositions
-                  append (pitch-transpose transposition chords))))
+  (let* ((scale-pcs (mapcar scale-tone-comparison scale))
+         (tr-chords (loop for transposition in transpositions
+		       append (pitch-transpose transposition chords)))
+         (result (if scale
+		     (remove-if-not (lambda (chrd)
+				      (every (lambda (tone)
+					       (member (funcall scale-tone-comparison tone)
+						       scale-pcs))
+					     (if chord-size-to-check
+						 (subseq (melodize chrd) 0 (1- chord-size-to-check))
+						 (melodize chrd))))
+				    tr-chords)
+		     tr-chords)))
     (if preview?
-      result
-      (mclist (pitch-to-midi result)))))
+	result
+	(mclist (pitch-to-midi result)))))
 
 ; (chords->domain (list (midic->omn-chord (tr:n-sp-gen 3600 (gen-integer 8 15) 0))) :transpositions (gen-integer 0 11) :preview? T)
 
@@ -242,6 +267,7 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
 				    (rules :default)
 				    (additional-rules nil)
 				    (split-score? nil)
+				    (forward-rule #'ce::fwd-rule_left-to-right_type-tie-breaking) ;; :fwd-rule6B
 				    (length-adjust? T)
 				    (print-csp? nil)
 				    (unprocessed-cluster-engine-result? nil))
@@ -254,20 +280,29 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
   - scales (OMN expression or NIL): OMN chords expressing the rhythm of scales and scale changes of the underlying harmony. If `scales' is NIL (convenience when there are no constrains restricting the underlying scale) then simply the underlying harmonies are doublicated in the scales staff (the staff is not skipped to preserve the order of parts for the constraints that depend on it).
   - constrain-pitch-profiles? (Boolean or int): Whether to constrain the pitch profile. If an int, it sets the weigth offset of the profile rule.
   - constrain-pitch-intervals? (Boolean or int): Whether to constrain the pitch intervals. If an int, it sets the weigth offset of the profile rule.
-  - pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format: (<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...), where pitches are Opusmodus pitch symbols. For example, if your `score' specifies the first and second violin with the keywords :vl1 and :vl2, `pitch-domains' could be (:vl1 (g3 c6) :vl2 (g3 c6)).     
+  - pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format, where pitches are Opusmodus pitch symbols:
+    ;;; (<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...)
+    For example, if your `score' specifies the first and second violin with the keywords :vl1 and :vl2, `pitch-domains' could be as follows
+    ;;; (:vl1 (g3 c6) :vl2 (g3 c6)).     
     By default, the ambitus of each part of `score' is used to automatically deduce the chromatic pitch domain for that part. When overwriting this default, the pitch domain of all parts must be given explicitly.
   - pitch-domains-extension: 
      If 0, the pitch domain for each part is the ambitus of pitches in the respective part of `score' (including all semitones within that ambitus). 
      If a positive integer, the pitch domain of each part is the respective ambitus extended by this number of semitones both up an down. For example, if `pitch-domains-extension' is 2, and the ambitus of some part in `score' ranges from C4 to C5, then the pitch domain for that part ranges chromatically from Bb3 (2 semitones down at the lower end) to D5 (2 semitones up at the upper end).
-     A pitch domain extension can also be specified for each part separately in either of the following formats: (<part1-name-keyword> <extension> ...) or (<part1-name-keyword> (<lower-extension> <upper-extension>) ...). For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write (:vln1 (0 7)), if you are using :vln1 as keyword in `score'. 
-      When specifying a pitch domain extension for any part explicitly, then extensions for all parts must be given explicitly.
-  - pitch-domain-limits: If set, it specifies absolute limits of the pitch domain for some or all parts, which restrict the domain otherwise specified with the pitches of `score' and  `pitch-domains-extension'. This is useful, e.g., to restrict the pitch of a part to the playable range of instruments. This argument in the following format: 
-(<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...), where pitches are Opusmodus pitch symbols or Opusmodus pitch integers (but not MIDI integers!). 
+     A pitch domain extension can also be specified for each part separately in either of the following formats:
+    ;;; (<part1-name-keyword> <extension> ...) 
+    ;;; or (<part1-name-keyword> (<lower-extension> <upper-extension>) ...)
+    For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write the following, if you are using :vln1 as keyword in `score':
+    ;;; (:vln1 (0 7))
+    When specifying a pitch domain extension for any part explicitly, then extensions for all parts must be given explicitly.
+  - pitch-domain-limits: If set, it specifies absolute limits of the pitch domain for some or all parts, which restrict the domain otherwise specified with the pitches of `score' and  `pitch-domains-extension'. This is useful, e.g., to restrict the pitch of a part to the playable range of instruments. This argument in the following format, where pitches are Opusmodus pitch symbols or Opusmodus pitch integers (but not MIDI integers!):
+    ;;; (<part1-name-keyword> (<lowest-pitch> <highest-pitch>) ...)
     When specifying a pitch domain limit for any part, then a limit for all parts must be given.
   - rules (list of cluster-engine rule instances): further rules to apply, in addition to the automatically applied pitch/interval profile constraints. Note that the scales and chords of the underlying harmony are voice 0 and 1, and the actual voices are the sounding score parts. 
     If `rules' is :default, then some default rule set is used. 
   - additional-rules (list of cluster-engine rule instances): convenience argument to add rules without overwriting the default rule set by leaving the argument `rules' untouched.
-  - split-score? (Boolean or more complex representation, see below): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. 
+  - split-score? (Boolean or more complex representation, see below):
+    NOTE: This argument is likely now redundant with the argument forward-rule and its default value.
+    Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. 
     If `split-score?' is  
     - :at-shared-rests or simply T, the score is split at shared rests (see function `split-score-at-shared-rests').
     - :at-bar-boundaries, the score is split after every bar.
@@ -275,6 +310,7 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
     -- A list '(:at-bar-boundaries <list of integers>), the score is split at the given zero-based bar numbers.
     NOTE: You cannot use index rules if `split-score?' is not NIL -- indices would not be correct! Also, constraints that would cross the boundary of a split point are ignored in this mode. E.g., a melodic constraint between the pitches of notes before and after the split point cannot be applied, as the score ends before/after the split point during the search process. 
     If you want to split your score at different positions (e.g., in order to ensure that melodic rules towards the first note of the next bar are actually followed), then simply rebar your score before calling `revise-score-harmonically' (e.g., by calling `omn-to-time-signature') and rebar the result back to the original time signature afterwards. 
+  - forward-rule (keyword or function): Argument forward-rule for ce::clusterengine specifying its search strategy (variable ordering).
   - length-adjust? (Boolean): If T, all parts of the output score are forced to be of the same length as the total length of the input score (otherwise the output score can be longer).
   - print-csp? (Boolean): For debugging the CSP: if true, print list of arguments to constraint solver cr:cluster-engine.
  - unprocessed-cluster-engine-result? (Boolean): For debugging the CSP: if true return the result of cluster engine directly, without translating it into an OMN score.
@@ -333,15 +369,16 @@ TODO: demonstrate how default rules are overwritten.
 "
   ;; TMP: unused arg doc
   ;;; TODO:  - pitch-domains (property list): specifying a pitch domain in the Cluster Engine format for every part in score, using the same instrument ID. If no domain is specified for a certain part then a chromatic domain of the ambitus of the input part is automatically generated.
- ;;
- ;; Inefficient, but to ensure that time sigs of score are used, and not time sigs of harmonies or scales, which may not be correct
- (let ((score-duration (score-duration score)))
+  ;;
+  ;; Inefficient, but to ensure that time sigs of score are used, and not time sigs of harmonies or scales, which may not be correct
+  ;; TODO: Understand again: Why can the score be longer than underlying harmony -- should this not be the other way round, or both always must be equal?
+  (let ((score-duration (score-duration score)))
     (assert (>= score-duration
                 (total-duration harmonies)))
     (when scales
       (assert (>= score-duration
                   (total-duration scales)))))
- (let* (;; unify part durations: shorter parts looped until they have same length as longest part of score
+  (let* (;; unify part durations: shorter parts looped until they have same length as longest part of score
          (unified-full-score-aux (multiple-value-list
 				  (unify-part-durations
 				   (append score
@@ -349,6 +386,7 @@ TODO: demonstrate how default rules are overwritten.
 					   (when scales
 					     (list :scales scales))))))
 	 (unified-full-score (first unified-full-score-aux))
+	 ;; TODO: Why compute again -- see score-duration above...
 	 (score-dur (second unified-full-score-aux))
 	 (unified-score (remove-parts '(:harmonies :scales) unified-full-score))
 	 (unified-harmonies (get-part-omn :harmonies unified-full-score))
@@ -403,7 +441,7 @@ TODO: demonstrate how default rules are overwritten.
 	       (time-sigs (PWGL-time-signatures 
 			   (get-time-signature first-part)))
 	       (csp (list
-		     ;; min number of variables with much upper headroom (multiplied with 2), because search is stopped by stop rule
+		     ;; max number of variables with much upper headroom (multiplied with 2), because search is stopped by stop rule
 		     (* 2 (apply #'max (cons (length time-sigs) (mapcar #'count-notes parts))))
 		     ;; rules
 		     (let (;; position of all voices in score starting from 2 after scales and chords
@@ -463,7 +501,7 @@ TODO: demonstrate how default rules are overwritten.
 			,@(mappend #'(lambda (instr)
 				       (let* ((part (getf unified-score instr))
 					      (pitch-dom-extension-spec (getf pitch-domain-extension-specs instr))
-					      (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for aevery instrument, but that should be fine here
+					      (raw-ambitus (if pitch-domains ; inefficient -- checks pitch-ambitus for every instrument, but that should be fine here
 							       (mapcar #'pitch-to-integer (getf pitch-domains instr))
 							       (if
 								(omn :pitch (flatten part))
@@ -500,7 +538,8 @@ TODO: demonstrate how default rules are overwritten.
 							    limited-pitch-dom-ambitus)))
 					   )))
 				   (get-instruments unified-score))
-			))))
+			)
+		     :forward-rule forward-rule)))
 	  (when print-csp?
 	    (pprint csp))
 	  (if unprocessed-cluster-engine-result?
@@ -520,13 +559,12 @@ TODO: demonstrate how default rules are overwritten.
 				    `(,score-dur _)	       
 				    ))))
 		(mix-scores result-score
-			    `(;; ambitus-filter used to split into treble and bass staffs of notation for better readability 
-			      :chords-bass ,(ambitus-filter '(c-1 b3) harmonies)
-			      :chords-treble ,(ambitus-filter '(c4 g9) harmonies)
-			      ,@(when scales
-				  (list :scales-bass (chords-to-gracenotes (ambitus-filter '(c-1 b3) scales))
-					:scales-treble (chords-to-gracenotes (ambitus-filter '(c4 g9) scales) nil)))
-			      ))
+			    (list*  ; ambitus-filter used to split into treble and bass staffs of notation for better readability 
+			     :chords-treble (ambitus-filter '(c4 g9) harmonies)
+			     :chords-bass (ambitus-filter '(c-1 b3) harmonies)
+			     (when scales
+			       (list :scales-treble (chords-to-gracenotes (ambitus-filter '(c4 g9) scales) nil)
+				     :scales-bass (chords-to-gracenotes (ambitus-filter '(c-1 b3) scales))))))
 		))))))
 
 
