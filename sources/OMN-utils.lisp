@@ -10,6 +10,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; TODO: allow to add additional information to sequence, like the metric weight of notes
 (defun map-events (fn sequence &key (test #'(lambda (&rest args) (declare (ignore args)) T)) flat section exclude)
   "Every event for which the function `test' returns true is transformed by the function `fn'. In the background, sequence is transformed into a list of events, where each note is represented by a list of the parameters length, pitch, velocity, and articulation. 
 
@@ -191,14 +192,17 @@
 |#
 
 
-
 (defun copy-time-signature (music-with-time-signature music-to-rebar)
-  "Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'."
+  "Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'. If music-with-time-signature is a flat list, no rebarring happens."
   ;; only rebar if music-with-time-signature is nested 
   (if (every #'listp music-with-time-signature)
     (omn-to-time-signature music-to-rebar
                            (get-time-signature music-with-time-signature))
     music-to-rebar))
+#|
+(copy-time-signature '((q c4 d4) (q e4 f4)) '(q c4 d4 e4 f4))
+(copy-time-signature '(q c4 d4 q e4 f4) '(q c4 d4 e4 f4))
+|#
 
 
 (defun map-section (function sequence
@@ -283,7 +287,7 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
   - fun: a function expecting a parameter sequence of given type. It is sufficient to support only a flat input list, support for nested lists is added implicitly.
   - flat: whether or not `fun' expects a flat input list.
   - swallow: if `type' is :length, and `fun' turns notes into rests, the argument `swallow' sets whether the pitches of these notes should be shifted to the next note or omitted (swallowed). `swallow' is ignored if notation is a plain parameter list (e.g., a 
-  - section: only process the sublists (bars) of the positions given to this argument. Arg is ignored if `flat' is T.
+  - section: only process the sublists (bars) at the positions given to this argument. Arg is ignored if `flat' is T.
   - additional-args (list of args): `additional-args' allows implementing 'dynamic' arguments, i.e., transformations that change over the sublists of `notation' depending on a list of arguments instead of a plain value. If `additional-args' is nil, then `fun' expects parameter values directly. However, if it is a list, then `fun' expects a list where the parameter values are the first element, and `additional-args' (if `flat' is T) or an element thereof (if `flat' is NIL) the second element in the list expected by `fun'. 
 
 * Examples: 
@@ -347,7 +351,9 @@ This function is a generalised and somewhat more clean variant of the Opusmodus 
 
   "
   ;; (declare (optimize (debug 3)))
-  (if (and (notevery #'listp notation) (not flat)) 
+  ;; TODO: efficiency: should I assume consistent nesting and only test first list element?
+  (if (and (notevery #'listp notation) (not flat))
+      ;; TODO: efficiency: just (setf flat T), not calling function recursively.
       ;; If notation is not (consistently) nested then set flat to T
       (edit-omn type notation fun :flat T :swallow swallow :section section :additional-args additional-args)      
       (labels (;; function section-to-binary-better is like built-in section-to-binary, but ensures that resulting 
@@ -512,10 +518,23 @@ Currently, rests are simply not counted when estimating the position of a parame
 	    :swallow nil))
 
 
+(defun total-duration (sequence &optional float?)
+  "Returns the total duration (length) of `sequence', i.e. the sum of the length of all its notes and rests. 
+
+  If `float?' is true the result is a float.
+
+* Examples:
+  ;;; (total-duration '((h c4 q) (q h tie) (h.)))
+  ;;; => 9/4"
+  (let ((result (reduce #'+ (mapcar #'abs (omn :length (flatten-omn sequence))))))
+    (if float?
+      (* result 1.0)
+      result)))
+#|
 (defun total-duration (sequence)
   "Returns the total duration (sum of all note and rest values) of `sequence'."
   (reduce #'+ (mapcar #'abs (flatten (omn :length sequence))) :initial-value 0))
-
+|#
 ;; (total-duration '((-h q c4) (q. f4 e g4 q a4) (h. g4)))
 
 (defun flattened-length-adjust (duration sequence)
@@ -741,6 +760,8 @@ This function is now rather redundant, as Opusmodus automatically prints seed va
   "
   (print (if seed seed (rnd-range 1 999999))))
 
+
+;; TODO: This def is some overlap with tu:ensure-nested-list -- unify and replace all calls.
 (defun ensure-double-list (x)
   "Ensures that `x' is a duble-wrapped list. If not, a list (or two) are wrapped around it. 
   
