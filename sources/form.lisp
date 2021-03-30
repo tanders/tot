@@ -93,13 +93,14 @@ NOTE: The first note of sequence cannot be removed (turned into a rest) by conde
 ;;;           #'(lambda (dur pitch &rest other-args)  
 ;;;               (> (omn-encode dur) 1/4)))
 
-
-* Bugs:
-
-Currently, when first note does not meet the test, the result starts with a rest. It might be better to revise the function that in that case the first note is still preserved, as otherwise the result is too much changed compared with the input.
 "
-  (length-legato
-   (filter-notes-if test sequence :section section)))
+  (let* ((aux (filter-notes-if test (flatten sequence) :section section))
+	 (durs_orig (omn :length (flatten sequence)))
+	 (durs_aux (omn :length aux))
+	 (first-note-pos (position-if #'(lambda (dur) (>= dur 0))
+				      durs_orig)))
+    (setf (nth first-note-pos aux) (abs (omn-encode (nth first-note-pos aux))))
+    (copy-time-signature sequence (length-legato aux))))
 
 
 (defun section-id-seq (pairs)
