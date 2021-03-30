@@ -29,6 +29,8 @@
 
   ;;; (merge-articulations '(- -))
   ;;; => -  
+
+NOTE: Meanwhile there is a buildin function join-attributes, which replaces this function.
   "
   #|
   (assert (every #'articulationp arts)
@@ -79,7 +81,10 @@
 
 * Examples:
   ;;; (disassemble-articulations 'leg+ponte)
-  ;;; => (leg ponte)"  
+  ;;; => (leg ponte)
+
+NOTE: Meanwhile there is a buildin function disjoin-attributes, which replaces this function.
+"  
   #|
   (assert (articulationp art)
           (art)
@@ -94,6 +99,33 @@
  (split-string (symbol-name '|-7+3.14+16+1/3|) :separator "+")
 |#
 
+
+;; TODO: Arg arg test
+(defun attribute-substitution (new old list-of-attributes)
+  "Substitute all instances of `old' with `new' in `list-of-attributes'
+
+* Examples:
+  ;;; (attribute-substitution 'pizz 'arco '(ten+arco pizz arco))
+  => (ten+pizz pizz pizz)
+"
+  (mapcar (lambda (list) (join-attributes list)) 
+	  (substitute-map new old (mapcar (lambda (attr) 
+					    (disjoin-attributes attr))
+					  list-of-attributes))))
+
+
+(defun attribute-replace (new-old-list list-of-attributes) 
+  (mapcar (lambda (list) (join-attributes list)) 
+	  (replace-map new-old-list (mapcar (lambda (attr) 
+					      (disjoin-attributes attr))
+					    list-of-attributes))))
+#|
+(attribute-replace '((pizz arco) (arco pizz)) '(ten+arco pizz arco pizz+marc))
+=> (ten+pizz arco pizz arco+marc)
+
+(attribute-replace '((pizz arco) (arco pizz)) '(q c4 ten+arco e4 pizz f4 arco d4 pizz+marc))
+=> (q c4 ten+pizz e4 arco f4 pizz d4 arco+marc)
+|#
 
 ;;; TODO: support nested lists -- somehow store nesting structure, then process flattened list and apply nesting back
 (defun zip-articulations (&rest arts)
@@ -307,8 +339,8 @@ The symbol for each attribute starts with 'A_'
 ;;; TODO: add arg section (its a bit tricky...)
 (defun articulate-bars (sequence &key (accent 'ten) (default '-)
 				   (parameter :articulation)
-				   )
-  "Add articulations at the first notes of bars, e.g, a tenuto on every first beat, and staccato otherwise.
+				   (section NIL))
+  "Add articulations at the first notes of bars (sublists), e.g, a tenuto on every first beat, and staccato otherwise.
   
 * Arguments:
 
@@ -316,6 +348,9 @@ The symbol for each attribute starts with 'A_'
   - parameter (:articulation or :velocity): which parameter to use for the articulations 
   - accent (symbol): articulation to use on first notes of bars.
   - default (symbol): articulation to use for all other notes. 
+  - section (list of ints): position of sublists to process.
+
+  NOTE: with some rhythms and OMN input there seems to be some problem (too many accents), but workaround seems to be to use only rhythmic sequence (fractions).
 
 * Examples:
 
@@ -330,9 +365,16 @@ The symbol for each attribute starts with 'A_'
 	      (velocityp default)
 	      T))
   (let* ((new (gen-swallow (omn :length sequence)		
-			   (flatten (loop for bar in (span (length-rest-invert sequence)
-							   `(,default))
-				       collect (cons accent (rest bar))))))
+			   (flatten (let (;; Lists of default params
+					  (bars (span (length-rest-invert sequence)
+						      `(,default))))
+				      (loop
+					 for bar in bars
+					 for i upto (length bars)
+					 ;; do (break)
+					 collect (if (and section (not (member i section)))
+						     bar
+						     (cons accent (rest bar))))))))
 	 (new2 (case parameter
 		 ;; don't overwrite existing articulations
 		 (:articulation
@@ -341,9 +383,43 @@ The symbol for each attribute starts with 'A_'
 		      new))
 		 ;; but overwrite existing dynamics (velocities)
 		 (:velocity new))))
-    (omn-replace parameter new2 sequence)))
+    (case parameter
+      ;; Quick fix of omn-replace not handling ties properly with omn-replace-articulation
+      (:articulation (omn-replace-articulation new2 sequence))
+      (:velocity (omn-replace parameter new2 sequence)))
+    ))
 
- 
+;; TODO: Define this for flat list first and then call recursively for nested case
+;; ? TODO: handle param map-section with function `map-section'
+;; ? TODO: Automatically translate non-OMN sequences into a full OMN sequence (e.g., by adding the default pitch C4)?
+(defun omn-replace-articulation (new sequence) ;  &key (section)
+  "Tmp fix for `omn-replace' for articulations, which takes ties into account. As a quick fix, this function does not support the params `section' and `exclude', but it works also for nested sequences.
+
+NOTE: Function always returns a full OMN sequence, i.e., the default pitch c4 is added if no pitch is present in `sequence'."
+  (if (tu:nested-list? sequence)
+      (mapcar #'omn-replace-articulation new sequence)
+      (let* ((full-seq (if (and (lengthp (first sequence))
+				(every (lambda (x) (or (lengthp x) (articulationp x) (velocityp x)))
+				       sequence))
+			   ;; sequence lacks pitches
+			   (let ((seq-copy (copy-list sequence)))
+			     (push 'c4 (cdr seq-copy))
+			     seq-copy)
+			   sequence))
+	     (params (omn nil full-seq)))
+	(apply #'make-omn
+	       :articulation (zip-articulations (getf params :articulation) new)
+	       (tu:remove-property :articulation params)))))
+#|
+(omn-replace-articulation '(marc - -) '(q c4 mute q tie q))
+=> (Q C4 MUTE+MARC C4 TIE C4)
+
+(omn-replace-articulation '((marc) (marc) (marc)) '((q mute) (q tie) (q)))
+=> ((Q C4 MUTE+MARC) (Q C4 TIE+MARC) (Q C4 MARC))
+|#
+
+
+
 #|
 ;;; OLD:
 ;;; TODO:
