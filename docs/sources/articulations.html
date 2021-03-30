@@ -49,15 +49,15 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251940">
+<a href="articulations.html#_g339680">
 articulate-bars</a>
 </td>
 <td class="summary">
-sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation)</td>
+sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation) (section nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251936">
+<a href="articulations.html#_g339676">
 articulation-at-beginning</a>
 </td>
 <td class="summary">
@@ -65,7 +65,7 @@ articulation sequence <em>&amp;key</em> (default 'default)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251937">
+<a href="articulations.html#_g339677">
 articulation-at-end</a>
 </td>
 <td class="summary">
@@ -73,7 +73,7 @@ articulation sequence <em>&amp;key</em> (default 'default)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251938">
+<a href="articulations.html#_g339678">
 articulation-up-to-end</a>
 </td>
 <td class="summary">
@@ -81,7 +81,23 @@ articulation sequence <em>&amp;key</em> (default 'default)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251933">
+<a href="articulations.html#_g339673">
+attribute-replace</a>
+</td>
+<td class="summary">
+new-old-list list-of-attributes</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="articulations.html#_g339672">
+attribute-substitution</a>
+</td>
+<td class="summary">
+new old list-of-attributes</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="articulations.html#_g339671">
 disassemble-articulations</a>
 </td>
 <td class="summary">
@@ -89,7 +105,7 @@ art</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251935">
+<a href="articulations.html#_g339675">
 get-full-articulations</a>
 </td>
 <td class="summary">
@@ -97,7 +113,7 @@ sequence</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251932">
+<a href="articulations.html#_g339670">
 merge-articulations</a>
 </td>
 <td class="summary">
@@ -105,7 +121,15 @@ arts <em>&amp;key</em> (empty-articulations '(- default))</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251939">
+<a href="articulations.html#_g339681">
+omn-replace-articulation</a>
+</td>
+<td class="summary">
+new sequence</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="articulations.html#_g339679">
 text-attribute</a>
 </td>
 <td class="summary">
@@ -113,7 +137,7 @@ text-attribute</a>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="articulations.html#_g251934">
+<a href="articulations.html#_g339674">
 zip-articulations</a>
 </td>
 <td class="summary">
@@ -122,7 +146,7 @@ zip-articulations</a>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251932">
+<a id="_g339670">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -183,13 +207,14 @@ Examples: </h4>
     (merge-articulations '(- -)) 
      =&gt; -   </pre>
 <p>
-
+NOTE: Meanwhile there is a buildin function join-attributes, which replaces this function. 
+ 
  </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251933">
+<a id="_g339671">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -220,11 +245,74 @@ Examples: </h4>
 <pre>
     (disassemble-articulations 'leg+ponte) 
      =&gt; (leg ponte) </pre>
+<p>
+NOTE: Meanwhile there is a buildin function disjoin-attributes, which replaces this function. 
+ </p>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251934">
+<a id="_g339672">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+attribute-substitution&nbsp;&nbsp;</td>
+<td class="lambda-list">
+new old list-of-attributes</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Substitute all instances of `old' with `new' in `list-of-attributes' 
+ </p>
+<p>
+</p>
+<h4>
+Examples: </h4>
+<pre>
+    (attribute-substitution 'pizz 'arco '(ten+arco pizz arco)) </pre>
+<p>
+=&gt; (ten+pizz pizz pizz) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g339673">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+attribute-replace&nbsp;&nbsp;</td>
+<td class="lambda-list">
+new-old-list list-of-attributes</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g339674">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -264,7 +352,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251935">
+<a id="_g339675">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -306,7 +394,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251936">
+<a id="_g339676">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -343,7 +431,7 @@ BUG: May not work for OMN sequence.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251937">
+<a id="_g339677">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -393,7 +481,7 @@ May not work for OMN sequence.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251938">
+<a id="_g339678">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -427,7 +515,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251939">
+<a id="_g339679">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -484,7 +572,7 @@ All these examples are not working.
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251940">
+<a id="_g339680">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -497,7 +585,7 @@ All these examples are not working.
 <td class="symbol-name">
 articulate-bars&nbsp;&nbsp;</td>
 <td class="lambda-list">
-sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation)</td>
+sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation) (section nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -506,7 +594,7 @@ sequence <em>&amp;key</em> (accent 'ten) (default '-) (parameter :articulation)<
 </div>
 <div class="doc-body">
 <p>
-Add articulations at the first notes of bars, e.g, a tenuto on every first beat, and staccato otherwise. 
+Add articulations at the first notes of bars (sublists), e.g, a tenuto on every first beat, and staccato otherwise. 
  
  </p>
 <h4>
@@ -534,7 +622,17 @@ accent (symbol): articulation to use on first notes of bars.
 default (symbol): articulation to use for all other notes. 
  </p>
 </li>
+<li>
+<p>
+section (list of ints): position of sublists to process. 
+ </p>
+</li>
 </ul>
+<p>
+NOTE: with some rhythms and OMN input there seems to be some problem (too many accents), but workaround seems to be to use only rhythmic sequence (fractions). 
+ </p>
+<p>
+</p>
 <h4>
 Examples: </h4>
 <p>
@@ -556,10 +654,41 @@ An example with a tie: existing articulations are preserved. However, in that ca
  </p>
 </div>
 </div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g339681">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+omn-replace-articulation&nbsp;&nbsp;</td>
+<td class="lambda-list">
+new sequence</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Tmp fix for `omn-replace' for articulations, which takes ties into account. As a quick fix, this function does not support the params `section' and `exclude', but it works also for nested sequences. 
+ </p>
+<p>
+NOTE: Function always returns a full OMN sequence, i.e., the default pitch c4 is added if no pitch is present in `sequence'. 
+ </p>
+</div>
+</div>
 </div>
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2019-01-07 11:04:35</div>
+- 2021-03-30 20:31:35</div>
 </body>
 </html>

@@ -49,7 +49,7 @@ Method summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251951">
+<a href="constraints.html#_g339692">
 _chords-to-gracenotes</a>
 </td>
 <td class="summary">
@@ -63,15 +63,15 @@ Function summary</th>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251950">
+<a href="constraints.html#_g339691">
 chords-&gt;domain</a>
 </td>
 <td class="summary">
-chords <em>&amp;key</em> (transpositions '(0)) preview?</td>
+chords <em>&amp;key</em> (transpositions '(0)) scale (scale-tone-comparison #'pitch-&gt;pc) chord-size-to-check preview?</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251952">
+<a href="constraints.html#_g339693">
 chords-to-gracenotes</a>
 </td>
 <td class="summary">
@@ -79,7 +79,7 @@ sequence <em>&amp;optional</em> (root? t)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251947">
+<a href="constraints.html#_g339688">
 cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -87,7 +87,7 @@ cluster-engine-score <em>&amp;key</em> (instruments nil)</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251948">
+<a href="constraints.html#_g339689">
 copy-cluster-engine-pitches-to-score</a>
 </td>
 <td class="summary">
@@ -95,7 +95,7 @@ score cluster-engine-score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251949">
+<a href="constraints.html#_g339690">
 preview-cluster-engine-score</a>
 </td>
 <td class="summary">
@@ -103,16 +103,16 @@ score</td>
 </tr>
 <tr class="table-row-color">
 <td class="summary-name">
-<a href="constraints.html#_g251953">
+<a href="constraints.html#_g339694">
 revise-score-harmonically</a>
 </td>
 <td class="summary">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (pitch-domain-limits nil) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (pitch-domain-limits nil) (rules :default) (additional-rules nil) (split-score? nil) (forward-rule #'cluster-engine:fwd-rule_left-to-right_type-tie-breaking) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
 </tr>
 </table>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251951">
+<a id="_g339692">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -156,7 +156,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251947">
+<a id="_g339688">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -218,7 +218,7 @@ Examples: </h4>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251948">
+<a id="_g339689">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -249,7 +249,7 @@ Arguments: </h4>
 <ul>
 <li>
 <p>
-score (headerless score): see <a href="score.html#_g251836">
+score (headerless score): see <a href="score.html#_g339572">
 preview-score</a>
 for format description of headerless scores. 
  </p>
@@ -273,7 +273,7 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251949">
+<a id="_g339690">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -301,7 +301,7 @@ Just shorthand for (preview-score (cluster-engine-score score))
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251950">
+<a id="_g339691">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -314,7 +314,7 @@ Just shorthand for (preview-score (cluster-engine-score score))
 <td class="symbol-name">
 chords-&gt;domain&nbsp;&nbsp;</td>
 <td class="lambda-list">
-chords <em>&amp;key</em> (transpositions '(0)) preview?</td>
+chords <em>&amp;key</em> (transpositions '(0)) scale (scale-tone-comparison #'pitch-&gt;pc) chord-size-to-check preview?</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -323,22 +323,63 @@ chords <em>&amp;key</em> (transpositions '(0)) preview?</td>
 </div>
 <div class="doc-body">
 <p>
-Translates `chords' (list of OMN chords) and `transpositions' (list of ints) into a domain of chords for Cluster Engine (list of lists of MIDI note numbers), where every given spectrum is contained in all given transpositions. 
- </p>
-<p>
-If `preview?' is T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus. 
+Translates `chords' and `transpositions' into a domain of chords for Cluster Engine (list of lists of MIDI note numbers), where every given chord/spectrum is contained in all given transpositions. 
  </p>
 <p>
 </p>
 <h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+chords (list of OMN chords): the chords to use. 
+ </p>
+</li>
+<li>
+<p>
+transpositions (list of ints): transposition intervals for all chords. For example, if `transpositions' is (gen-integer 0 11), then `chords' are quasi chord types of which all 12-ET transpositions are considered (before scale filtering). 
+ </p>
+</li>
+<li>
+<p>
+scale (list of OMN pitches): list of OMN pitches used for filtering the result. All resulting chord PCs must be contained in the given scale. 
+ </p>
+</li>
+<li>
+<p>
+scale-tone-comparison (unary function): function for transforming each chord and scale tone before checken. The default results in checking that the chord PCs fit into the scale PCs. 
+ </p>
+</li>
+<li>
+<p>
+chord-size-to-check (int): if given, only the `chord-size-to-check' lowest chord pitches are checked whether they fit into scale. 
+ </p>
+</li>
+<li>
+<p>
+preview? (Boolan): if T, the resulting domain is returned as list of OMN chords for previewing in Opusmodus. 
+ </p>
+</li>
+</ul>
+<h4>
 Examples: </h4>
 <pre>
-    (chords-&gt;domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4)) </pre>
+    (chords-&gt;domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4) :preview? T) </pre>
+<p>
+Ensure that the resulting chords fit into the given scale. 
+ </p>
+<pre>
+    (chords-&gt;domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4) :scale '(c4 d4 e4 fs4 g4 a4 b4) :preview? T) </pre>
+<p>
+Only the first chord pitch should fit into the given scale. 
+ </p>
+<pre>
+    (chords-&gt;domain '(c4e4g4 b3d4g4) :transpositions '(0 2 4) :scale '(c4 d4 e4 fs4 g4 a4 b4) :chord-size-to-check 1 :preview? T) </pre>
 </div>
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251952">
+<a id="_g339693">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -377,7 +418,7 @@ root (OMN pitch): can be overwritten in case scales are notated on separate staf
 </div>
 <div class="defun">
 <div class="defunsignatures">
-<a id="_g251953">
+<a id="_g339694">
 </a>
 <table cellpadding="0" cellspacing="0" width="100%">
 <colgroup span="3">
@@ -390,7 +431,7 @@ root (OMN pitch): can be overwritten in case scales are notated on separate staf
 <td class="symbol-name">
 revise-score-harmonically&nbsp;&nbsp;</td>
 <td class="lambda-list">
-score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (pitch-domain-limits nil) (rules :default) (additional-rules nil) (split-score? nil) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
+score harmonies scales <em>&amp;key</em> (constrain-pitch-profiles? t) (constrain-pitch-intervals? t) (pitch-domains nil) (pitch-domains-extension 2) (pitch-domain-limits nil) (rules :default) (additional-rules nil) (split-score? nil) (forward-rule #'cluster-engine:fwd-rule_left-to-right_type-tie-breaking) (length-adjust? t) (print-csp? nil) (unprocessed-cluster-engine-result? nil)</td>
 <td class="symbol-type">
 &nbsp;[Function]</td>
 </tr>
@@ -408,7 +449,7 @@ Arguments: </h4>
 <ul>
 <li>
 <p>
-score (headerless score): See <a href="score.html#_g251836">
+score (headerless score): See <a href="score.html#_g339572">
 preview-score</a>
 for its format. NOTE: the total number of parts is limited to 8 (?) by internal Cluster Engine limitations. 
  </p>
@@ -435,14 +476,21 @@ constrain-pitch-intervals? (Boolean or int): Whether to constrain the pitch inte
 </li>
 <li>
 <p>
-pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format: (&lt;part1-name-keyword&gt; (&lt;lowest-pitch&gt; &lt;highest-pitch&gt;) ...), where pitches are Opusmodus pitch symbols. For example, if your `score' specifies the first and second violin with the keywords <span class="keyword">
+pitch-domains: Specifies the chromatic pitch domain of every part in `score' in the following format, where pitches are Opusmodus pitch symbols: 
+ </p>
+<pre>
+    (&lt;part1-name-keyword&gt; (&lt;lowest-pitch&gt; &lt;highest-pitch&gt;) ...) </pre>
+<p>
+For example, if your `score' specifies the first and second violin with the keywords <span class="keyword">
 :vl1 </span>
 and <span class="keyword">
 :vl2, </span>
-`pitch-domains' could be (:vl1 (g3 c6) <span class="keyword">
-:vl2 </span>
-(g3 c6)). 
- By default, the ambitus of each part of `score' is used to automatically deduce the chromatic pitch domain for that part. When overwriting this default, the pitch domain of all parts must be given explicitly. 
+`pitch-domains' could be as follows 
+ </p>
+<pre>
+    (:vl1 (g3 c6) :vl2 (g3 c6)).      </pre>
+<p>
+By default, the ambitus of each part of `score' is used to automatically deduce the chromatic pitch domain for that part. When overwriting this default, the pitch domain of all parts must be given explicitly. 
  </p>
 </li>
 <li>
@@ -450,17 +498,30 @@ and <span class="keyword">
 pitch-domains-extension: 
  If 0, the pitch domain for each part is the ambitus of pitches in the respective part of `score' (including all semitones within that ambitus). 
  If a positive integer, the pitch domain of each part is the respective ambitus extended by this number of semitones both up an down. For example, if `pitch-domains-extension' is 2, and the ambitus of some part in `score' ranges from C4 to C5, then the pitch domain for that part ranges chromatically from Bb3 (2 semitones down at the lower end) to D5 (2 semitones up at the upper end). 
- A pitch domain extension can also be specified for each part separately in either of the following formats: (&lt;part1-name-keyword&gt; &lt;extension&gt; ...) or (&lt;part1-name-keyword&gt; (&lt;lower-extension&gt; &lt;upper-extension&gt;) ...). For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write (:vln1 (0 7)), if you are using <span class="keyword">
+ A pitch domain extension can also be specified for each part separately in either of the following formats: 
+ </p>
+<pre>
+    (&lt;part1-name-keyword&gt; &lt;extension&gt; ...)  
+     or (&lt;part1-name-keyword&gt; (&lt;lower-extension&gt; &lt;upper-extension&gt;) ...) </pre>
+<p>
+For example, to specify that the pitch domain of the 1st violin is extended by 0 semitones at the lower, but 7 semitones at the higher end you would write the following, if you are using <span class="keyword">
 :vln1 </span>
-as keyword in `score'. 
- When specifying a pitch domain extension for any part explicitly, then extensions for all parts must be given explicitly. 
+as keyword in `score': 
+ </p>
+<pre>
+    (:vln1 (0 7)) </pre>
+<p>
+When specifying a pitch domain extension for any part explicitly, then extensions for all parts must be given explicitly. 
  </p>
 </li>
 <li>
 <p>
-pitch-domain-limits: If set, it specifies absolute limits of the pitch domain for some or all parts, which restrict the domain otherwise specified with the pitches of `score' and `pitch-domains-extension'. This is useful, e.g., to restrict the pitch of a part to the playable range of instruments. This argument in the following format: 
- (&lt;part1-name-keyword&gt; (&lt;lowest-pitch&gt; &lt;highest-pitch&gt;) ...), where pitches are Opusmodus pitch symbols or Opusmodus pitch integers (but not MIDI integers!). 
- When specifying a pitch domain limit for any part, then a limit for all parts must be given. 
+pitch-domain-limits: If set, it specifies absolute limits of the pitch domain for some or all parts, which restrict the domain otherwise specified with the pitches of `score' and `pitch-domains-extension'. This is useful, e.g., to restrict the pitch of a part to the playable range of instruments. This argument in the following format, where pitches are Opusmodus pitch symbols or Opusmodus pitch integers (but not MIDI integers!): 
+ </p>
+<pre>
+    (&lt;part1-name-keyword&gt; (&lt;lowest-pitch&gt; &lt;highest-pitch&gt;) ...) </pre>
+<p>
+When specifying a pitch domain limit for any part, then a limit for all parts must be given. 
  </p>
 </li>
 <li>
@@ -478,7 +539,9 @@ additional-rules (list of cluster-engine rule instances): convenience argument t
 </li>
 <li>
 <p>
-split-score? (Boolean or more complex representation, see below): Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. 
+split-score? (Boolean or more complex representation, see below): 
+ NOTE: This argument is likely now redundant with the argument forward-rule and its default value. 
+ Feature that can speed up the search for longer scores. If true, the search is performed on score sections one by one. 
  If `split-score?' is 
  </p>
 </li>
@@ -509,6 +572,11 @@ A list '(:at-bar-boundaries &lt;list of integers&gt;), the score is split at the
  </p>
 </li>
 </ul>
+</li>
+<li>
+<p>
+forward-rule (keyword or function): Argument forward-rule for ce::clusterengine specifying its search strategy (variable ordering). 
+ </p>
 </li>
 <li>
 <p>
@@ -614,6 +682,6 @@ TODO: demonstrate how default rules are overwritten.
 <div class="cludg-footer">
 Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
 CLDOC</a>
-- 2019-01-07 11:04:35</div>
+- 2021-03-30 20:31:35</div>
 </body>
 </html>
