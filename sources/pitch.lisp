@@ -44,7 +44,7 @@
 ;;; ?? TODO: revise for actual Opusmodus chords, and dynamic use for (possibly nested) lists of chords and pitches
 ;; Inspired by PWGL library FDSDB_XXth_CT
 (defun chord-multiplication (chord1 chord2)
-	 "Boulez's multiplication of chords. The intervals of `chord1' are built over every pitch of `chord2'.
+  "Boulez's multiplication of chords. The intervals of `chord1' are built over every pitch of `chord2'.
 
 * Examples:
 
@@ -56,10 +56,10 @@ Over every pitch of the C-major triad (chord2) the fifths of chord1 is created.
 
 Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 "
-	 (mapcar #'MIDI-to-pitch 
-		 (remove-duplicates
-		  (loop for p in (mapcar #'pitch-to-MIDI chord2)
-		     append (tu:dx->x (tu:x->dx (mapcar #'pitch-to-MIDI chord1)) p)))))
+  (mapcar #'MIDI-to-pitch 
+	  (remove-duplicates
+	   (loop for p in (mapcar #'pitch-to-MIDI chord2)
+	      append (tu:dx->x (tu:x->dx (mapcar #'pitch-to-MIDI chord1)) p)))))
 
 
 ;;; ?? TODO: revise for actual Opusmodus chords, and dynamic use for (possibly nested) lists of chords and pitches
@@ -84,7 +84,7 @@ Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 
 Boulez, Pierre (1963) Musikdenken heute. Schott's Söhne, Mainz.
 "
-  (let ((MIDI-pitches (mapcar #'pitch-to-MIDI chord)))
+  (let ((MIDI-pitches (mapcar #'pitch-to-MIDI pitches)))
     (mapcar #'MIDI-to-pitch 
 	    (if round
 		(mapcar #'round
@@ -139,7 +139,7 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun spectra-transpositions-fitting-in-scale (spectra scale)
-  "Function for generating a chord/spectral domain. Returns all transpositions of the given spectral that fit in the given scale (i.e., all their pitch classes are contained in the scale).
+  "Function for generating a chord/spectral domain. Returns all transpositions of the given spectra that fit in the given scale (i.e., all their pitch classes are contained in the scale).
 
 * Arguments:
   - spectra (OMN chords): a list of untransposed spectra  
@@ -222,6 +222,26 @@ Series of conferences by Giacomo Manzoni at Fiesole (Florence, Italy) School of 
       result)))
 
 
+(defun rotate-parameter (type n sequence &key section flat)
+  "A variant of Openmusic's `gen-rotate` for rotating individual parameters (e.g., the pitch).
+
+* Arguments:
+  - type (:length, :pitch, :velocity, :duration, or :articulation): the musical parameter to rotate.
+  - n (positive or negative int; alternatively :left or :right): how many positions to rotate.
+  - sequence: OMN sequence, can be nested.
+  
+* Examples:
+
+;;; (rotate-parameter :pitch -1 '((q f3 q ab3 e c4 bb3 ab3 g3)))
+
+NB: Openmusic's `pitch-rotate` does something rather different.
+"
+  (edit-omn type sequence
+	    (lambda (params) (gen-rotate n params))
+	    :section section
+	    :flat flat))
+
+
 (defun pitch-retrograde-omn (sequence &key (flat T))
   "My version of pitch-retrograde that is working until the original is fixed for OMN expressions with flattened input."
   (edit-omn :pitch sequence 
@@ -290,16 +310,26 @@ Contrast: `pitch-invert' inverts around first note of `sequence'.
 Processing of full OMN sequences supported.
 ;;; (invert-in-ambitus '((q c3 ff snap+gliss q g3 cue) (-e s e3 > pizz gs3 > pizz g3 > pizz e3 > pizz eb3 > pizz gs3 p pizz) (h c4 f pizz)))
 "
-  (pitch-transpose 
-   (- (tu:last-element (get-ambitus sequence))
-      (pitch-to-integer 
-       ;; inefficient: whole sequence processed, while actually I only need first note, 
-       ;; but I currently don't have way to extract first note.
-       (let ((flat-seq (flatten sequence)))
-         (first (if (every #'pitchp flat-seq)
-                  flat-seq
-                  (omn :pitch flat-seq))))))
-   (pitch-invert sequence :flatten T)))
+  (ambitus-field (get-ambitus sequence) (pitch-invert sequence))
+  ;; (pitch-transpose 
+  ;;  (- (find-best-if (get-ambitus sequence) #'> :key #'abs)
+  ;;     (pitch-to-integer 
+  ;;      ;; inefficient: whole sequence processed, while actually I only need first note, 
+  ;;      ;; but I currently don't have way to extract first note.
+  ;;      (let ((flat-seq (flatten sequence)))
+  ;;        (first (if (every #'pitchp flat-seq)
+  ;;                 flat-seq
+  ;;                 (omn :pitch flat-seq))))))
+  ;;  (pitch-invert sequence :flatten T))
+  )
+
+#|
+(invert-in-ambitus '((-q f3 -q c3)))
+(invert-in-ambitus '((q g3 d4 b3)))
+|#
+
+
+
 
 
 ;;; TODO: 
@@ -344,7 +374,6 @@ The input `sequence' for this function could be generated, e.g., with the functi
       result)))
 
 
-
 ;;; TODO:
 ;; - consider rewriting using map-events -- much shorter then
 ;; - add args for number of trill notes (e.g., trill in triplets)
@@ -352,7 +381,7 @@ The input `sequence' for this function could be generated, e.g., with the functi
   "Increases rhythmic interest by subdividing all notes that meet the function test and turning these into a trill.
 
 * Arguments:
-  - sequence: nested OMN sequence
+  - sequence: nested OMN sequence (if sequence is not nested, an additional list is implicitly thrown around it)
   - test: function expecting four arguments of a given note, its length, pitch, velocity and articulation.
   - interval: integer specifying size and direction of trill interval (positive is up, negative is down).
   - ignore-articulations: list of articulations not to repeat at inserted notes.
@@ -361,21 +390,23 @@ The input `sequence' for this function could be generated, e.g., with the functi
   ;;; (trill-selected-notes '((q c4 e e) (q d4 e e)) (make-is-trill-length? 'e))
   ;;; => ((q c4 mf 1/16 c4 mf 1/16 d4 mf 1/16 c4 mf 1/16 d4 mf) (q d4 mf 1/16 d4 mf 1/16 e4 mf 1/16 d4 mf 1/16 e4 mf))
   "
-  (let ((remove-articulations (flatten (mapcar #'disassemble-articulations (tu:ensure-list ignore-articulations)))))
-    (loop for bar in (single-events sequence)
-       collect (loop for (l p v a) in bar
-		  append (remove nil 
-				 (cond 
-				   ((length-restp l) (list l))
-				   ((funcall test l p v a) 
-				    (let ((half-l (/ (omn-encode l) 2))) 
-				      (list half-l p v a
-					    half-l (first (pitch-transpose interval (list p))) v
-					    (merge-articulations
-					     (reduce #'(lambda (list art) (remove art list))
-						     '(marc ten) :initial-value (disassemble-articulations a)))
-					    )))
-				   (T (list l p v a))))))))
+  (let* ((remove-articulations (tu:mappend #'disassemble-articulations (tu:ensure-list ignore-articulations)))
+	 (flat-sequence (flatten sequence))
+	 (result (loop for (l p v a) in (single-events flat-sequence)
+		    append (remove nil 
+				   (cond 
+				     ((length-restp l) (list l))
+				     ((funcall test l p v a) 
+				      (let ((half-l (/ (omn-encode l) 2))) 
+					(list half-l p v a
+					      half-l (first (pitch-transpose interval (list p))) v
+					      (merge-articulations
+					       (reduce #'(lambda (list art) (remove art list))
+						       remove-articulations
+						       :initial-value (disassemble-articulations a)))
+					      )))
+				     (T (list l p v a)))))))
+    (copy-time-signature sequence result)))
 
 
 (defun make-is-trill-length? (length)
