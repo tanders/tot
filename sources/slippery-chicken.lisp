@@ -176,12 +176,15 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+#| ;; Don't import any further packages into the already very busy OM package
 (in-package :om)
 
 ;; not sure why this is necessary
 (unintern 'fibonacci-transition)
 
 (use-package :sc :om)
+|#
+
 
 #|
 (sc:fibonacci-transition 35 0 1)
