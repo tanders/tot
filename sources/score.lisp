@@ -151,8 +151,18 @@ But this is not (instead, multiple bars are interpreted as separate parts):
     :layout ((:bracket
 	      ,(violin-layout 'vln :flexible-clef t)
 	      ,(violoncello-layout 'vlc :flexible-clef t)))
-    :time-signature ((4 4 1)))
+    ;; :time-signature ((4 4 1))
+    ;; :temperament *current-temperament*
+    )
   "Global score settings used by `preview-score'. The format is a plist where keys are the instrument labels, and values a list with the actual settings. The format is the same as the header settings for `def-score' with keywords like :title, :key-signature etc.")
+
+
+(defun update-preview-score-tempo (tempo)
+  "Sets the tempo in `*default-preview-score-header*` to `tempo."
+  (setf *default-preview-score-header*
+	(tu:update-property *default-preview-score-header*
+			    :tempo tempo)))
+
 
 (defparameter *preview-score-return-value*
   :headerless-score 
@@ -162,15 +172,58 @@ But this is not (instead, multiple bars are interpreted as separate parts):
   - :headerless-score - the input score to preview-score
   - :full-score - the full def-score expression generated
   - :score - the resulting score object")
+ 
 
+;; collect only layouts of instruments actually present in score
+;; TODO: remove also unused parts in brace etc groups
+(defun _collect-present-layouts (layouts score-instruments)
+  ;; (break)
+  (list
+   (tu:mappend  ;; all return values listed -- nils removed by append
+    #'(lambda (spec)
+        ;; (break "Break lambda in")
+        (cond (;; recursion in case of groups
+	   (and (listp spec)
+	        (member (first spec)
+		    '(:brace :bracket :square)))
+	   ;; (break "Break group")
+	   (let ((collected-layouts (_collect-present-layouts (rest spec) score-instruments)))
+	     ;; (break "Break after recursive collect-present-layouts call")
+	     ;; remove complete group if all its instruments were removed
+	     (unless
+	         ;; only naming details left like (:name "Organ" :abbr "Org.")
+	         (every #'(lambda (x) (or (keywordp x) (stringp x)))
+		    collected-layouts)
+	       (list (cons (first spec) collected-layouts)))))
+	  (;; instrument spec like (:treble violin :name "Violin" :abbr "Vln.")
+	   (and (listp spec)
+	        (keywordp (first spec))
+	        (member (intern (symbol-name (second spec))
+			:keyword)
+		    score-instruments))
+	   ;; (break "Break instrumet")
+	   (list spec))							 
+	  (;; layouts was only a single instrument layout taken apart by mappend
+	   (or (symbolp spec) (stringp spec))
+	   ;; (break "Break symbols or string")
+	   (list spec))							 
+	  (;; everything else is removed by mappend
+	   T
+	   ;; (break "Break else")
+	   nil)))
+    layouts)))
 
-
-(rest (getf *default-preview-score-header* :layout))
-
-(defun preview-score (score &key (name 'test-score)    
+#||
+TODO: Define additional args corresponding to the args of `ps` that would overwrite values in `instruments` and `header`. Currently, this is done in a more complicated (and stateful!) way with settings like the folloiwng.
+(setf *default-preview-score-header*
+        (tu:update-properties *default-preview-score-header*
+                              :tempo 90))
+||#
+;; BUG: The layout is currently not controllable (and _collect-present-layouts not used), because there is something broken. For now, :layout nil results in some default layout without brackets etc. 
+(defun preview-score (score &key (name 'test-score)
 			      (instruments *default-preview-score-instruments*)
 			      (header *default-preview-score-header*)
-                              (display :window))
+                              (display  :assistant)) ; :window
   "Notates and plays a score in a format slightly simpler than expected by def-score, i.e., without its header. 
     
 * Arguments:
@@ -236,63 +289,33 @@ https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
 			  (length-span (/ max-part-dur (apply #'+ time-sig-lengths))				       
 				       time-sig-lengths)))
 	 |#
+	 (given-layouts (getf header :layout))
 	 (full-header (append (tu:update-properties  
 			       header
 			       ;;; TMP: not yet working, hence commented
 			       ;; :time-signature (list time-signature)
-			       :layout
-			       ;; collect only layouts of instruments actually present in score
-			       ;;; TODO: remove also unused parts in brace etc groups
-			       (labels ((collect-present-layouts (layouts)
-					  (tu:mappend  ;; all return values listed -- nils removed by append
-					   #'(lambda (spec)
-					       ;; (break "Break lambda in")
-					       (cond (;; recursion in case of groups
-						      (and (listp spec)
-							   (member (first spec)
-								   '(:brace :bracket :square)))
-						      ;; (break "Break group")
-						      (let ((collected-layouts (collect-present-layouts (rest spec))))
-							;; (break "Break after recursive collect-present-layouts call")
-							;; remove complete group if all its instruments were removed
-							(unless
-							    ;; only naming details left like (:name "Organ" :abbr "Org.")
-							    (every #'(lambda (x) (or (keywordp x) (stringp x)))
-								   collected-layouts)
-							  (list (cons (first spec) collected-layouts)))))
-						     (;; instrument spec like (:treble violin :name "Violin" :abbr "Vln.")
-						      (and (listp spec)
-							   (keywordp (first spec))
-							   (member (intern (symbol-name (second spec))
-									   :keyword)
-								   score-instruments))
-						      ;; (break "Break instrumet")
-						      (list spec))							 
-						     (;; layouts was only a single instrument layout taken apart by mappend
-						      (or (symbolp spec) (stringp spec))
-						      ;; (break "Break symbols or string")
-						      (list spec))							 
-						     (;; everything else is removed by mappend
-						      T
-						      ;; (break "Break else")
-						      nil)))
-					   layouts)))
-				 ;; wrap in list for append
-				 (list (collect-present-layouts (getf header :layout)))
-				 ))
+			       ;; BUG: tmp fix
+			       :layout nil)
+			       ;; :layout (_collect-present-layouts given-layouts score-instruments))
 			      ;; add default vals of required header args at end -- they are overwritten by args given
 			      (tu:remove-properties
 			       (tu:properties header)
 			       (list :key-signature 'atonal
 				     ;; By default, use implicit time signature of 1st part
 				     :time-signature (om:get-time-signature (second score))
+				     ;; Tempo is wrong, but there should be some settings to get it work
 				     :tempo 70))))
-	 ;; (break)
-	 (full-score 
-	  `(def-score ,name 
-	       ;; header args must be quoted...
-	       ,(mapcar #'(lambda (x) `',x)					
-			full-header)
+	 (full-score-params
+	  `(,name 
+	       ;; Some header args like lists and non-keyword symbols must be quoted because of eval later
+	       ,(alexandria:alist-plist
+		 (loop for (key . val) in (alexandria:plist-alist full-header)
+		    collect `(,key . ,(if (or (listp val)
+					      (and (symbolp val) (not (keywordp val))))
+					  `',val
+					  val))))
+	       ;; ,(mapcar #'(lambda (x) `',x)					
+	       ;; 		full-header)
 	     ,@(mapcar #'(lambda (part)
 			   (let ((part-symbol (first part))
 				 (part-omn (second part)))
@@ -300,12 +323,18 @@ https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
 				    :omn `(quote ,part-omn)
 				    (getf actual-instruments part-symbol))))
 		       (tu:plist->pairs (merge-equal-instrument-parts score))))))
-    ;; (break)
-    (eval full-score)
+    ;; (break) 
+    ;; TODO: I could avoid eval if preview-score would be a macro...
+    ;; Playback with microtonal temperament spread over multiple MIDI chans, but notation done normally
+    ;; TODO: dependency on library more-tots. Better unify the libraries again.
+    (eval (cons 'def-tempered-score full-score-params))
+    ;; (display-midi *last-score* :display display)
+    (audition-last-score)
+    ;; BUG: microtonal parts have multiple MIDI chans -- only take the first 
+    ;; (eval (cons 'def-score full-score-params))
     ; (audition-musicxml-last-score)
     (display-musicxml *last-score* :display display)
-    ; (display-midi *last-score* :display display)
-    (audition-last-score)
+    ;; TODO: *last-score* should be "normal" score without notation spread over multiple channels, but the multiple MIDI channels should be preserved
     (case *preview-score-return-value*
       (:headerless-score score)
       (:full-score full-score)
@@ -325,6 +354,12 @@ https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
 
 '(:vln ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3)))
+
+
+(DEF-TEMPERED-SCORE TEST-SCORE
+    (:TITLE "Opus magnum" :TEMPO 80 :LAYOUT 'NIL :KEY-SIGNATURE 'ATONAL :TIME-SIGNATURE '((1 4 1) (4 4 1) (3 4 1)))
+  (VLN :OMN '((Q G4) (Q. C5 E D5 Q E5 F5) (H. E5)) :PROGRAM 'VIOLIN :SOUND 'GM :channel '(1))
+  (VLC :OMN '((Q G3) (Q C4 B3 A3 G3) (H. C3)) :PROGRAM 'CELLO :SOUND 'GM :channel '(1)))
 
 |#
   
@@ -770,13 +805,14 @@ length-expansion-variant
 					    (omn parameter part-omn)
 					    part-omn)
 					'_ args)))))
+		 ;; (break)
                  (list instrument
 		       (if skipped?
 			   part-omn
 			   (if parameter
 			       (copy-time-signature part-omn
 						    (omn-replace parameter (flatten result) (flatten part-omn)))
-			       result))))) 
+			       result)))))
            (tu:plist->pairs score)))
 
 
@@ -844,9 +880,10 @@ length-expansion-variant
 #|
 (setf material '((-3h fs4 pp eb4 <) (q e4 < fs4 <) (3h gs4 mp> a4 > bb4 >) (q a4 pp -)))
 
-(number-instruments 
- `(:vl1 ,material
-   :vl1 ,(pitch-transpose 12 material)))
+(un-number-instruments
+ (number-instruments 
+  `(:vl1 ,material
+    :vl1 ,(pitch-transpose 12 material))))
 |#
 
 
@@ -856,23 +893,26 @@ length-expansion-variant
 	 (result (loop for (instrument omn) in pairs
 		      collect (list (first instrument) omn))))
     (tu:pairs->plist result)))
+ 
 
-
+; (find-best-if '((1) (4) (2)) #'> :key #'first)
+ 
 (defun _append-two-scores (score1 score2)
-  (let ((instruments (remove-duplicates 
-                      (append (get-instruments score1)
-                              (get-instruments score2))
-		      :test #'equal))
-        ;; dur of longest part in score 1 as rest
-        (score1-dur-rest (copy-time-signature 
-                          ;;; first instrument, assuming all instruments share same metric structure
-                          (second score1)
-                          (list (list (- (apply #'max (mapcar #'total-duration 
-                                                              (tu:at-odd-position score1))))))))
-        (score2-dur-rest (copy-time-signature 
-                          (second score2) ;;; first instrument
-                          (list (list (- (apply #'max (mapcar #'total-duration 
-                                                              (tu:at-odd-position score2)))))))))
+  (let* ((instruments (remove-duplicates 
+		       (append (get-instruments score1)
+			       (get-instruments score2))
+		       :test #'equal))
+	 (score1-longest-part (find-best-if (tu:at-odd-position score1) #'> :key #'total-duration))
+	 ;; Filled in rests for missing parts entirely based on longest part
+	 ;; dur of longest part in score 1 as rest
+	 (score1-dur-rest (copy-time-signature 
+			   score1-longest-part
+			   ;; Inefficient, total duration computed again
+			   (list (list (- (total-duration score1-longest-part))))))
+	 (score2-longest-part (find-best-if (tu:at-odd-position score2) #'> :key #'total-duration))
+	 (score2-dur-rest (copy-time-signature 
+			   score2-longest-part
+			   (list (list (- (total-duration score2-longest-part)))))))
     (tu:pairs->plist 
      (loop 
        for instr in instruments
@@ -903,6 +943,14 @@ length-expansion-variant
         :vl1 ,(pitch-transpose 12 material)))
 
 (get-instruments my-score)
+
+(_append-two-scores '(:melody ((q f4 leg+m1 q ab4 leg e c5 leg bb4 leg ab4 leg g4 leg))
+		      :bass ((-q f2 -q c3))
+		      ; :chords ((-w))
+		      )
+		     '(:melody ((q f4 leg+m1 q ab4 leg e c5 leg bb4 leg ab4 leg g4 leg))
+		      :bass ((-q f2 -q c3))
+		      :chords ((h f3ab3c4 -h))))
 |#
 
 
@@ -941,11 +989,11 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 
 (preview-score
  (append-scores `(:vl1 ,material
-                 :vl2 ,(gen-retrograde material :flatten T))
-               `(:vl1 ,material
-                 :vlc ,(gen-retrograde material :flatten T))
-               `(:vl2 ,material
-                 :vlc ,(gen-retrograde material :flatten T))))
+		       :vl2 ,(gen-retrograde material :flatten T))
+		`(:vl1 ,material
+		       :vlc ,(gen-retrograde material :flatten T))
+		`(:vl2 ,material
+		       :vlc ,(gen-retrograde material :flatten T))))
 
 ;; appending multiple scores with repeated part labels 
 (preview-score
@@ -955,8 +1003,36 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
   `(:vl1 ,material
     :vl1 ,(gen-retrograde material :flatten T))
   ))
+
+(append-scores
+ '(:MELODY ((Q F4 LEG+M1 Q AB4 LEG E C5 LEG BB4 LEG AB4 LEG G4 LEG)) 
+   :BASS ((-Q F2 -Q C3)) 
+   :CHORDS ((H F3AB3C4 -H)))
+ '(:MELODY ((Q F4 LEG+M1 Q AB4 LEG E C5 LEG BB4 LEG AB4 LEG G4 LEG)) :BASS ((-Q F2 -Q C3)) :CHORDS ((H F3AB3C4 -H)))
+ '((:EXTRA ((E F5 - CS5 - BB4 - FS4 -))) 
+   :MELODY ((Q B3 M1+LEG F4 LEG E C5 LEG GS4 LEG F4 LEG EB4 LEG)) 
+   :BASS ((-Q F2 -Q C3))))
+
+
 |#
 
+
+(defun extract-score-bars (score start &optional end)
+  "Extract the bars from `start` (0-based) to `end` (excluded) from `score. Like the function `subseq`, but for scores.
+
+* Examples:
+
+Extract the bars 1-2
+
+;;; (extract-score-bars '(:MELODY ((Q BB4 G4 Q. BB4 E C5 F) (Q EB5 FF C5 Q. D5 S BB4 F C5 FF)
+;;; 			           (Q BB4 F G4 FF Q. BB4 FFF E C5 FF) (Q AB4 C5 D5 F C5))
+;;; 		          :CHORDS ((-Q E BB3EB4G4 -H -E) (-Q E C4EB4AB4 F -H -E)
+;;; 			           (-Q E BB3EB4G4 MF -H -E) (-Q E BB3EB4G4 MP -H -E))
+;;; 		          :BASS ((Q BB2 -H Q EB3 F) (Q EB3 -H Q BB2 MF) (Q BB2 -H Q EB2 F)
+;;; 			         (Q BB2 MF -H Q F2 MP)))
+;;; 		         1 3)
+"
+  (map-parts-equally score #'subseq (list '_ start end)))
 
 
 ;;; TODO:
@@ -1026,8 +1102,12 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 
 
 
-(defun merge-equal-instrument-parts (score)
+(defun merge-equal-instrument-parts (score &optional (type :merge-voices))
   "If `score' contains multiple instances of the same instrument, then those multiple voices are merged into a polyphonic line (with the time signature taken from the first voice).
+
+* Arguments:
+  - score (headerless score): See {defun preview-score} for format description. All OMN sequences in the score are supposed to be double nested.
+  _ type (either :merge-voices or :list): Method how the voices are merged. :merge-voices calls the function `merge-voices' on the list of all OMN sequences of the same instrument, while :list instead lists all the OMN sequences, resulting in a third nesting level (as supported by `ps*'). 
 
 * Examples:
   ;;; (merge-equal-instrument-parts 
@@ -1050,7 +1130,9 @@ BUG: If one part misses hierarchic nesting in contrast to others, then this lati
 		  (list instrument (if other-omns
 				       (progn
 					 (setf already-processed-instruments (cons instrument already-processed-instruments))
-					 (apply #'merge-voices (cons omn other-omns)))
+					 (case type
+					   (:merge-voices (apply #'merge-voices (cons omn other-omns)))
+					   (:list (cons omn other-omns))))
 				       omn)))))))
 
 #| ; tests
@@ -1251,14 +1333,15 @@ NOTE: If `score` contains multiple parts with the same label, only the first is 
 
 * Examples:
 
-(get-part-omn  '(:vln 1)
-`((:vln 0) ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
-  (:vln 1) ,(pitch-transpose 12 '((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
-  :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
+;;; (get-part-omn  '(:vln 1)
+;;; `((:vln 0) ((q g4) (q. c5 e d5 q e5 f5) (h. e5))
+;;;   (:vln 1) ,(pitch-transpose 12 '((q g4) (q. c5 e d5 q e5 f5) (h. e5)))
+;;;   :vlc ((q g3) (q c4 b3 a3 g3) (h. c3))))
 "
   ;; (getf score instrument)
   (let ((pos (position instrument score :test #'equal)))
-    (nth (1+ pos) score)))
+    (when pos
+      (nth (1+ pos) score))))
 
 #|
 (get-part-omn  :vln
@@ -1481,6 +1564,11 @@ Split divisi strings into parts
   (mappend #'(lambda (instr)
 	       (list instr (getf score instr)))
 	   instruments-in-order))
+
+
+(defun bar-score (score time-sig)
+  "Bars all parts  in `score' according to `time-sig'."
+  (map-parts-equally score #'omn-to-time-signature `(_ ,time-sig)))
 
 
 (defun unify-time-signature (instrument-with-time-signature score)
