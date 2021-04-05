@@ -13,13 +13,15 @@
   :version "0.3"
   :serial t ;; the dependencies are linear.
   :components (; (:file "sources/package")
-	       ;; (:file "sources/macros")
-	       (:file "sources/slippery-chicken") ;; independent
+	       (:file "sources/macros")
+	       ;; (:file "sources/slippery-chicken") ;; independent
 	       (:file "sources/utils")
 	       (:file "sources/OMN-utils")
 	       (:file "sources/score")	       
-	       (:file "sources/rhythm")
+	       (:file "sources/rhythm")       
+	       (:file "sources/karnatic-rhythm")
 	       (:file "sources/pitch")
+	       (:file "sources/tuning")
 	       (:file "sources/velocity")
 	       (:file "sources/articulations")	       
 	       (:file "sources/PWGL")
@@ -30,9 +32,16 @@
 	       )
   ;; :if-feature :opusmodus
   ;;; !! NOTE: This code additionally depends on the commercial system Opusmodus
-  :depends-on ("string-tools"
+  :depends-on (;; https://common-lisp.net/project/alexandria/
+	       ;; Alexandria should already be loaded with Opusmodus
+	       "alexandria"
+	       ;; https://common-lisp.net/project/cl-utilities/
+	       "cl-utilities"
+	       ;; Libraries by Torsten Anders, see https://github.com/tanders?tab=repositories
+	       "string-tools"
 	       "ta-utilities"
 	       "fenv"
 	       "cluster-rules"
 	       ))
+
 
