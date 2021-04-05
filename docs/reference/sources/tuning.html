@@ -1,0 +1,2375 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="../cludg.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>
+tuning</title>
+</head>
+<body>
+<div id="navbar">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<colgroup span="3">
+<col width="0*"/>
+<col width="0*"/>
+<col width="1*"/>
+</colgroup>
+<tr>
+<td align="left" valign="baseline">
+<a href="pitch.html">
+Prev:&nbsp;pitch</a>
+<br/>
+<a href="velocity.html">
+Next:&nbsp;velocity</a>
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left" valign="baseline">
+<span class="upchain">
+<b>
+tuning</b>
+<br/>
+<a href="../index.html">
+Index</a>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class="cludg-doc-body">
+<h2>
+tuning
+</h2>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Constant summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342900">
++edo-prime-octave-offsets+</a>
+</td>
+<td class="summary">
+(loop for prime in +primes+ collect (round (log (/ prime (ji-pc-ratio prime)) 2)))</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342927">
++nominal-&gt;ratio-table+</a>
+</td>
+<td class="summary">
+(alexandria.0.dev:alist-hash-table (loop for nom in +nominals+ for no-of-fifths from -1 collect (cons nom (ji-pc-ratio (monzo-to-ratio (list 0 no-of-fifths))))))</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342926">
++nominals+</a>
+</td>
+<td class="summary">
+'(f c g d a e b)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342943">
++prime-&gt;comma-ratio-table+</a>
+</td>
+<td class="summary">
+(alexandria.0.dev:alist-hash-table (list* (list* 3 (expt 2187/2048 -1)) (list* (list* 5 (expt 81/80 -1)) (list* (list* 7 (expt 64/63 -1)) (list* '(11 . 33/32) (list* (list* 13 (expt 27/26 -1)) (list* (list* 17 (expt 256/255 -1)) (list* '(19 . 513/512) (list* '(23 . 736/729) (list* '(29 . 145/144) (list (list* 31 (expt 1024/1023 -1)))))))))))))</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342899">
++primes+</a>
+</td>
+<td class="summary">
+'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342928">
++ratio-&gt;nominal-table+</a>
+</td>
+<td class="summary">
+(flip-hash-table +nominal-&gt;ratio-table+)</td>
+</tr>
+</table>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Function summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342935">
+add-accidentals-as-text-attributes</a>
+</td>
+<td class="summary">
+</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342940">
+add-all-accidental-powers-and-accidental-combinations</a>
+</td>
+<td class="summary">
+specs</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342931">
+add-power-accidentals</a>
+</td>
+<td class="summary">
+accidental n</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342936">
+aux-add-accidental-combinations</a>
+</td>
+<td class="summary">
+</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342937">
+aux-add-all-accidental-powers</a>
+</td>
+<td class="summary">
+specs</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342930">
+aux-add-power-accidentals</a>
+</td>
+<td class="summary">
+accidental-string orig-ratio i</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342945">
+aux-pythagorean-ratio-to-pc-symbols</a>
+</td>
+<td class="summary">
+limit-3-expt</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342908">
+cent-to-ratio</a>
+</td>
+<td class="summary">
+cent</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342909">
+edo-val</a>
+</td>
+<td class="summary">
+edo mappings</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342932">
+equal-prime-limit?</a>
+</td>
+<td class="summary">
+ratio1 ratio2</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342898">
+flip-hash-table</a>
+</td>
+<td class="summary">
+table</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342917">
+get-all-temperament-names</a>
+</td>
+<td class="summary">
+</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342953">
+get-ji-accidentals</a>
+</td>
+<td class="summary">
+event</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342950">
+get-ratio-octave</a>
+</td>
+<td class="summary">
+ratio</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342919">
+get-temperament-generators</a>
+</td>
+<td class="summary">
+name</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342918">
+get-temperament-vals</a>
+</td>
+<td class="summary">
+name</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342924">
+has-fewer-accidentals?</a>
+</td>
+<td class="summary">
+ratio1 ratio2</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342923">
+has-lower-prime-limit?</a>
+</td>
+<td class="summary">
+ratio1 ratio2</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342921">
+identity-matrix</a>
+</td>
+<td class="summary">
+n</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342942">
+is-ji-accidental</a>
+</td>
+<td class="summary">
+x</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342944">
+ji-pc-symbols-to-ratio</a>
+</td>
+<td class="summary">
+nominal <em>&amp;rest</em> accidentals</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342906">
+monzo-limit</a>
+</td>
+<td class="summary">
+monzo</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342904">
+monzo-to-ratio</a>
+</td>
+<td class="summary">
+monzo</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342954">
+omn-event-to-ji-pc-ratio</a>
+</td>
+<td class="summary">
+event <em>&amp;key</em> (use-ji-accidentals? t)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342955">
+omn-event-to-pc-cents</a>
+</td>
+<td class="summary">
+temperament event <em>&amp;key</em> (use-ji-accidentals? t)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342956">
+omn-to-tunings</a>
+</td>
+<td class="summary">
+temperament sequence</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342952">
+parse-omn-pitch</a>
+</td>
+<td class="summary">
+pitch</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342934">
+prettify-exported-accidental</a>
+</td>
+<td class="summary">
+accidental-string</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342903">
+prime-factors</a>
+</td>
+<td class="summary">
+n</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342901">
+primes-in-limit</a>
+</td>
+<td class="summary">
+limit</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342946">
+pythagorean-ratio-to-pc-symbols</a>
+</td>
+<td class="summary">
+ratio</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342911">
+ratio-to-1d-temperament-cents</a>
+</td>
+<td class="summary">
+frac val step-generator</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342910">
+ratio-to-1d-temperament-degree</a>
+</td>
+<td class="summary">
+frac val</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342907">
+ratio-to-cent</a>
+</td>
+<td class="summary">
+frac <em>&amp;key</em> (round? nil)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342947">
+ratio-to-higher-limit-ji-accidental-symbols</a>
+</td>
+<td class="summary">
+ratio</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342948">
+ratio-to-ji-pc-symbols</a>
+</td>
+<td class="summary">
+ratio</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342905">
+ratio-to-monzo</a>
+</td>
+<td class="summary">
+frac</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342951">
+ratio-to-omn</a>
+</td>
+<td class="summary">
+ratio</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342914">
+ratio-to-regular-temperament-cents</a>
+</td>
+<td class="summary">
+frac vals generators</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342912">
+ratio-to-regular-temperament-degrees</a>
+</td>
+<td class="summary">
+frac vals</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342913">
+regular-temperament-degrees-to-ratio</a>
+</td>
+<td class="summary">
+degrees <em>&amp;optional</em> (generator-ratios +primes+)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342933">
+replace-all</a>
+</td>
+<td class="summary">
+string part replacement <em>&amp;key</em> (test #'char=)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342941">
+set-ji-accidental</a>
+</td>
+<td class="summary">
+name ratio</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342916">
+store-temperament</a>
+</td>
+<td class="summary">
+name vals generators</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342922">
+temperament-degrees</a>
+</td>
+<td class="summary">
+generators ns <em>&amp;key</em> (mode :up-and-down)</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="tuning.html#_g342925">
+temperament-pcs-infos</a>
+</td>
+<td class="summary">
+temperament generator-ns limit-ratios ratio-ns fn <em>&amp;key</em> (ratios-comparison #'has-fewer-accidentals?)</td>
+</tr>
+</table>
+<div class="defconstant">
+<div class="defunsignatures">
+<a id="_g342899">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++primes+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+'(2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61)</td>
+<td class="symbol-type">
+&nbsp;[Constant]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+List of prime numbers from 2 to 61. 
+ </p>
+</div>
+</div>
+<div class="defconstant">
+<div class="defunsignatures">
+<a id="_g342900">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++edo-prime-octave-offsets+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+(loop for prime in +primes+ collect (round (log (/ prime (ji-pc-ratio prime)) 2)))</td>
+<td class="symbol-type">
+&nbsp;[Constant]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+List of octave offsets of prime frequency ratios, i.e., in which octave lies a prime frequency ratio compared to 1/1. For example, the first prime (2) is one octave and the third prime (5) is two octaves above 1. 
+ </p>
+</div>
+</div>
+<div class="defconstant">
+<div class="defunsignatures">
+<a id="_g342926">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++nominals+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+'(f c g d a e b)</td>
+<td class="symbol-type">
+&nbsp;[Constant]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Standard pitch nominals in order of fifth chain. These will be tuned Pythagorean in JI. 
+ </p>
+</div>
+</div>
+<div class="defconstant">
+<div class="defunsignatures">
+<a id="_g342927">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++nominal-&gt;ratio-table+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+(alexandria.0.dev:alist-hash-table (loop for nom in +nominals+ for no-of-fifths from -1 collect (cons nom (ji-pc-ratio (monzo-to-ratio (list 0 no-of-fifths))))))</td>
+<td class="symbol-type">
+&nbsp;[Constant]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Hashtable mapping pitch nominals (symbols like A, B, C...) to their corresponding Pythagorean frequency ratios. 
+ </p>
+</div>
+</div>
+<div class="defconstant">
+<div class="defunsignatures">
+<a id="_g342928">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++ratio-&gt;nominal-table+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+(flip-hash-table +nominal-&gt;ratio-table+)</td>
+<td class="symbol-type">
+&nbsp;[Constant]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Hashtable mapping Pythagorean frequency ratios for pitch nominals to their corresponding symbols (A, B, C...). 
+ </p>
+</div>
+</div>
+<div class="defconstant">
+<div class="defunsignatures">
+<a id="_g342943">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++prime-&gt;comma-ratio-table+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+(alexandria.0.dev:alist-hash-table (list* (list* 3 (expt 2187/2048 -1)) (list* (list* 5 (expt 81/80 -1)) (list* (list* 7 (expt 64/63 -1)) (list* '(11 . 33/32) (list* (list* 13 (expt 27/26 -1)) (list* (list* 17 (expt 256/255 -1)) (list* '(19 . 513/512) (list* '(23 . 736/729) (list* '(29 . 145/144) (list (list* 31 (expt 1024/1023 -1)))))))))))))</td>
+<td class="symbol-type">
+&nbsp;[Constant]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342902">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
++limit-31-primes+&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+List of prime numbers from 2 to 31. 
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342915">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*temperaments*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+A hashtable filled with function store-temperament and accessed by get-temperament-vals and get-temperament-generators. 
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342920">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*current-temperament*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Currently set global temperament (e.g., used by my snippet audition from within Emacs). 
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342929">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*accidental-&gt;ratio-table*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Hashtable mapping symbols representing accidentals to corresponding prime limit ratios and their combinations. Combinations are representing by their own symbol, so that for notating chords we only need a single accidental symbol per tone. 
+ </p>
+<p>
+Notation: 
+ s and b are the Pythagorean sharp and flat accidentals 
+ K stands for prime limit 'c'omma (K as in the original Greek κόμμα, 'c' is already used for OMN attributes denoting cents) 
+ 5K means prime limit 5 comma up 
+ -5K means prime limit 5 comma down 
+ 1K is the natural accidental 
+ xx is used for combinations of the same symbol (two quasi multiplication signs read as power of frequency ratios) 
+ 5Kxx3 means triple prime limit 5 comma up 
+ x combines accidentals (quasi multiplication sign read as factor of frequency ratios) 
+ -5Kx-7K means a limit 5 and additionally a limit 7 comma down 
+ 5Kxx2x7K means two limit 5 commas and additionally a limit 7 comma up 
+ </p>
+<p>
+Remember that these symbols do not distinguish between upper and lower case, case is just used for a (very little) bit of readability. 
+ </p>
+<p>
+NOTE: Currently always only at most 2 prime limits are combined in a single accidental. 
+ </p>
+<p>
+Source for the initial prime limit ratios: Nicholson, T. &amp; Sabat, M. (2018) Fundamental Principles of Just Intonation and Microtonal Composition. p. 18 
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342938">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*ratio-&gt;accidental-table*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Map prime limit ratios to corresponding symbols representing accidentals. The inverse map of *accidental-&gt;ratio-table* 
+ </p>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342939">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*ji-accidentals*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defparam">
+<div class="defunsignatures">
+<a id="_g342949">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+*1/1-octave*&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Variable]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Octave in which the frequency ratio 1/1 sounds. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342898">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+flip-hash-table&nbsp;&nbsp;</td>
+<td class="lambda-list">
+table</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Turns the keys of the given hash `table' into values and vice versa 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342901">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+primes-in-limit&nbsp;&nbsp;</td>
+<td class="lambda-list">
+limit</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return list of primes up to the given prime limit. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342903">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+prime-factors&nbsp;&nbsp;</td>
+<td class="lambda-list">
+n</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return list of prime factors of given integer. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342904">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+monzo-to-ratio&nbsp;&nbsp;</td>
+<td class="lambda-list">
+monzo</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return a ratio that corresponds to a monzo represented by a list of integers. 
+ </p>
+<p>
+See also https://en.xen.wiki/w/Monzo 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342905">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-monzo&nbsp;&nbsp;</td>
+<td class="lambda-list">
+frac</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return a monzo represented by a list of integers that corresponds to the fraction `frac'. 
+ </p>
+<p>
+See also https://en.xen.wiki/w/Monzo 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342906">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+monzo-limit&nbsp;&nbsp;</td>
+<td class="lambda-list">
+monzo</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return the prime limit of the given `monzo'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342907">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-cent&nbsp;&nbsp;</td>
+<td class="lambda-list">
+frac <em>&amp;key</em> (round? nil)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Transform the frequency ratio `frac' into the corresponding cent value. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342908">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+cent-to-ratio&nbsp;&nbsp;</td>
+<td class="lambda-list">
+cent</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342909">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+edo-val&nbsp;&nbsp;</td>
+<td class="lambda-list">
+edo mappings</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return a val (list of ints) given a subdivision of the octave (an int) and mappings for all prime limits as a list of temperament degrees *within an octave* (list of ints). The first mapping should be 0 (and not `edo'). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342910">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-1d-temperament-degree&nbsp;&nbsp;</td>
+<td class="lambda-list">
+frac val</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return an interval in a 1D temperament specified by its `val' that corresponds to the JI interval ratio `frac'. The resulting interval is specified as a factor (or exponent) for the single generator of the temperament. For example, if the generator is the smallest interval of an equal temperament, the returned degree specifies how many such intervals are needed to reach a pitch that corresponds to the given fraction. (If the generator is measured in cents, the returned degree is to be used as a factor for the measured, but if the generator is a frequency ratio, then the returned degree is to be used as an exponent.) 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+frac (rational): a JI interval for which we want to get a tempered interval 
+ </p>
+</li>
+<li>
+<p>
+val (list of ints): the val that specifies how JI pitches of prime limits are mapped to the temperament. See also https://en.xen.wiki/w/Keenan%27s_explanation_of_vals and https://en.xen.wiki/w/Val 
+ </p>
+</li>
+</ul>
+<h4>
+Examples: </h4>
+<p>
+We can specify arbitrary equal temperaments (not just EDOs) by using their smallest step as a generator. The val then contains the ordered number of theses steps to the temperament intervals that should serve as the prime frequency ratios 2, 3, 5... up to the desired prime limit. For 12-EDO, the smallest step is 100 cent. 12 such steps correspond to the frequency ratio 2 (the octave), 19 such steps to the frequency ratios 3 (the octave plus a fifth), 28 such steps correspond to the frequency ratio 5 and so on. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf 12-EDO-val '(12 19 28)) </pre>
+<p>
+With this 5-limit val, we can now obtain the 12-EDO intervals for arbitrary 5-limit JI intervals specified by ratios, for example the minor third (6/5) in 12-EDO is 3 steps. 
+ </p>
+<p>
+</p>
+<pre>
+    (ratio-to-1D-temperament-degree 6/5 12-EDO-val) </pre>
+<p>
+=&gt; 3 
+ </p>
+<p>
+Remember that 12-EDO is a meantone temperament (https://en.wikipedia.org/wiki/Meantone_temperament), so the syntonic comma (81/80) is tempered out: the size of that interval is 0. 
+ </p>
+<p>
+</p>
+<pre>
+    (ratio-to-1D-temperament-degree 81/80 12-EDO-val) </pre>
+<p>
+=&gt; 0 
+ </p>
+<p>
+As a consequence, intervals that differ only by this comma have the same size in this temperament. For example, the Pythagorean minor third (32/27) has also the size of 3 in 12-EDO. 
+ </p>
+<p>
+</p>
+<pre>
+    (ratio-to-1D-temperament-degree (* 6/5 80/81) 12-EDO-val) </pre>
+<p>
+=&gt; 3 
+ </p>
+<p>
+The 7-limit val for the temperament 22-EDO (https://en.xen.wiki/w/22edo) is as follows. You can collect the data for writing such vals yourself simply by collecting the temperament interval sizes for prime frequency ratios up to the relevant limit (2, 3, 5, and 7 in this case), e.g., from a table for that temperament listing all its intervals the the approximated JI ratios (e.g., see https://en.xen.wiki/w/22edo#Superpyth.2FPorcupine_Notation). For 22-EDO, the ratio 2 corresponds to 22 steps, the ratio 3 to 13 (fifth) plus 22 (1 octave) steps and so forth. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf 22-EDO-val (list 22 (+ 13 22) (+ 7 (* 2 22)) (+ 18 (* 2 22)))) </pre>
+<p>
+With this 7-limit val for 22-EDO, we can now get the 22-EDO intervals for arbitrary 7-limit JI ratios. Here is the subminor third (7/6). You can confirm the resulting value with the above-mentioned table for this temperament. 
+ </p>
+<p>
+</p>
+<pre>
+    (ratio-to-1D-temperament-degree 7/6 22-EDO-val) </pre>
+<p>
+=&gt; 5 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342911">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-1d-temperament-cents&nbsp;&nbsp;</td>
+<td class="lambda-list">
+frac val step-generator</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return the pitch of an interval (measured in cents) that corresponds to the JI interval ratio `frac' in an equal temperament (not just EDOs) defined by the given `val' and the generator for a step in that equal temperament (also measured in cents). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342912">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-regular-temperament-degrees&nbsp;&nbsp;</td>
+<td class="lambda-list">
+frac vals</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return an interval in an arbitrary regular temperament specified by a list of its `vals' that corresponds to the JI interval ratio `frac'. The resulting interval is specified as a list of factors for the generators of the temperament measured in cent (or as exponents for generators that are frequency ratios). 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+frac (rational): a JI interval for which we want to get a tempered interval 
+ </p>
+</li>
+<li>
+<p>
+vals (list of list of ints): the list of vals that specify how the temperament how JI pitches are mapped to the temperament. See also https://en.xen.wiki/w/Keenan%27s_explanation_of_vals and https://en.xen.wiki/w/Val 
+ </p>
+</li>
+</ul>
+<h4>
+Examples: </h4>
+<p>
+We can specify arbitrary regular temperaments by their generators. The vals then specify how JI pitches are mapped into this temperament. This is done by stating how often each generator must be repeated to reach a tempered tone that should serve as the prime frequency ratios 2, 3, 5... up to the desired prime limit. 
+ </p>
+<p>
+Meantone temperament is specified by two generators, one specifying the size of the octave and one that of the fifth (the second generator can also be an octave plus a fifth, but then the vals are slightly different). As meantone has two generators, we must specify two vals, one for each of them. The first value in each val states how often its generator must be repeated to reach the frequency ratio 2, i.e., the octave. For reaching the octave we need 1 octave (generator 1) and 0 fifths (generator 2), so the first value in the first val is 1 and the first in the second val is 0. The second value in each val states how often its generator must be repeated to reach the frequency ratio 3, i.e., the octave plus a fifth. Obviously, we need one octave (second value of val 1) and one fifth (second value of val 2). The third (and for 5-limit meantone the last) val values state how to reach the prime frequency ratio 5 (two octaves and a major third). We can reach this interval by stacking 5 fifths and no additional octave is needed. So, the third value for the val 1 is 0 and for val 2 is 4. So, the vals for meantone are as follows. 
+ </p>
+<p>
+</p>
+<pre>
+    (setf 5-limit-meantone-vals '((1 1 0) (0 1 4))) </pre>
+<p>
+With this 5-limit val, we can now obtain the meantone intervals measured in repetitions of generators for arbitrary 5-limit JI intervals specified by ratios. For example, to reach a fourth (ratio 4/3), we need to go one octave up and one fifth down. So, the first generator is repeated once upwards, and the second once downwards (specified by a negative count). 
+ </p>
+<p>
+(ratio-to-regular-temperament-degrees 4/3 5-limit-meantone-vals) 
+ =&gt; (1 -1) 
+ </p>
+<p>
+A minor third (6/5) is reached by 2 octaves up and 3 fifths down. 
+ </p>
+<pre>
+    (ratio-to-regular-temperament-degrees 6/5 5-limit-meantone-vals) </pre>
+<p>
+=&gt; (2 -3) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342913">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+regular-temperament-degrees-to-ratio&nbsp;&nbsp;</td>
+<td class="lambda-list">
+degrees <em>&amp;optional</em> (generator-ratios +primes+)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Translate given temperament `degrees' into a corresponding JI ratio. `generator-ratios' is the list of primes that correspond to the generators for which the given degrees would be fitting. Does not temper out any commas and gives preference to ratios with a lower limit (e.g., Pythagorean third instead of just third). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342914">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-regular-temperament-cents&nbsp;&nbsp;</td>
+<td class="lambda-list">
+frac vals generators</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[main function in background] Translate a JI interval (ratio) into the corresponding interval measured in cents of a regular temperament. The temperament is specified by its `vals' and `generators'. 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+frac (rational): a JI interval for which we want to get a tempered interval 
+ </p>
+</li>
+<li>
+<p>
+vals (list of list of ints): the list of vals that specify how the temperament how JI pitches are mapped to the temperament. See also https://en.xen.wiki/w/Keenan%27s_explanation_of_vals and https://en.xen.wiki/w/Val 
+ </p>
+</li>
+<li>
+<p>
+generators (list of numbers): the list of generators that specify the temperament. 
+ </p>
+</li>
+</ul>
+<p>
+The order of vals and generators must match (i.e. the val of a certain generator must be at the same position). 
+ </p>
+<p>
+See the documentation of `deftemperament' and also `ratio-to-regular-temperament-degrees' for more information. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342916">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+store-temperament&nbsp;&nbsp;</td>
+<td class="lambda-list">
+name vals generators</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Store a temperament with the given `vals' and `generators' under the key the `name' in `*temperaments*'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342917">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-all-temperament-names&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return list of names (symbols) of all temperaments so far defined with `deftemperament'. 
+ </p>
+<p>
+You can jump to the definition of a temperament, by jumping to the definition of a function/method with the name of a temperament. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342918">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-temperament-vals&nbsp;&nbsp;</td>
+<td class="lambda-list">
+name</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return vals of a temperament with `name' defined with `deftemperament'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342919">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-temperament-generators&nbsp;&nbsp;</td>
+<td class="lambda-list">
+name</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return generators of a temperament with `name' defined with `deftemperament'. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342921">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+identity-matrix&nbsp;&nbsp;</td>
+<td class="lambda-list">
+n</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342922">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+temperament-degrees&nbsp;&nbsp;</td>
+<td class="lambda-list">
+generators ns <em>&amp;key</em> (mode :up-and-down)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return list of degrees of the temperament specified by `generators'. 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+generators (list of rationals or list of floats): List of temperament generators. If rationals, generators are assumed to be frequency ratios, otherwise they are assumed to be measured in cent. 
+ </p>
+</li>
+<li>
+<p>
+ns (list of its): Specifies how often the generators should be repeated. Each n specifies the number the corresponding generator (at the same position) is repeated. 
+ </p>
+</li>
+<li>
+<p>
+mode (either <span class="keyword">
+:up-and-down </span>
+or :up): Whether generators are repeated upwards and downwards or only upwards. 
+ </p>
+</li>
+</ul>
+<p>
+* Examples 
+ </p>
+<p>
+Using just the octave (2) as a generator, repeating that generator up and down until in total 7 frequency ratios are generated. 
+ </p>
+<pre>
+    (temperament-degrees '(2) '(7)) </pre>
+<p>
+=&gt; (1/8 1/4 1/2 1 2 4 8) 
+ </p>
+<p>
+Generating a single octave of 12-EDO by repeating its generator (100.0 cent) to result in 12 tones. 
+ </p>
+<pre>
+    (temperament-degrees '(100.0) '(12)) </pre>
+<p>
+=&gt; (-600.0 -500.0 -400.0 -300.0 -200.0 -100.0 0.0 100.0 200.0 300.0 400.0 500.0) 
+ </p>
+<p>
+Collect the ratios of a 5-limit JI lattice without the octave, so that there is a sequence of 12 tones in the dimension of fifths and 3 tones in the dimension of thirds. 
+ </p>
+<pre>
+    (temperament-degrees '(3/2 5/4) '(12 3)) </pre>
+<p>
+Repeating generators only upwards. 
+ </p>
+<pre>
+    (temperament-degrees '(100.0) '(12) :mode :up) </pre>
+<p>
+=&gt; (0.0 100.0 200.0 300.0 400.0 500.0 600.0 700.0 800.0 900.0 1000.0 1100.0) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342923">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+has-lower-prime-limit?&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio1 ratio2</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[For temperament-pcs-infos arg sort-ratios] Given two ratios, return T if the first ratio has a lower prime limit. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342924">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+has-fewer-accidentals?&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio1 ratio2</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[For temperament-pcs-infos arg sort-ratios] Given two ratios, return T if the first ratio needs fewer accidentals for notating it. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342925">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+temperament-pcs-infos&nbsp;&nbsp;</td>
+<td class="lambda-list">
+temperament generator-ns limit-ratios ratio-ns fn <em>&amp;key</em> (ratios-comparison #'has-fewer-accidentals?)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return nested list where each sublist starts with a temperament degree measured in cents (as returned by `temperament-degrees') and the remaining values of each sublist are results of the function `fn' given rationals that are tempered to this degree in the given temperament. 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+temperament (symbol): A temperament defined by `deftemperament'. 
+ </p>
+</li>
+<li>
+<p>
+generator-ns (list of ints): Specifies how often each generator (implicitly specified by the temperament symbol) should be repeated. Each n specifies the number the corresponding generator (at the same position) is repeated. 
+ </p>
+</li>
+<li>
+<p>
+limit-ratios (list of rationals): Specifies generators for creating a JI tuning that is then matched to the temperament. 
+ </p>
+</li>
+<li>
+<p>
+ratio-ns (list of ints): Specifies how often the corresponding generator (at the same position) is repeated. 
+ </p>
+</li>
+<li>
+<p>
+fn (binary function): Function for generating further information on temperament tones. The function expects a JI rational and the corresponding temperament degree in cents. 
+ ;; - sorted-degrees? (Boolean): if T, the result is sorted in increasing order of degrees. 
+ </p>
+</li>
+<li>
+<p>
+ratios-comparison (binary function): Function comparing two ratios that is used for sorting ratios per degree. 
+ 
+ * Examples 
+ </p>
+</li>
+</ul>
+<p>
+TODO: 
+ </p>
+<p>
+Collect list of (relatively simple) note names for temperament degrees 
+ </p>
+<p>
+Compute tuning errors as difference between degrees and ratios turned into cents. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342930">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-add-power-accidentals&nbsp;&nbsp;</td>
+<td class="lambda-list">
+accidental-string orig-ratio i</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342931">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+add-power-accidentals&nbsp;&nbsp;</td>
+<td class="lambda-list">
+accidental n</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+For the given `accidental' symbol, add `n' accidentals that are powers of the corresponding frequency ratios. If `n' is two, accidental doubles are added, if it is tree, triple are added etc. These accidentals are notated with a double star for expressing the power relation. E.g., sxx3 is a triple sharp. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342932">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+equal-prime-limit?&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio1 ratio2</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return T if ratio1 or ratio2 share the same prime limit (of if either is 1). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342933">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+replace-all&nbsp;&nbsp;</td>
+<td class="lambda-list">
+string part replacement <em>&amp;key</em> (test #'char=)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Returns a new string in which all the occurrences of the part 
+ is replaced with replacement. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342934">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+prettify-exported-accidental&nbsp;&nbsp;</td>
+<td class="lambda-list">
+accidental-string</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342935">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+add-accidentals-as-text-attributes&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Automatically define for all accidentals (keys of `*accidental-&gt;ratio-table*') corresponding OMN text attributes. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342936">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-add-accidental-combinations&nbsp;&nbsp;</td>
+<td class="lambda-list">
+</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Pairwise combine all accidentals into product accidentals (resulting in a huge accidental number overall). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342937">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-add-all-accidental-powers&nbsp;&nbsp;</td>
+<td class="lambda-list">
+specs</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Each spec is a pair (accidentals . n), where accidentals is a list of accidental symbols, and n is the number of power accidentals to add to them. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342940">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+add-all-accidental-powers-and-accidental-combinations&nbsp;&nbsp;</td>
+<td class="lambda-list">
+specs</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Each spec is a pair (accidentals . n), where accidentals is a list of accidental symbols, and n is the number of power accidentals to add to them. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342941">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+set-ji-accidental&nbsp;&nbsp;</td>
+<td class="lambda-list">
+name ratio</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Can be used, e.g., for adding some custom interpretation of the OMN builtin accidentals like + and - or (for adding higher prime limits?). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342942">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+is-ji-accidental&nbsp;&nbsp;</td>
+<td class="lambda-list">
+x</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342944">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ji-pc-symbols-to-ratio&nbsp;&nbsp;</td>
+<td class="lambda-list">
+nominal <em>&amp;rest</em> accidentals</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342945">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-pythagorean-ratio-to-pc-symbols&nbsp;&nbsp;</td>
+<td class="lambda-list">
+limit-3-expt</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342946">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+pythagorean-ratio-to-pc-symbols&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342947">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-higher-limit-ji-accidental-symbols&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Aux for ratio-to-ji-pc-symbols etc] Return list of accidental symbols list beyond limit 5 that corresponds to ratio. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342948">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-ji-pc-symbols&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return PC symbol list that corresponds to ratio (i.e. octaves are ignored). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342950">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-ratio-octave&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342951">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ratio-to-omn&nbsp;&nbsp;</td>
+<td class="lambda-list">
+ratio</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return OMN pitch plus accidental attribute that corresponds to ratio (i.e. octaves are ignored). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342952">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+parse-omn-pitch&nbsp;&nbsp;</td>
+<td class="lambda-list">
+pitch</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return a plist that contains the components of `pitch' (an OMN pitch symbol), each component as a string. 
+ </p>
+<p>
+</p>
+<pre>
+    (parse-OMN-pitch 'c4) </pre>
+<p>
+=&gt; (:NOMINAL C <span class="keyword">
+:STANDARD-ACCIDENTAL </span>
+NIL <span class="keyword">
+:OCTAVE </span>
+4 <span class="keyword">
+:MICROTONE-ACCIDENTAL </span>
+||) 
+ </p>
+<p>
+</p>
+<pre>
+    (parse-OMN-pitch 'cs4+) </pre>
+<p>
+=&gt; (:NOMINAL C <span class="keyword">
+:STANDARD-ACCIDENTAL </span>
+S <span class="keyword">
+:OCTAVE </span>
+4 <span class="keyword">
+:MICROTONE-ACCIDENTAL </span>
++) 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342953">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+get-ji-accidentals&nbsp;&nbsp;</td>
+<td class="lambda-list">
+event</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342954">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+omn-event-to-ji-pc-ratio&nbsp;&nbsp;</td>
+<td class="lambda-list">
+event <em>&amp;key</em> (use-ji-accidentals? t)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342955">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+omn-event-to-pc-cents&nbsp;&nbsp;</td>
+<td class="lambda-list">
+temperament event <em>&amp;key</em> (use-ji-accidentals? t)</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342956">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+omn-to-tunings&nbsp;&nbsp;</td>
+<td class="lambda-list">
+temperament sequence</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return a flat list of tuning values for the given `sequence'. The tuning values are floats (1.0 is 100 cents). 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<ul>
+<li>
+<p>
+sequence (list, possibly nested): OMN sequence with custom JI accidentals (as defined in *accidental-&gt;ratio-table*) as OMN attributes. 
+ </p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cludg-footer">
+Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
+CLDOC</a>
+- 2021-04-05 15:07:07</div>
+</body>
+</html>

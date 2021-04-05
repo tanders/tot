@@ -1,0 +1,32 @@
+
+\usepackage{tikz}
+
+% Example dynamics: \p \Cresc \ff
+\newcommand{\ppp}{\textbf{\emph{ppp}}}
+\newcommand{\pp}{\textbf{\emph{pp}}}
+\newcommand{\p}{\textbf{\emph{p}}}
+\renewcommand{\mp}{\textbf{\emph{mp}}}
+\newcommand{\mf}{\textbf{\emph{mf}}}
+\newcommand{\f}{\textbf{\emph{f}}}
+\newcommand{\ff}{\textbf{\emph{ff}}}
+\newcommand{\fff}{\textbf{\emph{fff}}}
+
+\newcommand{\Cresc}{%
+  \vspace{.1em}
+  \begin{tikzpicture}
+    \draw[line width=1pt] (0.5, 0.1) --  (0, 0) --  (0.5, -0.1)
+  \end{tikzpicture}
+  \vspace{.3em}}
+
+\newcommand{\Dim}{%
+  \vspace{.1em}
+  \begin{tikzpicture}
+    \draw[line width=1pt] (0, 0.1) --  (0.5, 0) --  (0, -0.1)
+  \end{tikzpicture}
+  \vspace{.3em}}
+
+
+% Command to express either bar or rehearsal numbers or letters  
+\newcommand{\Boxed}[1]{\fbox{#1} \hspace{0.2 em}}
+% \newcommand{\Bar}[1]{{\fbox{#1}}}
+% \newcommand{\Boxed}[1]{\fbox{#1}}

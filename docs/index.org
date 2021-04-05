@@ -1,0 +1,24 @@
+#+TITLE: TOT Tutorial
+#+AUTHOR: Torsten Anders
+
+#+OPTIONS: TOC:nil num:nil
+
+# https://gongzhitaao.org/orgcss/
+# https://laptrinhx.com/simple-and-clean-css-for-org-exported-html-2634084585/
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://gongzhitaao.org/orgcss/org.css"/>
+
+
+
+TOT is a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]].
+
+* TOT Tutorial
+  
+#+ATTR_HTML: :target _blank
+[[./tutorial/tutorial.html][TOT tutorial]]
+  
+
+* TOT Reference
+
+#+ATTR_HTML: :target _blank  
+[[./reference/index.html][Reference documentation with many usage examples]]
+

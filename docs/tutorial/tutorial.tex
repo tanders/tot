@@ -1,0 +1,96 @@
+% Created 2021-04-02 Fri 10:15
+% Intended LaTeX compiler: pdflatex
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{minted}
+\input{LatexHeader}
+\usepackage{harmony}
+\author{Torsten Anders}
+\date{\today}
+\title{TOT Tutorial}
+\hypersetup{
+ pdfauthor={Torsten Anders},
+ pdftitle={TOT Tutorial},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.3.50.1 (Org mode 9.2.6)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{4}
+\tableofcontents
+
+
+\section{Introduction}
+\label{sec:org1f9dfaf}
+
+This document presents in a tutorial fashion some functionality of the \href{https://github.com/tanders/tot}{TOT library} for
+\href{http://opusmodus.com/}{Opusmodus}. The TOT library is a loose collection of tools for algorithmic composition. Various
+functions and independent and their reference documentation is probably suficient. 
+
+However, this library also implements some features where a number of definitions work
+together. This tutorial focusses on documenting such features.
+
+
+\section{Microtonal and xenharmonic music}
+\label{sec:orged78377}
+
+\subsection{Introduction}
+\label{sec:org375ec40}
+
+The TOT library greatly expands Opusmodus' builtin support for microtonal music.  Opusmodus'
+builtin support for microtonal music only allows for quarter tones (24 tone equal division of
+the octave, 24-EDO) and eighth tones (48 tone equal division of the octave, 48-EDO). The
+microtonal model of the TOT library, by contrast, allows users to define arbitrary equal
+temperaments (both equal divisions of the octave and other intervals), just intonation (JI) for
+arbitrary prime limits, and arbitrary regular temperaments
+(\url{https://en.xen.wiki/w/Tour\_of\_Regular\_Temperaments}). 
+
+The library provides this tuning universe in a way that is controllable by a single uniform
+notation embedded in \href{https://opusmodus.com/forums/tutorials/omn-the-language/}{OMN}. Still, the library tries to keep things relatively clear and simple by
+introducing mainly one actual new accidental symbol, and that symbol will then be combined with
+numbers (for prime limits) to express arbitrary JI pitches, which are then mapped to all the
+possible tunings.  Technically, pitch deflections are expressed by OMN articulations, as a
+library cannot change the underlying OMN pitch format.
+
+For microtonal playback, the library implements what could be called a subset of \href{https://www.midi.org/midi-articles/midi-polyphonic-expression-mpe}{MIDI Polyphonic
+Expression (MPE)}, where chords are distributed automatically over multiple MIDI channels so that
+each tone is tuned independently by pitch bend messages. A considerable number of soft synth
+already support MPE directly (\href{https://roli.com/mpe}{some incomplete list is shown here, scroll down and select Soft
+Synths}), and every instrument plugin can be relatively easily made to support MPE by
+using multiple instances of that plugin in parallel (e.g., directly in a DAW or with a plugin
+host that itself is also a plugin, like \href{https://www.plogue.com/products/bidule.html}{Plogue Bidule}).
+
+
+The core idea of this xemharmonic support is that JI, arbitrary equal temperaments and very many
+other tunings (\url{https://en.xen.wiki/w/Tour\_of\_Regular\_Temperaments}) can all be expressed as
+regular temperaments. You can find an informal discussion of regular temperaments, its context
+and motivation -- how it extends/generalises many other tone systems -- at this link:
+\url{http://x31eq.com/paradigm.html}. Here is another introduction: \url{https://en.xen.wiki/w/Mike\%27s\_Lectures\_On\_Regular\_Temperament\_Theory}. 
+
+
+\section{Karnatic rhythms}
+\label{sec:orgcc2c5a7}
+
+\subsection{Creating a higher-level plan}
+\label{sec:orgb305b45}
+
+
+\subsection{Filling in details}
+\label{sec:orgc0a7c35}
+\end{document}

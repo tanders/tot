@@ -7,7 +7,7 @@
 
 (require :cldoc)
 
-(defparameter *doc-dir* (make-pathname :directory (append (pathname-directory *load-truename*) '("docs"))))
+(defparameter *doc-dir* (make-pathname :directory (append (pathname-directory *load-truename*) '("docs" "reference"))))
 
 
 (cldoc:extract-documentation 'cludg:html (format nil "~A" *doc-dir*)

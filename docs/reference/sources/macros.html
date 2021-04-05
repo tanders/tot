@@ -1,0 +1,345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html>
+<head>
+<link rel="Stylesheet" type="text/css" href="../cludg.css"/>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>
+macros</title>
+</head>
+<body>
+<div id="navbar">
+<table cellspacing="0" cellpadding="0" border="0" style="width: 100%;">
+<colgroup span="3">
+<col width="0*"/>
+<col width="0*"/>
+<col width="1*"/>
+</colgroup>
+<tr>
+<td align="left" valign="baseline">
+<br/>
+<a href="utils.html">
+Next:&nbsp;utils</a>
+</td>
+<td>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+<td align="left" valign="baseline">
+<span class="upchain">
+<b>
+macros</b>
+<br/>
+<a href="../index.html">
+Index</a>
+</span>
+&nbsp;&nbsp;&nbsp;&nbsp;</td>
+</tr>
+</table>
+</div>
+<div class="cludg-doc-body">
+<h2>
+macros
+</h2>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Method summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342734">
+ji-pc-ratio</a>
+</td>
+<td class="summary">
+(x rational)</td>
+</tr>
+</table>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Function summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342738">
+aux-def-tempered-score-instruments</a>
+</td>
+<td class="summary">
+temperament score-parts</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342739">
+aux-def-tempered-score-let-decls</a>
+</td>
+<td class="summary">
+score-parts</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342737">
+aux-def-tempered-score-mpe-parts-var-name</a>
+</td>
+<td class="summary">
+instr</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342736">
+chord-sequences-to-parts</a>
+</td>
+<td class="summary">
+sequence n</td>
+</tr>
+</table>
+<table style="width: 100%;" class="summary-table">
+<tr class="table-heading-color">
+<th class="summary" colspan="2">
+Macro summary</th>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342740">
+def-tempered-score</a>
+</td>
+<td class="summary">
+name global-args <em>&amp;rest</em> instruments</td>
+</tr>
+<tr class="table-row-color">
+<td class="summary-name">
+<a href="macros.html#_g342735">
+deftemperament</a>
+</td>
+<td class="summary">
+name vals generators <em>&amp;optional</em> docstring</td>
+</tr>
+</table>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342734">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+ji-pc-ratio&nbsp;&nbsp;</td>
+<td class="lambda-list">
+(x rational)</td>
+<td class="symbol-type">
+&nbsp;[Method]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Transforms the frequency ratio `x' into the interval [1, 2) to represent a corresponding pitch class expressed as a fraction. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342736">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+chord-sequences-to-parts&nbsp;&nbsp;</td>
+<td class="lambda-list">
+sequence n</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return `n' monophonic sequences that distribute chords tones in `sequence' across the returned sequences. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342737">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-def-tempered-score-mpe-parts-var-name&nbsp;&nbsp;</td>
+<td class="lambda-list">
+instr</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Return a variable name (symbol) for the quasi MPE parts for the given instr (symbol). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342738">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-def-tempered-score-instruments&nbsp;&nbsp;</td>
+<td class="lambda-list">
+temperament score-parts</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Called at compile time by macro] Generate the instruments body for def-score generated by def-tempered-score, where the instruments are split into multiple instruments on different MIDI channels for quasi MPE playback. 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342739">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+aux-def-tempered-score-let-decls&nbsp;&nbsp;</td>
+<td class="lambda-list">
+score-parts</td>
+<td class="symbol-type">
+&nbsp;[Function]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+[Called at compile time by macro] Generate the variable declarations around the def-score generated by def-tempered-score, which split the instrument parts into multiple parts for the different MIDI channels. The let is needed for efficiency (value reuse). 
+ </p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342735">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+deftemperament&nbsp;&nbsp;</td>
+<td class="lambda-list">
+name vals generators <em>&amp;optional</em> docstring</td>
+<td class="symbol-type">
+&nbsp;[Macro]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+Define a temperament with the given `vals' and `generators' bound to the `name'. This results in a method of the given name expecting a ratio and returning the temperament pitch in cents. The `vals' and `generators' can also later be accessed with `get-temperament-vals' and `get-temperament-generators'. 
+ </p>
+<p>
+Note that `vals' and `generators' are evaluated (so they can be an expression resulting in the actual values), while the name is not. 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<p>
+</p>
+</div>
+</div>
+<div class="defun">
+<div class="defunsignatures">
+<a id="_g342740">
+</a>
+<table cellpadding="0" cellspacing="0" width="100%">
+<colgroup span="3">
+<col width="0*"/>
+<col width="1*"/>
+<col width="0*"/>
+</colgroup>
+<tbody>
+<tr>
+<td class="symbol-name">
+def-tempered-score&nbsp;&nbsp;</td>
+<td class="lambda-list">
+name global-args <em>&amp;rest</em> instruments</td>
+<td class="symbol-type">
+&nbsp;[Macro]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="doc-body">
+<p>
+The same as the Opusmodus builtin `def-score', but with the added arg `temperament'. 
+ </p>
+<p>
+</p>
+<h4>
+Arguments: </h4>
+<p>
+TODO: Allow somehow for temperament to change over time (like arguments such as tempo etc.). 
+ </p>
+<ul>
+<li>
+<p>
+temperament (symbol): a temperament defined with deftemperament. 
+ </p>
+</li>
+</ul>
+<p>
+The other arguments are documented for the builtin `def-score'. 
+ </p>
+</div>
+</div>
+</div>
+<div class="cludg-footer">
+Generated by&nbsp;<a href="mailto:ihatchondo@common-lisp.net" lang="en">
+CLDOC</a>
+- 2021-04-05 15:07:07</div>
+</body>
+</html>

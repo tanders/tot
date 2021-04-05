@@ -1,0 +1,631 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2021-04-05 Mon 15:21 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TOT Tutorial</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Torsten Anders" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
+<link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
+<link href="leuven_theme.css" rel="stylesheet">
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2019 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">TOT Tutorial</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#org898e7b8">1. Introduction</a></li>
+<li><a href="#orgcf9dd9d">2. Score processing</a>
+<ul>
+<li><a href="#org140d119">2.1. Score preview</a></li>
+<li><a href="#orgf7fd918">2.2. Score transformations</a></li>
+</ul>
+</li>
+<li><a href="#org95bb267">3. Microtonal and xenharmonic music</a>
+<ul>
+<li><a href="#org650037b">3.1. Introduction</a></li>
+<li><a href="#org2c3e460">3.2. First steps</a></li>
+<li><a href="#org01db866">3.3. Defining temperaments and scales</a></li>
+<li><a href="#org7bbb358">3.4. Obtaining information</a>
+<ul>
+<li><a href="#org06f1acf">3.4.1. Information on intervals</a></li>
+<li><a href="#org27629e0">3.4.2. Information on scales</a></li>
+</ul>
+</li>
+<li><a href="#orgd2ac3a4">3.5. Defining harmony</a></li>
+<li><a href="#org86f9868">3.6. Constraining music to an underlying harmony</a></li>
+<li><a href="#orgc1c5bce">3.7. Dynamic temperaments</a></li>
+</ul>
+</li>
+<li><a href="#org3ebd008">4. Form</a></li>
+<li><a href="#org6f34ac4">5. Karnatic rhythms</a>
+<ul>
+<li><a href="#org2d34e69">5.1. Creating a higher-level plan</a></li>
+<li><a href="#org51f46d6">5.2. Filling in details</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-org898e7b8" class="outline-2">
+<h2 id="org898e7b8"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This document presents in a tutorial fashion some functionality of the <a href="https://github.com/tanders/tot">TOT library</a> for
+<a href="http://opusmodus.com/">Opusmodus</a>. The TOT library is a loose collection of tools for algorithmic composition. Various
+functions and independent and their reference documentation is probably sufficient. 
+</p>
+
+<p>
+However, this library also implements some features where a number of definitions work
+together. This tutorial focusses on documenting such features.
+</p>
+
+<p>
+<b>This document is unfinished&#x2026;</b>
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-orgcf9dd9d" class="outline-2">
+<h2 id="orgcf9dd9d"><span class="section-number-2">2</span> Score processing</h2>
+<div class="outline-text-2" id="text-2">
+</div>
+<div id="outline-container-org140d119" class="outline-3">
+<h3 id="org140d119"><span class="section-number-3">2.1</span> Score preview</h3>
+</div>
+
+
+<div id="outline-container-orgf7fd918" class="outline-3">
+<h3 id="orgf7fd918"><span class="section-number-3">2.2</span> Score transformations</h3>
+</div>
+</div>
+
+
+<div id="outline-container-org95bb267" class="outline-2">
+<h2 id="org95bb267"><span class="section-number-2">3</span> Microtonal and xenharmonic music</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org650037b" class="outline-3">
+<h3 id="org650037b"><span class="section-number-3">3.1</span> Introduction</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+The TOT library greatly expands Opusmodus' builtin support for microtonal music.  Opusmodus'
+builtin support for microtonal music only allows for quarter tones (24 tone equal division of
+the octave, 24-EDO) and eighth tones (48 tone equal division of the octave, 48-EDO). The
+microtonal model of the TOT library, by contrast, allows users to define arbitrary equal
+temperaments (both equal divisions of the octave and other intervals), just intonation (JI) for
+arbitrary prime limits, and arbitrary regular temperaments
+(<a href="https://en.xen.wiki/w/Tour_of_Regular_Temperaments">https://en.xen.wiki/w/Tour_of_Regular_Temperaments</a>). 
+</p>
+
+<p>
+The library provides this tuning universe in a way that is controllable by a single uniform
+notation embedded in <a href="https://opusmodus.com/forums/tutorials/omn-the-language/">OMN</a>. Still, the library tries to keep things relatively clear and simple by
+introducing mainly one actual new accidental symbol, and that symbol will then be combined with
+numbers (for prime limits) to express arbitrary JI pitches, which are then mapped to all the
+possible tunings.  Technically, pitch deflections are expressed by OMN articulations, as a
+library cannot change the underlying OMN pitch format.
+</p>
+
+<p>
+For microtonal playback, the library implements what could be called a subset of <a href="https://www.midi.org/midi-articles/midi-polyphonic-expression-mpe">MIDI Polyphonic
+Expression (MPE)</a>, where chords are distributed automatically over multiple MIDI channels so that
+each tone is tuned independently by pitch bend messages. A considerable number of soft synth
+already support MPE directly (<a href="https://roli.com/mpe">some incomplete list is shown here, scroll down and select Soft
+Synths</a>), and every instrument plugin can be relatively easily made to support MPE by
+using multiple instances of that plugin in parallel (e.g., directly in a DAW or with a plugin
+host that itself is also a plugin, like <a href="https://www.plogue.com/products/bidule.html">Plogue Bidule</a>).
+</p>
+
+
+<p>
+The core idea of this xemharmonic support is that JI, arbitrary equal temperaments and very many
+other tunings (<a href="https://en.xen.wiki/w/Tour_of_Regular_Temperaments">https://en.xen.wiki/w/Tour_of_Regular_Temperaments</a>) can all be expressed as
+regular temperaments. You can find an informal discussion of regular temperaments, its context
+and motivation &#x2013; how it extends/generalises many other tone systems &#x2013; at this link:
+<a href="http://x31eq.com/paradigm.html">http://x31eq.com/paradigm.html</a>. Here is another introduction: <a href="https://en.xen.wiki/w/Mike%27s_Lectures_On_Regular_Temperament_Theory">https://en.xen.wiki/w/Mike%27s_Lectures_On_Regular_Temperament_Theory</a>. 
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-org2c3e460" class="outline-3">
+<h3 id="org2c3e460"><span class="section-number-3">3.2</span> First steps</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Importantly, regular temperaments can all be mapped to JI. Therefore, they can also all by
+notated by a pitch notation capable of notating JI for arbitrary prime limits. So, as a unifying
+pitch notation for all these temperaments I am using such a JI notation. Several recent JI staff
+notations <sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> are based on the same fundamental idea: the
+traditional pitch nominals (A, B, C&#x2026;) and the traditional accidentals (sharp, double-sharp,
+flat&#x2026;) are denoting tones in a Pythagorean tuning (when the notation is read as a JI
+notation), i.e. the traditional nominals and accidentals notate all the pitches we can reach
+when stacking just fifths (plus their octaves). The core idea of these JI pitch notations is
+that they introduce a new accidental for the comma (<a href="https://en.wikipedia.org/wiki/Comma_(music)">https://en.wikipedia.org/wiki/Comma_(music)</a>)
+of every prime limit (<a href="https://en.wikipedia.org/wiki/Limit_(music)">https://en.wikipedia.org/wiki/Limit_(music)</a>). These notations
+mainly differ in what kind of symbols they propose for these comma-accidentals.
+</p>
+
+<p>
+The JI notation of this library is based on the same principle idea. We notate Pythagorean
+nominals and accidentals using the standard OMN pitch notation. Here is a dominant seventh
+chord, which in a JI interpretation would be tuned in Pythagorean tuning.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(setf pythagorean-seventh '(h c4e4g4bb4))
+</pre>
+</div>
+
+
+<p>
+We can play this chord in JI with the TOT macro <code>def-tempered-score</code>. This macro does almost
+exactly what the Opusmodus builtin <code>def-score</code> does, but it additionally receives a temperament as
+one of its arguments. Also, there are multiple MIDI channels specified per instrument, as
+simultaneous tones are played on different MIDI channels, so they can be tuned individually by
+pitch bend (the macro uses the <code>def-score</code> tuning argument in the background).
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(def-tempered-score score-name
+    (<span class="org-builtin">:temperament</span> '31-limit-JI
+     <span class="org-builtin">:time-signature</span> '(4 4))
+  (instr1
+   <span class="org-builtin">:omn</span> pythagorean-seventh
+   <span class="org-builtin">:channel</span> '(1 2 3 4)
+   <span class="org-builtin">:sound</span> 'gm))
+</pre>
+</div>
+
+<p>
+OK, how about instead of the Pythagorean third we want to use a just major third &#x2013; and also a
+harmonic seventh and the 11ths overtone? All pitches that go beyond Pythagorean tuning are
+notated using JI accidentals that express microtonal comma inflections. 
+</p>
+
+<p>
+I suggest we use the letter <code>K</code> for marking any OMN attribute that serves as a Komma
+accidental,<sup><a id="fnr.2" class="footref" href="#fn.2">2</a></sup> and then
+to simply complement that letter with the digits of the prime of the comma in question. So, the
+OMN accidental for the <a href="https://en.wikipedia.org/wiki/Syntonic_comma">5-limit comma (the syntonic comma)</a> is notated <code>5K</code>, the <a href="https://en.wikipedia.org/wiki/Septimal_comma%20">7-limit comma</a> is
+notated <code>7K</code> and so forth. These accidentals raise the pitch by that comma. For a comma flat, put
+a minus in front of the accidental, e.g., <code>-5K</code>. So, here is how we can notate and play<sup><a id="fnr.3" class="footref" href="#fn.3">3</a></sup> the just harmonic seventh chord.  <code>1K</code> is the natural sign, and
+multiple accidental attributes for a chord are assigned in ascending order of chord tones.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(setf 7-limit-seventh '(h c4e4g4bb4 1K+-5K+1K+-7K))
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(def-tempered-score score-name
+    (<span class="org-builtin">:temperament</span> '31-limit-JI
+     <span class="org-builtin">:time-signature</span> '(4 4))
+  (instr1
+   <span class="org-builtin">:omn</span> 7-limit-seventh
+   <span class="org-builtin">:channel</span> '(1 2 3 4)
+   <span class="org-builtin">:sound</span> 'gm))
+</pre>
+</div>
+
+<p>
+JI leads to an infinite number of different pitches. Temperaments reduce that number. So, how about
+we want to play the above chord in, say, 22-tone equal temperament
+(<a href="https://en.xen.wiki/w/22edo">https://en.xen.wiki/w/22edo</a>). We only need to define that temperament. Each regular
+temperament (including all equal temperaments and also JI) is specified by only two settings: a small
+number of generator intervals, and a val for each generator. The vals together specify how each
+prime (up to the prime limit of the temperament) it is mapped to JI. These details are explained
+in the next section. For now, the following code simply shows the definition of 22-EDO, which is pretty brief. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(deftemperament 7-limit-22-EDO
+    <span class="org-comment-delimiter">;; </span><span class="org-comment">List of vals</span>
+    (list (list 22
+                (+ 13 22)
+                (+ 7 (* 2 22))
+                (+ 18 (* 2 22))))
+  <span class="org-comment-delimiter">;; </span><span class="org-comment">List of generators</span>
+  (list (/ 1200.0 22)))
+</pre>
+</div>
+
+<p>
+After we defined 22-EDO this say, we can play the above chord (and any other 7-limit OMN
+intervals) in this temperament.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(def-tempered-score score-name
+    (<span class="org-builtin">:temperament</span> '17-limit-22-EDO
+     <span class="org-builtin">:time-signature</span> '(4 4))
+  (instr1
+   <span class="org-builtin">:omn</span> 7-limit-seventh
+   <span class="org-builtin">:channel</span> '(1 2 3 4)
+   <span class="org-builtin">:sound</span> 'gm))
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org01db866" class="outline-3">
+<h3 id="org01db866"><span class="section-number-3">3.3</span> Defining temperaments and scales</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+We can define arbitrary regular temperaments simply by specifying their vals and generators. This
+section briefly introduces these concept, so that you can define your own temperaments. We will
+first define the temperament for 12-tone equal temperament (12-EDO), because that is most widely
+used and best understood by most Western musicians. 
+</p>
+
+<p>
+All pitches of a regular temperament are specified by a small number of <i>generators</i>. For an
+equal temperament like 12-EDO, we only need a single generator. We can use the semitone of this
+temperament as its generator. All tones of the temperament 12-EDO can then be derived by
+stacking that interval multiple times. The semitone of 12-EDO and thus our generator is tuned to
+100 <a href="https://en.wikipedia.org/wiki/Cent_(music)">cents</a>.
+</p>
+
+<p>
+The <a href="https://en.xen.wiki/w/Val"><i>vals</i></a> of a temperament specify how the intervals of the prime frequency ratios 2, 3,
+5&#x2026; up to the prime limit of our temperament are mapped to intervals in this temperament. 
+</p>
+
+<p>
+<b>TODO</b>
+</p>
+
+
+<div class="org-src-container">
+<pre class="src src-lisp">(deftemperament 11-limit-12-EDO
+    (list (edo-val 12 '(0 7 4 10 6)))
+  '(100.0)
+  <span class="org-string">"12-EDO temperament with an 11-limit mapping."</span>)
+</pre>
+</div>
+</div>
+</div>
+
+
+<div id="outline-container-org7bbb358" class="outline-3">
+<h3 id="org7bbb358"><span class="section-number-3">3.4</span> Obtaining information</h3>
+<div class="outline-text-3" id="text-3-4">
+</div>
+<div id="outline-container-org06f1acf" class="outline-4">
+<h4 id="org06f1acf"><span class="section-number-4">3.4.1</span> Information on intervals</h4>
+</div>
+
+
+<div id="outline-container-org27629e0" class="outline-4">
+<h4 id="org27629e0"><span class="section-number-4">3.4.2</span> Information on scales</h4>
+</div>
+</div>
+
+
+<div id="outline-container-orgd2ac3a4" class="outline-3">
+<h3 id="orgd2ac3a4"><span class="section-number-3">3.5</span> Defining harmony</h3>
+</div>
+
+
+<div id="outline-container-org86f9868" class="outline-3">
+<h3 id="org86f9868"><span class="section-number-3">3.6</span> Constraining music to an underlying harmony</h3>
+</div>
+
+
+
+<div id="outline-container-orgc1c5bce" class="outline-3">
+<h3 id="orgc1c5bce"><span class="section-number-3">3.7</span> Dynamic temperaments</h3>
+<div class="outline-text-3" id="text-3-7">
+<p>
+At a later stage, the library is also meant to support dynamic temperaments, so that the tuning
+can change during the course of a piece, but the implementation of dynamic temperaments is
+still unfinished.
+</p>
+</div>
+</div>
+</div>
+
+
+
+<div id="outline-container-org3ebd008" class="outline-2">
+<h2 id="org3ebd008"><span class="section-number-2">4</span> Form</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+<code>fn-unfold</code> 
+</p>
+</div>
+</div>
+
+
+
+<div id="outline-container-org6f34ac4" class="outline-2">
+<h2 id="org6f34ac4"><span class="section-number-2">5</span> Karnatic rhythms</h2>
+<div class="outline-text-2" id="text-5">
+</div>
+<div id="outline-container-org2d34e69" class="outline-3">
+<h3 id="org2d34e69"><span class="section-number-3">5.1</span> Creating a higher-level plan</h3>
+</div>
+
+
+<div id="outline-container-org51f46d6" class="outline-3">
+<h3 id="org51f46d6"><span class="section-number-3">5.2</span> Filling in details</h3>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1">1</a></sup> <div class="footpara"><p class="footpara">I found so far 5 of such JI notations. Examples of highly developed and more
+widely used notations are Sagittal (<a href="http://sagittal.org">http://sagittal.org</a>) and the Helmholtz-Ellis JI Pitch
+Notation (<a href="https://marsbat.space/pdfs/notation.pdf">https://marsbat.space/pdfs/notation.pdf</a>).</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2">2</a></sup> <div class="footpara"><p class="footpara">Our letter <code>K</code> is similar to the Greek letter kappa, from where the word comma
+comes. (Besides, the letter <code>C</code> is already used in OMN for cent values). When extending OMN as
+users by microtonal accidentals, we are restricted to plain ASCII letters and numbers. Most of the
+ASCII special characters are already used for something else in OMN and are therefore unavailable
+for accidental symbols. Also, while the underlying CCL compiler does support unicode, unicode
+support in OMN attribute names is currently limited. I could use greek letters in the names of
+custon OMN attributes, but all unicode symbols I tried &#x2013; e.g., any mathematical symbols or arrows
+&#x2013; were not supported. Anyway, while such characters could currently not be used for the attribute
+name, they can be used for the string that is then shown for the attribute in the score.</p></div></div>
+
+<div class="footdef"><sup><a id="fn.3" class="footnum" href="#fnr.3">3</a></sup> <div class="footpara"><p class="footpara">Unfortunately, we cannot yet define new shortcuts for the standard Opusmodus editor. I am instead
+using Opusmodus mainly with Emacs, and I defined a shortcut for me for such microtonal snippets
+that calls the TOT function <code>prevew-score</code>, which in turn calls <code>def-tempered-score</code> with the OMN
+expression before the cursor.</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="author">Author: Torsten Anders</p>
+<p class="date">Created: 2021-04-05 Mon 15:21</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
