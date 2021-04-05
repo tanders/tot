@@ -774,3 +774,132 @@ This function is now rather redundant, as Opusmodus automatically prints seed va
 	  (list (flatten x))))
     (list (list x))))
 
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Generalised unfold alternative based on higher-order programming
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun fn-unfold (fns sequence)
+  "Much like the buildin Opusmodus `unfold`, but instead works with functions and additional arguments can be given to the functions. Apply to `sequence` all fns in order.
+
+* Arguments:
+  - fns (list of lists): Each sublist has the form (<omn-fn> &rest <args>), where <omn-fn> is a function expecting an OMN sequence as first argument and arbitrary further argments, and <args> are the further arguments beyond the OMN sequence given to the function.
+  - sequence: OMN sequence
+
+
+* Examples:
+
+Some material to use
+;;; (setf mat '((q c4 d4 e4) (h f4 q b3)))
+
+Remember: all functions used must expect a OMN sequence as *first* argument.
+
+;;; (fn-unfold '((gen-retrograde :flatten T) (quantum :fraction -0.2)) mat)
+
+Some short-hand versions of common functions are defined for conciseness. These short-hand functions commonly start with an asterisk (*) to stand out and to reduce namespace pollution.
+
+;;; (fn-unfold '((*t 12) (*ld (2 3) :section 1)) mat)
+"
+  (reduce (lambda (seq fn)
+	    (apply (if (functionp (first fn))
+		       (first fn)
+		       (fdefinition (first fn)))
+		   seq (rest fn)))
+	  fns :initial-value sequence))
+
+#| ;; Functions that can be used directly (OMN sequence is already first argument) 
+;; gen-retrograde
+;; length-staccato
+;; length-legato
+;; quantum
+;; rnd-order
+;; closest-path
+;; comparative-closest-path
+;; relative-closest-path
+;; ! length-rational-quantize
+;; velocity-to-dynamic
+|#
+
+(defun swap-args (fn &optional (pos 1))
+  "Return a function where the argument at `pos` is moved forward to become the first positional argument. Intended for making arbitrary OMN functions usable for `fn-unfold` (so that their OMN argument becomes the first positional argument)."
+  (lambda (&rest args)
+    (apply fn (nth pos args) (append (subseq args 0 pos) (subseq args (1+ pos))))))
+
+;;;
+;;; Some more concisely named Opusmodus functions compatible with fn-unfold
+;;;
+
+(defun *t (sequence transpose &key (section NIL) (exclude NIL) (ambitus 'piano) (omn NIL))
+  "Like pitch-transpose, but sequence as first param."
+  (pitch-transpose transpose sequence :section section :exclude exclude :ambitus ambitus :omn omn))
+
+(defun *mute (sequence &key (section NIL) (exclude NIL))
+  "Alias for gen-pause."
+  (gen-pause sequence :section section :exclude exclude))
+
+(defun *a (sequence range &key (type :transpose) (section NIL) (exclude NIL) (omn NIL))
+  "Like ambitus, but sequence as first param."
+  (ambitus range sequence :type type :section section :exclude exclude :omn omn))
+
+(defun *ac (sequence size &key (unique T) (section NIL) (exclude NIL))
+  "Like ambitus-chord, but sequence as first param."
+  (ambitus-chord size sequence :unique unique :section section :exclude exclude))
+
+;; ;; TODO: Either chord-interval-remove is buggy or not well documented...
+;; ;; Perhaps instead define your own versions of chord-interval-remove and chord-interval-remove when needed?
+;; (defun *cir (sequence intervals &key (octaves NIL) (sort :asc) (section NIL) (exclude NIL))
+;;   "Like chord-interval-remove, but sequence as first param."
+;;   (chord-interval-remove intervals sequence &key :octaves octaves :sort sort :section section :exclude exclude))
+
+;; (defun *cia (sequence intervals &key (chord T) (section NIL) (exclude NIL))
+;;   "Like chord-interval-add, but sequence as first param."
+;;   (chord-interval-remove intervals sequence &key :chord chord :section section :exclude exclude))
+
+(defun *r (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return retrograde."
+  (pitch-variant sequence :variant 'r :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *i (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return inverse."
+  (pitch-variant sequence :variant 'i :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *ri (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return retrograde inverse."
+  (pitch-variant sequence :variant 'ri :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *> (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return descending."
+  (pitch-variant sequence :variant '> :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *< (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return ascending."
+  (pitch-variant sequence :variant '< :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *>< (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return descending-ascending."
+  (pitch-variant sequence :variant '>< :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *<> (sequence &key (transpose NIL) (section NIL) (exclude NIL) (omn T))
+  "Simplification of pitch-variant: return ascending-descending."
+  (pitch-variant sequence :variant '<> :transpose transpose :section section :exclude exclude :omn omn))
+
+(defun *ld (sequence values &key set ignore (seed NIL) (section NIL) (exclude NIL) (omn NIL))
+  "Like length-divide, but sequence as first param."
+  (length-divide values sequence :set set :ignore ignore :section section :exclude exclude :omn omn :seed seed))
+
+(defun *frag (sequence count range &key (encode T) (lists NIL) (section NIL) (exclude NIL) (seed NIL))
+  "Like gen-fragment, but sequence as first param."
+  (gen-fragment count range sequence :encode encode :lists lists :section section :exclude exclude :seed seed))
+
+(defun *rest (sequence value &key (type NIL) (swallow T) (section NIL) (exclude NIL) (omn NIL) (flat NIL) (span :length))
+  "Like length-to-rest, but sequence as first param."
+  (length-to-rest value sequence :type type :swallow swallow :section section :exclude exclude :omn omn :flat flat :span span))
+
+;; ? TODO: density
+
+;; ? TODO: length-span
+
+
