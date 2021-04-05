@@ -28,7 +28,11 @@ $ git clone https://github.com/tanders/tot.git
 
   You might be be asked for your GitHub username and password.
   
-  This library depends on several other libraries, which you should install in the same way.
+  This library depends on several other libraries. You can download [[https://common-lisp.net/project/cl-utilities/][the library cl-utilities at
+  this link]]. You can install it by copying the unpacked directory into your local directory
+  =~/common-lisp/= as well. 
+
+  Other libraries you can install in the same way as TOT itself.
   
 #+begin_src bash :tangle yes
 $ cd ~/common-lisp
@@ -49,7 +53,7 @@ $ cd ~/common-lisp/tot
 $ git pull
 #+end_src
 
-   Make sure you update all the dependencies likewise.
+   Make sure you update the dependencies likewise.
 
 #+begin_src bash :tangle yes
 $ cd ~/common-lisp/string-tools
@@ -74,11 +78,17 @@ $ git pull
 (require :tot)
 #+end_src  
 
-  As already mentioned, for most convenient use within Opusmodus, you can drag and drop the whole folder of this library in the browser of an Opusmodus project. Then, visit the HTML documentation of this library from within Opusmodus: open the =tot= folder, and then its contained folder =docs= and click on an HTML file, say =index.html=. You can now browse the reference documentation of the library within Opusmodus, which explains its individual definitions. Most importantly, you can directly run all example code in the documentation from within Opusmodus (thanks, Janusz Podrazik).
+  As already mentioned, for most convenient use within Opusmodus, you can drag and drop the whole
+  folder of this library in the browser of an Opusmodus project. Then, visit the HTML documentation
+  of this library from within Opusmodus: open the =tot= folder, and then its contained folder
+  =docs= and click on an HTML file, say =index.html=. You can now browse the reference
+  documentation of the library within Opusmodus, which explains its individual definitions. Most
+  importantly, you can directly run all example code in the documentation from within Opusmodus
+  (thanks, Janusz Podrazik).
+
+  *NOTE: Unfortunately, evaluating code from within HTML and PDF files is currently broken in Opusmodus.*
     
   This collection of definitions is roughly sorted in the file structure and documentation according to certain musical aspects (rhythm, pitches, musical form...).  
-
-  The file =score= deserves a special mention, because it defines a little library in his own. It provides a collection of tools to transform polyphonic scores in various ways. The function =preview-score= notates and plays such scores, the other functions in this sub-library process it it various ways. Whenever elsewhere in the library (e.g., in the file =constraints.lisp=) the documentation mentions a score, it refers to the format expected by =preview-score=. 
 
   Note that dependencies of this library are of interest on their own for computer-aided composition. This is particularly true for the constraint library [[https://github.com/tanders/cluster-engine][cluster engine]] and its extension [[https://github.com/tanders/cluster-rules][cluster rules]], as well as the library [[https://github.com/tanders/fenv][fenv]]. 
 
@@ -87,5 +97,5 @@ $ git pull
 
   Distributed under the GNU General Public License.
   
-  Copyright © 2018 Torsten Anders
+  Copyright © 2018, 2019, 2021 Torsten Anders
 
