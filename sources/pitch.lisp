@@ -589,3 +589,179 @@ Hack: Quick evaluation: strong melodic accents have an accent value greater than
       (:omn (pitch-to-midi (omn :pitch sequence)))
       (:pitch (pitch-to-midi sequence))
       (:midi sequence)))))
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Tonnetz tools
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun triad-in-root-position (triad)
+  "Return the given major or minor triad in root position.
+
+* Arguments:
+  - triad (OPMO chord): a major or minor triad of exactly three pitches in any position
+
+* Examples:
+
+;;; (triad-in-root-position 'e4g4c5)
+=> c4e4g4
+
+NOTE: Result currently always in close position.
+;;; (triad-in-root-position 'e3a4c6)
+=> a2c3e3
+
+BUG: Currently the pitch order must be in some rotated from of root, third, fifth.
+The following is currently not supported.
+;;; (triad-in-root-position 'a2e5c6)
+=> c4e4g4
+"
+  (let (;; Consecutive harmonic intervals
+	(intervals (mapcar #'(lambda (p) (mod p 12))
+			   (tu:x->dx (sort (pitch-to-midi (melodize triad))
+					   #'<))))
+	;; (intervals (tu:x->dx (pitch-to-midi (melodize triad))))
+	)
+    (cond 
+      ;; major triad
+      ;; BUG: (4 3) here means either 4 or 3, not the list
+      ((equal intervals '(4 3)) triad) ; root position
+      ((equal intervals '(3 5)) (chord-inversion -1 triad)) ; 1st inversion
+      ((equal intervals '(5 4)) (chord-inversion -2 triad)) ; 2nd inversion
+      ;; minor triad
+      ((equal intervals '(3 4)) triad) ; root position
+      ((equal intervals '(4 5)) (chord-inversion -1 triad)) ; 1st inversion
+      ((equal intervals '(5 3)) (chord-inversion -2 triad)) ; 2nd inversion
+      ;; BUG: raise exception
+      (T (error "Chord ~A with intervals ~A not supported." triad intervals)))))
+
+#|
+;; (4 3)
+(tu:x->dx (pitch-to-midi (melodize 'c4e4g4)))
+
+;; (3 5)
+(tu:x->dx (pitch-to-midi (melodize 'e4g4c5)))
+
+;; (5 4)
+(tu:x->dx (pitch-to-midi (melodize 'g4c5e5)))
+
+;; (3 4)
+(tu:x->dx (pitch-to-midi (melodize 'c4eb4g4)))
+
+;; (4 5)
+(tu:x->dx (pitch-to-midi (melodize 'eb4g4c5)))
+
+;; (5 3)
+(tu:x->dx (pitch-to-midi (melodize 'g4c5eb5)))
+|#
+
+
+;;; TODO:
+;;;  - Add all expand-chord args -- as separate args or in sublist?
+;;;  - ? Revise function name
+;;;  - OK Preserve third of triad
+(defun chord-over-triad-root (triad chord-form &key (preserve-quality? NIL)
+					;  variant rotate add remove mod assoc seed row
+						 )
+  "Change the chord type of a give triad to the specified chord type.
+
+* Arguments:
+  - triad (OPMO chord): a major or minor triad of exactly three pitches in any position
+  - chord-form (list): a chord name symbol or a chord form as expected by expand-chord: (chord &key variant rotate add remove mod assoc seed row)
+  - preserve-quality? (Boolean): not only the root, but also the third of the triad is preserved.
+
+* Examples:
+
+Change a minor chord into an added sixth major chord
+;;; (chord-over-triad-root 'eb4g4c5 6)
+=> c4e4g4a4
+
+Change a minor chord into an added sixth minor chord (preserve its third)
+;;; (chord-over-triad-root 'eb4g4c5 6 :preserve-quality? T)
+=> c4eb4g4a4
+
+Added chord form keys are supported
+;;; (chord-over-triad-root 'eb4g4c5 '(6 :rotate 1))
+=> e4g4a4c5
+"
+  (let* ((triad-pitches (melodize (triad-in-root-position triad)))
+	 (root (first triad-pitches))
+	(chord (expand-chord (cons root (tu:ensure-list chord-form)))))
+    (if preserve-quality?
+	;; BUG: oversimplified, currently only works for chord types that are extensions of triads, e.g., not for suspension chords
+	(chordize (append (list root (second triad-pitches))
+			  (subseq (melodize chord) 2)))
+	chord)
+    ))
+
+#|
+(triad-to-chord-type 'eb4g4c5 6)
+
+|#
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Quasi tonnetz alternative
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#|
+Idea: new quasi tonnetz from scratch that only results in roots, and chord quality/type is specified separately.
+
+Multiple dimensions for moving into different "prime directions", perhaps simply represented by fractions 
+
+Main idea: repetition of the same root interval results in the same interval transposition.
+|#
+
+(defun region-to-interval (symbol)
+  (case symbol
+    (:t 0)
+    (:d 7)
+    (:s 5)
+    (:m 4)
+    (:f-m 3)
+    (:sm 9)
+    (:f-sm 8)))
+
+
+;; TODO: add a way to refer back to inital pitch
+
+;; NOTE: Difference compared to tonnetz: closeness of relation is not represented, as arbitrary transitions are possible
+(defun chord-sequence (pitch interval+chord-form)
+  "
+* Arguments:
+  - pitch (OMN pitch): pitch to start from.
+  - interval+chord-form (list of int and chord-form): progression interval from previous chord and Opusmodus chord-form
+  ;; ;; TODO: later also support symbols, e.g., for Schoenberg's chart of regions
+  ;; - transition (fraction or int)
+  ;; - chord-form (list): a chord name symbol or a chord form as expected by expand-chord: (chord &key variant rotate add remove mod assoc seed row)
+"
+  ;; NOTE: for now root-progression is int
+  (let ((root pitch))
+    (loop for args in interval+chord-form
+       collect (let* ((interval (first args))
+		      (chord-form (second args))
+		      (chord (expand-chord (cons (midi-to-pitch (+ (pitch-to-midi root) interval))
+						 (tu:ensure-list chord-form)))))
+		 (setf root (first (melodize chord)))
+		 chord)
+	 )))
+
+; (chord-progression 'd4 '((0 maj) (7 7) (-7 maj)))
+
+
+
+#|
+261.62555 
+
+(hertz-to-interval (list (* 261.62555 1/2)))
+
+(hertz-to-interval (list 261))
+
+(pitch-to-midi 'c4)
+|#
+
+
