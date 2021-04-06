@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{(}\PYG{n+nv}{audition\PYGZhy{}last\PYGZhy{}score}\PYG{p}{)}
+\PYG{p}{(}\PYG{n+nv}{display\PYGZhy{}musicxml} \PYG{n+nv+vg}{*last\PYGZhy{}score*} \PYG{l+s+ss}{:display} \PYG{l+s+ss}{:window}\PYG{p}{)}
+\end{Verbatim}

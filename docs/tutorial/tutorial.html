@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2021-04-05 Mon 15:21 -->
+<!-- 2021-04-06 Tue 08:46 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>TOT Tutorial</title>
@@ -254,53 +254,51 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org898e7b8">1. Introduction</a></li>
-<li><a href="#orgcf9dd9d">2. Score processing</a>
+<li><a href="#org9659827">1. Introduction</a></li>
+<li><a href="#orgcdef51f">2. Score processing</a>
 <ul>
-<li><a href="#org140d119">2.1. Score preview</a></li>
-<li><a href="#orgf7fd918">2.2. Score transformations</a></li>
+<li><a href="#org7fb7553">2.1. Score preview</a></li>
+<li><a href="#orga02688f">2.2. Score transformations</a></li>
 </ul>
 </li>
-<li><a href="#org95bb267">3. Microtonal and xenharmonic music</a>
+<li><a href="#org7d28941">3. Microtonal and xenharmonic music with regular temperaments</a>
 <ul>
-<li><a href="#org650037b">3.1. Introduction</a></li>
-<li><a href="#org2c3e460">3.2. First steps</a></li>
-<li><a href="#org01db866">3.3. Defining temperaments and scales</a></li>
-<li><a href="#org7bbb358">3.4. Obtaining information</a>
+<li><a href="#org2d1a90e">3.1. Introduction</a></li>
+<li><a href="#org998073c">3.2. First steps</a></li>
+<li><a href="#org2934322">3.3. Defining temperaments and scales</a></li>
+<li><a href="#orgd7902dd">3.4. Obtaining information</a>
 <ul>
-<li><a href="#org06f1acf">3.4.1. Information on intervals</a></li>
-<li><a href="#org27629e0">3.4.2. Information on scales</a></li>
+<li><a href="#org5bcbb03">3.4.1. Information on intervals</a></li>
+<li><a href="#org22ef8a8">3.4.2. Information on scales</a></li>
 </ul>
 </li>
-<li><a href="#orgd2ac3a4">3.5. Defining harmony</a></li>
-<li><a href="#org86f9868">3.6. Constraining music to an underlying harmony</a></li>
-<li><a href="#orgc1c5bce">3.7. Dynamic temperaments</a></li>
+<li><a href="#orgec0d799">3.5. Defining harmony</a></li>
+<li><a href="#orgcf5bb12">3.6. Constraining music to an underlying harmony</a></li>
+<li><a href="#org2ac5655">3.7. Dynamic temperaments</a></li>
 </ul>
 </li>
-<li><a href="#org3ebd008">4. Form</a></li>
-<li><a href="#org6f34ac4">5. Karnatic rhythms</a>
+<li><a href="#org2a99c14">4. Form</a></li>
+<li><a href="#orgdeeb563">5. Karnatic rhythms</a>
 <ul>
-<li><a href="#org2d34e69">5.1. Creating a higher-level plan</a></li>
-<li><a href="#org51f46d6">5.2. Filling in details</a></li>
+<li><a href="#orgf64bfb0">5.1. Creating a higher-level plan</a></li>
+<li><a href="#org5548157">5.2. Filling in details</a></li>
 </ul>
 </li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-org898e7b8" class="outline-2">
-<h2 id="org898e7b8"><span class="section-number-2">1</span> Introduction</h2>
+<div id="outline-container-org9659827" class="outline-2">
+<h2 id="org9659827"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 This document presents in a tutorial fashion some functionality of the <a href="https://github.com/tanders/tot">TOT library</a> for
-<a href="http://opusmodus.com/">Opusmodus</a>. The TOT library is a loose collection of tools for algorithmic composition. Various
-functions and independent and their reference documentation is probably sufficient. 
+<a href="http://opusmodus.com/">Opusmodus</a>. The TOT library is a loose collection of tools for algorithmic composition. This library
+implements some features, where a number of definitions work together. This tutorial focusses on
+documenting such features. Other functions are self-contained, and their <a href="../reference/index.html">reference documentation</a>
+is probably sufficient.
 </p>
 
-<p>
-However, this library also implements some features where a number of definitions work
-together. This tutorial focusses on documenting such features.
-</p>
 
 <p>
 <b>This document is unfinished&#x2026;</b>
@@ -309,27 +307,31 @@ together. This tutorial focusses on documenting such features.
 </div>
 
 
-<div id="outline-container-orgcf9dd9d" class="outline-2">
-<h2 id="orgcf9dd9d"><span class="section-number-2">2</span> Score processing</h2>
+<div id="outline-container-orgcdef51f" class="outline-2">
+<h2 id="orgcdef51f"><span class="section-number-2">2</span> Score processing</h2>
 <div class="outline-text-2" id="text-2">
 </div>
-<div id="outline-container-org140d119" class="outline-3">
-<h3 id="org140d119"><span class="section-number-3">2.1</span> Score preview</h3>
+
+
+
+
+<div id="outline-container-org7fb7553" class="outline-3">
+<h3 id="org7fb7553"><span class="section-number-3">2.1</span> Score preview</h3>
 </div>
 
 
-<div id="outline-container-orgf7fd918" class="outline-3">
-<h3 id="orgf7fd918"><span class="section-number-3">2.2</span> Score transformations</h3>
+<div id="outline-container-orga02688f" class="outline-3">
+<h3 id="orga02688f"><span class="section-number-3">2.2</span> Score transformations</h3>
 </div>
 </div>
 
 
-<div id="outline-container-org95bb267" class="outline-2">
-<h2 id="org95bb267"><span class="section-number-2">3</span> Microtonal and xenharmonic music</h2>
+<div id="outline-container-org7d28941" class="outline-2">
+<h2 id="org7d28941"><span class="section-number-2">3</span> Microtonal and xenharmonic music with regular temperaments</h2>
 <div class="outline-text-2" id="text-3">
 </div>
-<div id="outline-container-org650037b" class="outline-3">
-<h3 id="org650037b"><span class="section-number-3">3.1</span> Introduction</h3>
+<div id="outline-container-org2d1a90e" class="outline-3">
+<h3 id="org2d1a90e"><span class="section-number-3">3.1</span> Introduction</h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 The TOT library greatly expands Opusmodus' builtin support for microtonal music.  Opusmodus'
@@ -372,8 +374,8 @@ and motivation &#x2013; how it extends/generalises many other tone systems &#x20
 </div>
 
 
-<div id="outline-container-org2c3e460" class="outline-3">
-<h3 id="org2c3e460"><span class="section-number-3">3.2</span> First steps</h3>
+<div id="outline-container-org998073c" class="outline-3">
+<h3 id="org998073c"><span class="section-number-3">3.2</span> First steps</h3>
 <div class="outline-text-3" id="text-3-2">
 <p>
 Importantly, regular temperaments can all be mapped to JI. Therefore, they can also all by
@@ -406,11 +408,12 @@ We can play this chord in JI with the TOT macro <code>def-tempered-score</code>.
 exactly what the Opusmodus builtin <code>def-score</code> does, but it additionally receives a temperament as
 one of its arguments. Also, there are multiple MIDI channels specified per instrument, as
 simultaneous tones are played on different MIDI channels, so they can be tuned individually by
-pitch bend (the macro uses the <code>def-score</code> tuning argument in the background).
+pitch bend (the macro uses the <code>def-score</code> tuning argument in the background). Only chords with as
+many tones as we specify MIDI channels can be independently/correctly tuned.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-lisp">(def-tempered-score score-name
+<pre class="src src-lisp">(def-tempered-score my-score-name
     (<span class="org-builtin">:temperament</span> '31-limit-JI
      <span class="org-builtin">:time-signature</span> '(4 4))
   (instr1
@@ -419,6 +422,78 @@ pitch bend (the macro uses the <code>def-score</code> tuning argument in the bac
    <span class="org-builtin">:sound</span> 'gm))
 </pre>
 </div>
+
+
+<p>
+While <code>def-tempered-score</code> generates the score, it does not actually display it nor play it
+back. We can always play back and notate the last score explicitly with the next code snippet. The
+notation also reveals how <code>def-tempered-score</code> works in the background: it splits the given
+score instrument (<code>instr1</code>) with the chord into as many staves as there are MIDI channels, so that
+these resulting monophonic staves can be independently tuned via MIDI pitchbend.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(audition-last-score)
+(display-musicxml *last-score* <span class="org-builtin">:display</span> <span class="org-builtin">:window</span>)
+</pre>
+</div>
+
+<p>
+Instead of first defining a score with <code>def-tempered-score</code> and then explicitly triggering
+its notation or playback as shown, we can also use the TOT function <code>preview-score</code>, which then calls
+<code>def-tempered-score</code> in the background. We will commonly use a single temperament and a fixed set
+of instruments when working on a piece, so we might want to specify their settings only once and
+then use it for notating and playing back multiple snippets.
+</p>
+
+<p>
+We can set the tuning separately using the variable <code>*current-temperament*</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(setf *current-temperament* '31-limit-JI)
+</pre>
+</div>
+
+<p>
+We can specify all other score settings via the two variables <code>*default-preview-score-header*</code> and
+<code>*default-preview-score-instruments*</code>, where <code>*default-preview-score-header*</code> is a keyword list
+(plist) supporting all keyword arguments of <code>def-score</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(setf *default-preview-score-header*
+      '(<span class="org-builtin">:title</span> <span class="org-string">"Dummy title"</span>
+        <span class="org-builtin">:tempo</span> 80))
+</pre>
+</div>
+
+<p>
+Any instrument-specific settings can be specified with the variable
+<code>*default-preview-score-instruments*</code> for each instrument we want to use. The instrument labels we
+use here are the same that we will later use in the score short-hand format given to
+<code>preview-score</code>. Note that multiple MIDI channels are specified here again, and also note the
+nested quote (<code>'</code>) signs.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(setf *default-preview-score-instruments*
+      '(<span class="org-builtin">:instr1</span> (<span class="org-builtin">:sound</span> 'gm
+                 <span class="org-builtin">:channel</span> '(1 2 3 4))))
+</pre>
+</div>
+
+<p>
+We can now instead of <code>def-tempered-score</code> use the shorter call <code>preview-score</code> with these
+settings. The function <code>preview-score</code> is designed for playing back polyphonic scores, so we need
+to specify the instrument labels as well.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-lisp">(preview-score (list <span class="org-builtin">:instr1</span> pythagorean-seventh))
+</pre>
+</div>
+
 
 <p>
 OK, how about instead of the Pythagorean third we want to use a just major third &#x2013; and also a
@@ -436,21 +511,12 @@ a minus in front of the accidental, e.g., <code>-5K</code>. So, here is how we c
 multiple accidental attributes for a chord are assigned in ascending order of chord tones.
 </p>
 
+
 <div class="org-src-container">
-<pre class="src src-lisp">(setf 7-limit-seventh '(h c4e4g4bb4 1K+-5K+1K+-7K))
+<pre class="src src-lisp">(preview-score (list <span class="org-builtin">:instr1</span> '(h c4e4g4bb4 1K+-5K+1K+-7K)))
 </pre>
 </div>
 
-<div class="org-src-container">
-<pre class="src src-lisp">(def-tempered-score score-name
-    (<span class="org-builtin">:temperament</span> '31-limit-JI
-     <span class="org-builtin">:time-signature</span> '(4 4))
-  (instr1
-   <span class="org-builtin">:omn</span> 7-limit-seventh
-   <span class="org-builtin">:channel</span> '(1 2 3 4)
-   <span class="org-builtin">:sound</span> 'gm))
-</pre>
-</div>
 
 <p>
 JI leads to an infinite number of different pitches. Temperaments reduce that number. So, how about
@@ -471,30 +537,28 @@ in the next section. For now, the following code simply shows the definition of 
                 (+ 18 (* 2 22))))
   <span class="org-comment-delimiter">;; </span><span class="org-comment">List of generators</span>
   (list (/ 1200.0 22)))
+
+(setf *current-temperament* '7-limit-22-EDO)
 </pre>
 </div>
 
 <p>
-After we defined 22-EDO this say, we can play the above chord (and any other 7-limit OMN
+After we defined 22-EDO this way, we can play the above chord (and any other 7-limit OMN
 intervals) in this temperament.
 </p>
 
+
 <div class="org-src-container">
-<pre class="src src-lisp">(def-tempered-score score-name
-    (<span class="org-builtin">:temperament</span> '17-limit-22-EDO
-     <span class="org-builtin">:time-signature</span> '(4 4))
-  (instr1
-   <span class="org-builtin">:omn</span> 7-limit-seventh
-   <span class="org-builtin">:channel</span> '(1 2 3 4)
-   <span class="org-builtin">:sound</span> 'gm))
+<pre class="src src-lisp">(preview-score (list <span class="org-builtin">:instr1</span> '(h c4e4g4bb4 1K+-5K+1K+-7K)))
 </pre>
 </div>
 </div>
 </div>
 
 
-<div id="outline-container-org01db866" class="outline-3">
-<h3 id="org01db866"><span class="section-number-3">3.3</span> Defining temperaments and scales</h3>
+
+<div id="outline-container-org2934322" class="outline-3">
+<h3 id="org2934322"><span class="section-number-3">3.3</span> Defining temperaments and scales</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 We can define arbitrary regular temperaments simply by specifying their vals and generators. This
@@ -532,34 +596,34 @@ The <a href="https://en.xen.wiki/w/Val"><i>vals</i></a> of a temperament specify
 </div>
 
 
-<div id="outline-container-org7bbb358" class="outline-3">
-<h3 id="org7bbb358"><span class="section-number-3">3.4</span> Obtaining information</h3>
+<div id="outline-container-orgd7902dd" class="outline-3">
+<h3 id="orgd7902dd"><span class="section-number-3">3.4</span> Obtaining information</h3>
 <div class="outline-text-3" id="text-3-4">
 </div>
-<div id="outline-container-org06f1acf" class="outline-4">
-<h4 id="org06f1acf"><span class="section-number-4">3.4.1</span> Information on intervals</h4>
+<div id="outline-container-org5bcbb03" class="outline-4">
+<h4 id="org5bcbb03"><span class="section-number-4">3.4.1</span> Information on intervals</h4>
 </div>
 
 
-<div id="outline-container-org27629e0" class="outline-4">
-<h4 id="org27629e0"><span class="section-number-4">3.4.2</span> Information on scales</h4>
+<div id="outline-container-org22ef8a8" class="outline-4">
+<h4 id="org22ef8a8"><span class="section-number-4">3.4.2</span> Information on scales</h4>
 </div>
 </div>
 
 
-<div id="outline-container-orgd2ac3a4" class="outline-3">
-<h3 id="orgd2ac3a4"><span class="section-number-3">3.5</span> Defining harmony</h3>
+<div id="outline-container-orgec0d799" class="outline-3">
+<h3 id="orgec0d799"><span class="section-number-3">3.5</span> Defining harmony</h3>
 </div>
 
 
-<div id="outline-container-org86f9868" class="outline-3">
-<h3 id="org86f9868"><span class="section-number-3">3.6</span> Constraining music to an underlying harmony</h3>
+<div id="outline-container-orgcf5bb12" class="outline-3">
+<h3 id="orgcf5bb12"><span class="section-number-3">3.6</span> Constraining music to an underlying harmony</h3>
 </div>
 
 
 
-<div id="outline-container-orgc1c5bce" class="outline-3">
-<h3 id="orgc1c5bce"><span class="section-number-3">3.7</span> Dynamic temperaments</h3>
+<div id="outline-container-org2ac5655" class="outline-3">
+<h3 id="org2ac5655"><span class="section-number-3">3.7</span> Dynamic temperaments</h3>
 <div class="outline-text-3" id="text-3-7">
 <p>
 At a later stage, the library is also meant to support dynamic temperaments, so that the tuning
@@ -572,8 +636,8 @@ still unfinished.
 
 
 
-<div id="outline-container-org3ebd008" class="outline-2">
-<h2 id="org3ebd008"><span class="section-number-2">4</span> Form</h2>
+<div id="outline-container-org2a99c14" class="outline-2">
+<h2 id="org2a99c14"><span class="section-number-2">4</span> Form</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 <code>fn-unfold</code> 
@@ -583,17 +647,17 @@ still unfinished.
 
 
 
-<div id="outline-container-org6f34ac4" class="outline-2">
-<h2 id="org6f34ac4"><span class="section-number-2">5</span> Karnatic rhythms</h2>
+<div id="outline-container-orgdeeb563" class="outline-2">
+<h2 id="orgdeeb563"><span class="section-number-2">5</span> Karnatic rhythms</h2>
 <div class="outline-text-2" id="text-5">
 </div>
-<div id="outline-container-org2d34e69" class="outline-3">
-<h3 id="org2d34e69"><span class="section-number-3">5.1</span> Creating a higher-level plan</h3>
+<div id="outline-container-orgf64bfb0" class="outline-3">
+<h3 id="orgf64bfb0"><span class="section-number-3">5.1</span> Creating a higher-level plan</h3>
 </div>
 
 
-<div id="outline-container-org51f46d6" class="outline-3">
-<h3 id="org51f46d6"><span class="section-number-3">5.2</span> Filling in details</h3>
+<div id="outline-container-org5548157" class="outline-3">
+<h3 id="org5548157"><span class="section-number-3">5.2</span> Filling in details</h3>
 </div>
 </div>
 <div id="footnotes">
@@ -624,7 +688,7 @@ expression before the cursor.</p></div></div>
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Torsten Anders</p>
-<p class="date">Created: 2021-04-05 Mon 15:21</p>
+<p class="date">Created: 2021-04-06 Tue 08:46</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

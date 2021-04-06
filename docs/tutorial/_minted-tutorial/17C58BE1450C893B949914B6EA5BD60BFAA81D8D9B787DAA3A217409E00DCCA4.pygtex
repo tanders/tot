@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{(}\PYG{n+nv}{deftemperament} \PYG{n+nv}{7\PYGZhy{}limit\PYGZhy{}22\PYGZhy{}EDO}
+    \PYG{c+c1}{;; List of vals}
+    \PYG{p}{(}\PYG{n+nb}{list} \PYG{p}{(}\PYG{n+nb}{list} \PYG{l+m+mi}{22}
+		\PYG{p}{(}\PYG{n+nb}{+} \PYG{l+m+mi}{13} \PYG{l+m+mi}{22}\PYG{p}{)}
+		\PYG{p}{(}\PYG{n+nb}{+} \PYG{l+m+mi}{7} \PYG{p}{(}\PYG{n+nb}{*} \PYG{l+m+mi}{2} \PYG{l+m+mi}{22}\PYG{p}{))}
+		\PYG{p}{(}\PYG{n+nb}{+} \PYG{l+m+mi}{18} \PYG{p}{(}\PYG{n+nb}{*} \PYG{l+m+mi}{2} \PYG{l+m+mi}{22}\PYG{p}{))))}
+  \PYG{c+c1}{;; List of generators}
+  \PYG{p}{(}\PYG{n+nb}{list} \PYG{p}{(}\PYG{n+nb}{/} \PYG{l+m+mf}{1200.0} \PYG{l+m+mi}{22}\PYG{p}{)))}
+
+\PYG{p}{(}\PYG{n+nb}{setf} \PYG{n+nv+vg}{*current\PYGZhy{}temperament*} \PYG{l+s+ss}{\PYGZsq{}7\PYGZhy{}limit\PYGZhy{}22\PYGZhy{}EDO}\PYG{p}{)}
+\end{Verbatim}

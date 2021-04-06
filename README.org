@@ -11,6 +11,12 @@ Nevertheless, I trust at least some of the various functions here might be usefu
 
   You can browse the documentation of this library online at https://tanders.github.io/tot/. However, remember that you can directly evaluate the many examples in the documentation when (after installing the library) you drag the library folder into your Opusmodus project navigator and open the documentation within Opusmodus.
 
+  *NOTE: Unfortunately, evaluating code from within HTML files is currently broken in
+  Opusmodus.* (As is some HTML navigation that worked in previous Opusmodus versions.) 
+
+  Evaluating code from in PDF files is working, though, so you can currently at least execute
+  examples in the PDF version of the TOT tutorial directly from within Opusmodus. The TOT reference
+  is only available in HTML format, though.
 
 
 * Installation
@@ -85,8 +91,6 @@ $ git pull
   documentation of the library within Opusmodus, which explains its individual definitions. Most
   importantly, you can directly run all example code in the documentation from within Opusmodus
   (thanks, Janusz Podrazik).
-
-  *NOTE: Unfortunately, evaluating code from within HTML and PDF files is currently broken in Opusmodus.*
     
   This collection of definitions is roughly sorted in the file structure and documentation according to certain musical aspects (rhythm, pitches, musical form...).  
 

@@ -122,16 +122,19 @@ time 0 dur 1 pitch 60 ;
 * Introduction
 
 This document presents in a tutorial fashion some functionality of the [[https://github.com/tanders/tot][TOT library]] for
-[[http://opusmodus.com/][Opusmodus]]. The TOT library is a loose collection of tools for algorithmic composition. Various
-functions and independent and their reference documentation is probably sufficient. 
+[[http://opusmodus.com/][Opusmodus]]. The TOT library is a loose collection of tools for algorithmic composition. This library
+implements some features, where a number of definitions work together. This tutorial focusses on
+documenting such features. Other functions are self-contained, and their [[../reference/index.html][reference documentation]]
+is probably sufficient.
 
-However, this library also implements some features where a number of definitions work
-together. This tutorial focusses on documenting such features.
 
 *This document is unfinished...*
 
 
 * Score processing
+
+# The file =score= deserves a special mention, because it defines a little library in his own. It provides a collection of tools to transform polyphonic scores in various ways. The function =preview-score= notates and plays such scores, the other functions in this sub-library process it it various ways. Whenever elsewhere in the library (e.g., in the file =constraints.lisp=) the documentation mentions a score, it refers to the format expected by =preview-score=. 
+
 
   
 
@@ -140,8 +143,8 @@ together. This tutorial focusses on documenting such features.
 
 ** Score transformations
 
-
-* Microtonal and xenharmonic music
+   
+* Microtonal and xenharmonic music with regular temperaments
 
 ** Introduction
 
@@ -201,26 +204,82 @@ together. This tutorial focusses on documenting such features.
    nominals and accidentals using the standard OMN pitch notation. Here is a dominant seventh
    chord, which in a JI interpretation would be tuned in Pythagorean tuning.
 
- #+begin_src lisp
- (setf pythagorean-seventh '(h c4e4g4bb4))
- #+end_src
+#+begin_src lisp
+(setf pythagorean-seventh '(h c4e4g4bb4))
+#+end_src
 
 
  We can play this chord in JI with the TOT macro =def-tempered-score=. This macro does almost
  exactly what the Opusmodus builtin =def-score= does, but it additionally receives a temperament as
  one of its arguments. Also, there are multiple MIDI channels specified per instrument, as
  simultaneous tones are played on different MIDI channels, so they can be tuned individually by
- pitch bend (the macro uses the =def-score= tuning argument in the background).
+ pitch bend (the macro uses the =def-score= tuning argument in the background). Only chords with as
+ many tones as we specify MIDI channels can be independently/correctly tuned.
 
- #+begin_src lisp
-   (def-tempered-score score-name
+#+begin_src lisp
+   (def-tempered-score my-score-name
        (:temperament '31-limit-JI
 	:time-signature '(4 4))
      (instr1
       :omn pythagorean-seventh
       :channel '(1 2 3 4)
       :sound 'gm))
- #+end_src
+#+end_src
+
+
+While =def-tempered-score= generates the score, it does not actually display it nor play it
+back. We can always play back and notate the last score explicitly with the next code snippet. The
+notation also reveals how =def-tempered-score= works in the background: it splits the given
+score instrument (=instr1=) with the chord into as many staves as there are MIDI channels, so that
+these resulting monophonic staves can be independently tuned via MIDI pitchbend.
+
+#+begin_src lisp
+(audition-last-score)
+(display-musicxml *last-score* :display :window)
+#+end_src
+
+Instead of first defining a score with =def-tempered-score= and then explicitly triggering
+its notation or playback as shown, we can also use the TOT function =preview-score=, which then calls
+=def-tempered-score= in the background. We will commonly use a single temperament and a fixed set
+of instruments when working on a piece, so we might want to specify their settings only once and
+then use it for notating and playing back multiple snippets.
+
+We can set the tuning separately using the variable =*current-temperament*=.
+
+#+begin_src lisp
+(setf *current-temperament* '31-limit-JI)
+#+end_src
+
+We can specify all other score settings via the two variables =*default-preview-score-header*= and
+=*default-preview-score-instruments*=, where =*default-preview-score-header*= is a keyword list
+(plist) supporting all keyword arguments of =def-score=.
+
+#+begin_src lisp
+  (setf *default-preview-score-header*
+	'(:title "Dummy title"
+	  :tempo 80))
+#+end_src
+
+Any instrument-specific settings can be specified with the variable
+=*default-preview-score-instruments*= for each instrument we want to use. The instrument labels we
+use here are the same that we will later use in the score short-hand format given to
+=preview-score=. Note that multiple MIDI channels are specified here again, and also note the
+nested quote (='=) signs.
+
+#+begin_src lisp
+  (setf *default-preview-score-instruments*
+	'(:instr1 (:sound 'gm
+		   :channel '(1 2 3 4))))
+#+end_src
+
+We can now instead of =def-tempered-score= use the shorter call =preview-score= with these
+settings. The function =preview-score= is designed for playing back polyphonic scores, so we need
+to specify the instrument labels as well.
+
+#+begin_src lisp
+  (preview-score (list :instr1 pythagorean-seventh))
+#+end_src
+
 
  OK, how about instead of the Pythagorean third we want to use a just major third -- and also a
  harmonic seventh and the 11ths overtone? All pitches that go beyond Pythagorean tuning are
@@ -246,19 +305,11 @@ together. This tutorial focusses on documenting such features.
  expression before the cursor.] the just harmonic seventh chord.  =1K= is the natural sign, and
  multiple accidental attributes for a chord are assigned in ascending order of chord tones.
 
- #+begin_src lisp
- (setf 7-limit-seventh '(h c4e4g4bb4 1K+-5K+1K+-7K))
- #+end_src
 
- #+begin_src lisp 
-   (def-tempered-score score-name
-       (:temperament '31-limit-JI
-	:time-signature '(4 4))
-     (instr1
-      :omn 7-limit-seventh
-      :channel '(1 2 3 4)
-      :sound 'gm))
- #+end_src
+#+begin_src lisp
+  (preview-score (list :instr1 '(h c4e4g4bb4 1K+-5K+1K+-7K)))
+#+end_src
+
 
  JI leads to an infinite number of different pitches. Temperaments reduce that number. So, how about
  we want to play the above chord in, say, 22-tone equal temperament
@@ -268,29 +319,27 @@ together. This tutorial focusses on documenting such features.
  prime (up to the prime limit of the temperament) it is mapped to JI. These details are explained
  in the next section. For now, the following code simply shows the definition of 22-EDO, which is pretty brief. 
 
- #+begin_src lisp
-   (deftemperament 7-limit-22-EDO
-       ;; List of vals
-       (list (list 22
-		   (+ 13 22)
-		   (+ 7 (* 2 22))
-		   (+ 18 (* 2 22))))
-     ;; List of generators
-     (list (/ 1200.0 22)))
- #+end_src
+#+begin_src lisp
+  (deftemperament 7-limit-22-EDO
+      ;; List of vals
+      (list (list 22
+		  (+ 13 22)
+		  (+ 7 (* 2 22))
+		  (+ 18 (* 2 22))))
+    ;; List of generators
+    (list (/ 1200.0 22)))
 
- After we defined 22-EDO this say, we can play the above chord (and any other 7-limit OMN
+  (setf *current-temperament* '7-limit-22-EDO)
+#+end_src
+
+ After we defined 22-EDO this way, we can play the above chord (and any other 7-limit OMN
  intervals) in this temperament.
 
- #+begin_src lisp
-   (def-tempered-score score-name
-       (:temperament '17-limit-22-EDO
-	:time-signature '(4 4))
-     (instr1
-      :omn 7-limit-seventh
-      :channel '(1 2 3 4)
-      :sound 'gm))
- #+end_src
+
+#+begin_src lisp
+  (preview-score (list :instr1 '(h c4e4g4bb4 1K+-5K+1K+-7K)))
+#+end_src
+
 
 
 ** Defining temperaments and scales

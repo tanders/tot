@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{(}\PYG{n+nb}{setf} \PYG{n+nv+vg}{*default\PYGZhy{}preview\PYGZhy{}score\PYGZhy{}instruments*}
+      \PYG{o}{\PYGZsq{}}\PYG{p}{(}\PYG{l+s+ss}{:instr1} \PYG{p}{(}\PYG{l+s+ss}{:sound} \PYG{l+s+ss}{\PYGZsq{}gm}
+		 \PYG{l+s+ss}{:channel} \PYG{o}{\PYGZsq{}}\PYG{p}{(}\PYG{l+m+mi}{1} \PYG{l+m+mi}{2} \PYG{l+m+mi}{3} \PYG{l+m+mi}{4}\PYG{p}{))))}
+\end{Verbatim}

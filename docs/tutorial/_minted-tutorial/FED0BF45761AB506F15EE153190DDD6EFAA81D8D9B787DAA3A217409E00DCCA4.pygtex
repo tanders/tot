@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{(}\PYG{n+nb}{setf} \PYG{n+nv+vg}{*default\PYGZhy{}preview\PYGZhy{}score\PYGZhy{}header*}
+      \PYG{o}{\PYGZsq{}}\PYG{p}{(}\PYG{l+s+ss}{:title} \PYG{l+s}{\PYGZdq{}Dummy title\PYGZdq{}}
+	\PYG{l+s+ss}{:tempo} \PYG{l+m+mi}{80}\PYG{p}{))}
+\end{Verbatim}
