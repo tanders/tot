@@ -11,25 +11,26 @@
   :licence "GNU General Public License, Version 3"
   :source-control "https://github.com/tanders/tot"
   :version "0.3"
-  :serial t ;; the dependencies are linear.
-  :components (; (:file "sources/package")
-	       (:file "sources/macros")
-	       ;; (:file "sources/slippery-chicken") ;; independent
-	       (:file "sources/utils")
-	       (:file "sources/OMN-utils")
-	       (:file "sources/score")	       
-	       (:file "sources/rhythm")       
-	       (:file "sources/karnatic-rhythm")
-	       (:file "sources/pitch")
-	       (:file "sources/tuning")
-	       (:file "sources/velocity")
-	       (:file "sources/articulations")	       
-	       (:file "sources/PWGL")
-	       (:file "sources/constraints")
-	       (:file "sources/form")
-	       (:file "sources/orchestration")
-	       ;; (:file "sources/export")
-	       )
+  :components  ((:module "sources"
+			 :serial t
+			 :components (; (:file "package")
+				      (:file "macros")
+				      ;; (:file "slippery-chicken") ;; independent
+				      (:file "utils")
+				      (:file "OMN-utils")
+				      (:file "score")	       
+				      (:file "rhythm")       
+				      (:file "karnatic-rhythm")
+				      (:file "pitch")
+				      (:file "tuning")
+				      (:file "velocity")
+				      (:file "articulations")	       
+				      (:file "PWGL")
+				      (:file "constraints")
+				      (:file "form")
+				      (:file "orchestration")
+				      ;; (:file "sources/export")
+				      )))
   ;; :if-feature :opusmodus
   ;;; !! NOTE: This code additionally depends on the commercial system Opusmodus
   :depends-on (;; https://common-lisp.net/project/alexandria/
