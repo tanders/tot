@@ -1,4 +1,4 @@
-% Created 2021-04-06 Tue 08:45
+% Created 2021-04-06 Tue 10:00
 % Intended LaTeX compiler: pdflatex
 \documentclass[11pt]{article}
 \usepackage[utf8]{inputenc}
@@ -35,7 +35,7 @@
 
 
 \section{Introduction}
-\label{sec:org7d02128}
+\label{sec:org880776f}
 
 This document presents in a tutorial fashion some functionality of the \href{https://github.com/tanders/tot}{TOT library} for
 \href{http://opusmodus.com/}{Opusmodus}. The TOT library is a loose collection of tools for algorithmic composition. This library
@@ -48,21 +48,21 @@ is probably sufficient.
 
 
 \section{Score processing}
-\label{sec:org8483fd7}
+\label{sec:org046319c}
 
 \subsection{Score preview}
-\label{sec:org0fdfbc6}
+\label{sec:org0d241bb}
 
 
 \subsection{Score transformations}
-\label{sec:org81445f3}
+\label{sec:orga598e42}
 
 
 \section{Microtonal and xenharmonic music with regular temperaments}
-\label{sec:org9ac9947}
+\label{sec:orgd94fd22}
 
 \subsection{Introduction}
-\label{sec:org721d557}
+\label{sec:org6df8c16}
 
 The TOT library greatly expands Opusmodus' builtin support for microtonal music.  Opusmodus'
 builtin support for microtonal music only allows for quarter tones (24 tone equal division of
@@ -96,7 +96,7 @@ and motivation -- how it extends/generalises many other tone systems -- at this 
 
 
 \subsection{First steps}
-\label{sec:orge119a95}
+\label{sec:orgc1e7c9f}
 
 Importantly, regular temperaments can all be mapped to JI. Therefore, they can also all by
 notated by a pitch notation capable of notating JI for arbitrary prime limits. So, as a unifying
@@ -139,16 +139,24 @@ many tones as we specify MIDI channels can be independently/correctly tuned.
 \end{minted}
 
 
-While \texttt{def-tempered-score} generates the score, it does not actually display it nor play it
-back. We can always play back and notate the last score explicitly with the next code snippet. The
-notation also reveals how \texttt{def-tempered-score} works in the background: it splits the given
-score instrument (\texttt{instr1}) with the chord into as many staves as there are MIDI channels, so that
-these resulting monophonic staves can be independently tuned via MIDI pitchbend.
+While \texttt{def-tempered-score} generates the score, it does not actually display it nor play it back
+(the built-in \texttt{def-score} behaves in the same way). We can always play back and notate the last
+score explicitly with the next code snippet. The notation also reveals how \texttt{def-tempered-score}
+works in the background: it splits the given score instrument (\texttt{instr1}) with the chord into as
+many staves as there are MIDI channels, so that these resulting monophonic staves can be
+independently tuned via MIDI pitchbend.
 
 \begin{minted}[]{lisp}
 (audition-last-score)
 (display-musicxml *last-score* :display :window)
 \end{minted}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[angle=90,width=5cm]{./graphics/test2.png}
+\caption{Some TMP test image}
+\end{figure}
+
 
 Instead of first defining a score with \texttt{def-tempered-score} and then explicitly triggering
 its notation or playback as shown, we can also use the TOT function \texttt{preview-score}, which then calls
@@ -243,7 +251,7 @@ in the next section. For now, the following code simply shows the definition of 
 (setf *current-temperament* '7-limit-22-EDO)
 \end{minted}
 
-After we defined 22-EDO this say, we can play the above chord (and any other 7-limit OMN
+After we defined 22-EDO this way, we can play the above chord (and any other 7-limit OMN
 intervals) in this temperament.
 
 
@@ -254,7 +262,7 @@ intervals) in this temperament.
 
 
 \subsection{Defining temperaments and scales}
-\label{sec:orgfbecf1a}
+\label{sec:org1bb9c31}
 
 We can define arbitrary regular temperaments simply by specifying their vals and generators. This
 section briefly introduces these concept, so that you can define your own temperaments. We will
@@ -282,27 +290,27 @@ The \href{https://en.xen.wiki/w/Val}{\emph{vals}} of a temperament specify how t
 
 
 \subsection{Obtaining information}
-\label{sec:org0eece02}
+\label{sec:org6a04364}
 
 \subsubsection{Information on intervals}
-\label{sec:org4d1a28d}
+\label{sec:org90cc0ff}
 
 
 \subsubsection{Information on scales}
-\label{sec:orgfd81786}
+\label{sec:org6b6128e}
 
 
 \subsection{Defining harmony}
-\label{sec:org060ec8c}
+\label{sec:orgfbd410f}
 
 
 \subsection{Constraining music to an underlying harmony}
-\label{sec:org3196540}
+\label{sec:org2d4f13c}
 
 
 
 \subsection{Dynamic temperaments}
-\label{sec:orgc21e3e7}
+\label{sec:orgd674fed}
 
 At a later stage, the library is also meant to support dynamic temperaments, so that the tuning
 can change during the course of a piece, but the implementation of dynamic temperaments is
@@ -311,19 +319,19 @@ still unfinished.
 
 
 \section{Form}
-\label{sec:org7329001}
+\label{sec:orgbd427d6}
 
 \texttt{fn-unfold} 
 
 
 
 \section{Karnatic rhythms}
-\label{sec:orgcd6f1c7}
+\label{sec:orga2aa36e}
 
 \subsection{Creating a higher-level plan}
-\label{sec:org6657e6c}
+\label{sec:orgc321911}
 
 
 \subsection{Filling in details}
-\label{sec:org7dc8406}
+\label{sec:org660cd46}
 \end{document}

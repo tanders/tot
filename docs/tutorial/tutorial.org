@@ -134,8 +134,6 @@ is probably sufficient.
 * Score processing
 
 # The file =score= deserves a special mention, because it defines a little library in his own. It provides a collection of tools to transform polyphonic scores in various ways. The function =preview-score= notates and plays such scores, the other functions in this sub-library process it it various ways. Whenever elsewhere in the library (e.g., in the file =constraints.lisp=) the documentation mentions a score, it refers to the format expected by =preview-score=. 
-
-
   
 
 ** Score preview
@@ -227,16 +225,23 @@ is probably sufficient.
 #+end_src
 
 
-While =def-tempered-score= generates the score, it does not actually display it nor play it
-back. We can always play back and notate the last score explicitly with the next code snippet. The
-notation also reveals how =def-tempered-score= works in the background: it splits the given
-score instrument (=instr1=) with the chord into as many staves as there are MIDI channels, so that
-these resulting monophonic staves can be independently tuned via MIDI pitchbend.
+While =def-tempered-score= generates the score, it does not actually display it nor play it back
+(the built-in =def-score= behaves in the same way). We can always play back and notate the last
+score explicitly with the next code snippet. The notation also reveals how =def-tempered-score=
+works in the background: it splits the given score instrument (=instr1=) with the chord into as
+many staves as there are MIDI channels, so that these resulting monophonic staves can be
+independently tuned via MIDI pitchbend.
 
 #+begin_src lisp
 (audition-last-score)
 (display-musicxml *last-score* :display :window)
 #+end_src
+
+#+CAPTION: Some TMP test image
+#+ATTR_HTML: :alt tmp test image :title Action! :align right
+#+ATTR_LATEX: :width 5cm
+[[./graphics/test2.png]]
+
 
 Instead of first defining a score with =def-tempered-score= and then explicitly triggering
 its notation or playback as shown, we can also use the TOT function =preview-score=, which then calls
