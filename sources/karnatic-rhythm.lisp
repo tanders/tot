@@ -10,6 +10,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+
 (defun anga (anga &optional (laghu-size 3) (beat 1/4))
   "Return an anga represented by a rhythmic value of its duration wrapped in a list.
 
@@ -26,6 +27,7 @@
 
 ;; (anga :a)
 ;; (anga :l 5)
+
 
 (defun tala (angas &optional (laghu-size 3) (beat 1/4))
   "Return a tala represented by a list of angas (see function anga), i.e. a list of rhythmic values, each wrapped in a sublist.
@@ -74,8 +76,8 @@ The seven suladi tala categories collected by Purandaradasa (each with all possi
   "Return list of OMN time signatures (every anga represented as a separate bar) whose overall duration matches the length of `sequence'."
   (length->time-signature (length-span (total-duration sequence) (flatten tala))))
 
-					; (tala-time-signatures '(9/2))
-					; (tala-time-signatures '(10/4))
+;; (tala-time-signatures '(9/2))
+;; (tala-time-signatures '(10/4))
 
 
 (defun complete-phrase-in-tala (sequence &key (tala *tala*) (append-sam? NIL))
@@ -309,6 +311,7 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 
 ;; !! TODO: allow for ties across rhythmic cells
 ;; !! TODO: allow for turning cells or parts of them into rests (perhaps in a separate function?)
+;; ? TODO: Consider to count as accented also all cells that would result in a durational accent on a longer note immediately following the returned cell.
 (defun gen-karnatic-cell (gati jathi position
 			  &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
 			    (include-length nil) (exclude-length nil) (seed nil))
@@ -322,12 +325,11 @@ See Reina (2016) for details on terms like gati, jathi and matra.
   1 and 2 no standard Karnatic jathi, but added for more flexibility preserving consistency. Note that for jathi 1 and 2 no unaccented cells are defined (NIL will be returned).
 - position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is returned, which is always an even subdivision of the cell in jathi matras. 
 If `position' is '? then the position is randomised.
-- accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
-Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
+- accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells. If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell. Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
 - max-number/min-number (integer or list of them): max/min number of notes in the cell(s).
 - first-length (ratio or OMN length, or list of either): length of the first note in cell(s).
 - include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
-- seed (integer): the seed to use for the randomised position, is position is '?.
+- seed (integer): the seed to use for the randomised position, if position is '?.
 
 NOTE: For resulting in a full number of beats, the number of elements in position should be a multiple of gati. Remember that (with constant gati and jathi for one period), gati = number of accents and yati = number of beats.
 
@@ -403,7 +405,6 @@ The argument min-number is seemingly not fully working yet:
 
   )
 ||#
-
 
 ;; TODO: variant that allows for specifying the number of matras to add/remove at the front or end of the generated full cycle.
 ;; Perhaps simply removing some values from the generated result?
@@ -633,7 +634,6 @@ sequences into multiple calls of `tala-plan` per part.
    (gen-repeat jathi-number (list (gen-repeat jathi (/ 1/4 gati))))
    (when suffix (ensure-double-list suffix))   
    ))
-
 
 
 ;;; BUG: Not working anymore?
