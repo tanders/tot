@@ -100,7 +100,13 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 		  sequence)))
     (omn-to-time-signature seq (tala-time-signatures seq tala))))
 
-					; (complete-phrase-in-tala '((9/2 c4)))
+#|
+(complete-phrase-in-tala '((7/2 c4)) :tala (tala '(:d :l) 5))
+(complete-phrase-in-tala '((7/2 c4)) :tala (tala '(:d :l) 5) :append-sam? T)
+;; Issue warning
+(complete-phrase-in-tala '((8/2 c4)) :tala (tala '(:d :l) 5))
+|#
+
 
 ;;; BUG: ties missing in result, but with added pitches things are working fine 
 ;; (omn-to-time-signature '(3) '(5 4))
