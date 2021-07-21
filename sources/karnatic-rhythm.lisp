@@ -126,59 +126,100 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 
 ;; List of all possible combinations of note subdivisions in a group of n notes.
 ;; These are sorted into potentially accented (starting with a durational accent and/or leading to an accent if the next following note is longer, even though that is not really a karnatic concept) and non-accented
+;; See Reina (2016, p. 23f)
 (let* ((accented-1 ; non-standard 
 	(apply #'vector '((1))))
        (unaccented-1
 	(apply #'vector '()))
        (both-1 (vector accented-1 unaccented-1))
        (accented-2 ; non-standard 
-	(apply #'vector '((2) (1 1))))
+	(apply #'vector '((2)
+			  (1 1))))
        (unaccented-2
 	(apply #'vector '()))
        (both-2 (vector accented-2 unaccented-2))
        (accented-3 ; tisra 
-	(apply #'vector '((3) (2 1) (1 1 1))))
+	(apply #'vector '((3)
+			  (2 1)
+			  (1 1 1))))
        (unaccented-3 ; tisra 
 	(apply #'vector '((1 2))))
        (both-3 (vector accented-3 unaccented-3))
        (accented-4 ; chatusra 
-	(apply #'vector '((4) (3 1) (2 2) (2 1 1) (1 1 1 1))))
+	(apply #'vector '((4)
+			  (3 1)
+			  (2 2)
+			  (2 1 1)
+			  (1 1 1 1))))
        (unaccented-4 ; chatusra 
-	(apply #'vector '((1 3) (1 2 1) (1 1 2))))
+	(apply #'vector '((1 3)
+			  (1 2 1)
+			  (1 1 2))))
        (both-4 (vector accented-4 unaccented-4))
        (accented-5; khanda 
-	(apply #'vector '((5) (4 1) (3 2) (3 1 1) (2 2 1) (2 1 1 1) (1 1 1 1 1))))
+	(apply #'vector '((5)
+			  (4 1)
+			  (3 2)
+			  (3 1 1)
+			  (2 2 1)
+			  (2 1 1 1)
+			  (1 1 1 1 1))))
        (unaccented-5 ; kanda 
 	(apply #'vector
-	       '((2 3) (1 4)
-		 (2 1 2) (1 3 1) (1 2 2) (1 1 3)
-		 (1 2 1 1) (1 1 2 1) (1 1 1 2))))
+	       '((2 3) 
+		 (1 4)
+		 (2 1 2)
+		 (1 3 1)
+		 (1 2 2)
+		 (1 1 3)
+		 (1 2 1 1)
+		 (1 1 2 1)
+		 (1 1 1 2))))
        (both-5 (vector accented-5 unaccented-5))
        (accented-6 ; tisra 
 	(apply #'vector
-	       '((6) (5 1) (4 2) (3 3) (4 1 1) (3 2 1) (2 2 2) (3 1 1 1) (2 2 1 1) (2 1 1 1 1) (1 1 1 1 1 1))))
+	       '((6)
+		 (5 1)
+		 (4 2)
+		 (3 3)
+		 (4 1 1)
+		 (3 2 1)
+		 (2 2 2)
+		 (3 1 1 1)
+		 (2 2 1 1)
+		 (2 1 1 1 1)
+		 (1 1 1 1 1 1))))
        (unaccented-6 ; tisra
 	(apply #'vector
-	       '((2 4) (1 5)
-		 (3 1 2) ; this one is borderline
+	       '((2 4)
+		 (1 5)
+		 (3 1 2) ; borderline whether accented or not
 		 (2 3 1) (2 1 3) (1 4 1) (1 3 2) (1 2 3) (1 1 4) 
-		 (2 1 2 1) (2 1 1 2)
-		 (1 3 1 1)
-		 (1 2 2 1) (1 2 1 2) 
-		 (1 1 3 1) (1 1 2 2) (1 1 1 3)
+		 (2 1 2 1) (2 1 1 2) (1 3 1 1) (1 2 2 1) (1 2 1 2) (1 1 3 1) (1 1 2 2) (1 1 1 3)
 		 (1 2 1 1 1) (1 1 2 1 1) (1 1 1 2 1) (1 1 1 1 2)
 		 )))
        (both-6 (vector accented-6 unaccented-6))
-       #|
-;;; TODO: see (Reina, 2016, p. 24)
-       (defconstant accented-7 ; misra
-       )
-       
-       (defconstant unaccented-7 ; misra
-       )
+       (accented-7 ; misra 
+       	(apply #'vector
+       	       '((7)
+       		 (6 1) (5 2) (4 3)
+       		 (5 1 1) (4 2 1) (4 1 2) (3 3 1) (3 2 2)
+       		 (4 1 1 1) (3 2 1 1) (3 1 2 1) (3 1 1 2) (2 2 2 1)
+       		 (3 1 1 1 1) (2 2 1 1 1)
+		 (2 1 1 1 1 1)
+		 (1 1 1 1 1 1 1))))
+       (unaccented-7 ; misra
+	(apply #'vector
+	       '((1 6) (3 4) (2 5)
+		 (3 1 3) (2 4 1) (2 3 2) (2 2 3) (2 1 4)
+		 (1 5 1) (1 4 2) (1 3 3) (1 2 4) (1 1 5)
+		 (2 3 1 1) (2 2 1 2) (2 1 3 1) (2 1 2 2) (2 1 1 3)
+		 (1 4 1 1) (1 3 2 1) (1 3 1 2) (1 2 3 1) (1 2 2 2) (1 2 1 3) (1 1 4 1) (1 1 2 3) (1 1 1 4)
+		 (2 1 2 1 1) (2 1 1 2 1) (2 1 1 1 2)
+		 (1 3 1 1 1) (1 2 2 1 1) (1 2 1 2 1) (1 2 1 1 2)
+		 (1 1 3 1 1) (1 1 2 2 1) (1 1 2 1 2) (1 1 1 3 1) (1 1 1 2 2) (1 1 1 1 3)
+		 (1 2 1 1 1 1) (1 1 2 1 1 1) (1 1 1 2 1 1) (1 1 1 1 2 1) (1 1 1 1 1 2))))
        (both-7 (vector accented-7 unaccented-7))
-
-       |#
        )
   ;; TODO:
   ;; - ? Args prefix and suffix
@@ -215,8 +256,7 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 					      (4 both-4)
 					      (5 both-5)
 					      (6 both-6)
-					      ;; (7 both-7)      
-					      ))
+					      (7 both-7)))
 	       (all-accented/unaccented-selected
 		(cond ((or (eql accented? T)
 			   (eql accented? 1))
@@ -254,8 +294,7 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 				T)
 			    )))
 		 all-in-gati))
-	       (last-possible-position (1- (length all-filtered)))
-	       )
+	       (last-possible-position (1- (length all-filtered))))
 	  (if (= last-possible-position -1)
 	      ;; filtering removed all options
 	      nil
@@ -280,9 +319,8 @@ See Reina (2016) for details on terms like gati, jathi and matra.
 * Arguments:
 - gati (integer -- commonly in {3, 4, 5, 7} -- or list of them): gati for the cell(s) to generate.
 - jathi (integer in range 1-7, or list of them): jathi for the cell(s) to generate.
-  1 and 2 no standard Karnatic jathi, but added for more flexibility preserving consistency.
-  BUG: 7 not yet defined/supported
-- position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is return, which is always an even subdivision of the cell in jathi matras. 
+  1 and 2 no standard Karnatic jathi, but added for more flexibility preserving consistency. Note that for jathi 1 and 2 no unaccented cells are defined (NIL will be returned).
+- position (integer, '?, or list of either): specifies which cell of the available options to generate. If no filtering is enabled (see further arguments below) then the list of available options are all the possible standard subdivisions of a 'beat' depending on the current jathi as listed by (Reina, 2016, p. 23f). These options are sorted  by the number of notes in rhythmic cells (fewest first), and in case of equal note numbers the length of notes starting with the first note (longer first note first). So, the position 0 is always a single note per beat/cell (length depends on gati and jathi) and so on. If `position' exceeds the number of available options, the last option is returned, which is always an even subdivision of the cell in jathi matras. 
 If `position' is '? then the position is randomised.
 - accented? (Boolean, or binary integer, i.e. 0 or 1): whether the returned cells potentially carry durational accents on the start of the cells (or on an immediately following longer note). If accented? is nil (or 0) then the cell(s) carry a durational accent that is not on the start of the cell.
 Binary integers are supported so that values for this argument can be generated with Opusmodus' binary number generators.
