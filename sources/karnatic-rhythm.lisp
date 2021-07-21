@@ -92,6 +92,8 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 
 ;;; TODO: Generalise to better work if sequence is not full tala
 "
+  (when (/= 0 (mod (total-duration sequence) (total-duration tala)))
+   (warn "Sequence does not exactly fit into tala"))
   (let* ((last-tala-sam (first tala))
 	 (seq (if append-sam?
 		  (append sequence last-tala-sam)
