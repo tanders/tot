@@ -41,7 +41,23 @@
 	       "string-tools"
 	       "ta-utilities"
 	       "fenv"
-	       "cluster-rules"
-	       ))
+	       "cluster-rules")
+  :in-order-to ((test-op (test-op #:tot/tests))))
+
+(defsystem #:tot/tests
+  :depends-on (:FiveAM :tot) 
+  :components ((:module "tests"
+			:serial t
+			:components ((:file "package")
+				     (:file "setup-tests")
+				     (:file "karnatic-rhythm")
+				     )))
+  :perform (test-op (o s)
+		    ;; Find and run top-level test suite
+		    (uiop:symbol-call :fiveam '#:run!
+				      (uiop:find-symbol* '#:tot :om)
+				      ;; (uiop:find-symbol* '#:tot :tot/tests)
+				      )))
+
 
 
