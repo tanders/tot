@@ -60,5 +60,12 @@
 				      ;; (uiop:find-symbol* '#:tot :tot/tests)
 				      )))
 
+;;
+;; Opusmodus setup (this cannot be set in ~/Opusmodus/Extensions for some reason.
+;;
+
+;; For details see https://opusmodus.com/forums/topic/1391-disabling-do-verbose/
+(defparameter om::*do-verbose* nil
+  "Enable or disable traces printed by do-verbose.")
 
 
