@@ -100,7 +100,7 @@ NOTE: Meanwhile there is a buildin function disjoin-attributes, which replaces t
 |#
 
 
-;; TODO: Arg arg test
+;; TODO: Arg test
 (defun attribute-substitution (new old list-of-attributes)
   "Substitute all instances of `old' with `new' in `list-of-attributes'
 
@@ -354,16 +354,15 @@ The symbol for each attribute starts with 'A_'
 
 * Examples:
 
-  ;;; (articulate-bars '((h h) (q q q q) (q q q q) (-q q) (q q q q)) :accent 'marc)
+  Note that existing articulations are preserved, and so are ties. However, in that case `sequence' must be a full OMN expression (i.e. include length and pitch values).
+  ;;; (articulate-bars '((h d4 stacc q tie) (h. d4) (q d4 tie q q stacc) (-q q d4)) :accent 'marc)
 
-  An example with a tie: existing articulations are preserved. However, in that case `sequence' must be a full OMN expression (i.e. include length and pitch values).
-  ;;; (articulate-bars '((h c4 h) (q q q q tie) (q q q q) (-q q) (q q q q)) :accent 'marc)
-  
   ;;; (articulate-bars (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity)
   "
   (assert (if (eql parameter :velocity)
 	      (velocityp default)
 	      T))
+  (assert (tu:nested-list? sequence))
   (let* ((new (gen-swallow (omn :length sequence)		
 			   (flatten (let (;; Lists of default params
 					  (bars (span (length-rest-invert sequence)
@@ -379,16 +378,18 @@ The symbol for each attribute starts with 'A_'
 		 ;; don't overwrite existing articulations
 		 (:articulation
 		  (if (omn-formp sequence)
-		      (zip-articulations (omn parameter sequence) new)
+		      (zip-articulations
+		       ;; Don't include ties, they are preserved by omn-replace anyway.
+		       (loop for seq in (omn parameter sequence)
+			  collect (attribute-substitution '- 'tie seq))
+		       new)
 		      new))
 		 ;; but overwrite existing dynamics (velocities)
 		 (:velocity new))))
-    (case parameter
-      ;; Quick fix of omn-replace not handling ties properly with omn-replace-articulation
-      (:articulation (omn-replace-articulation new2 sequence))
-      (:velocity (omn-replace parameter new2 sequence)))
-    ))
+    (omn-replace parameter new2 sequence)))
 
+
+#| ;; Kann weg?
 ;; TODO: Define this for flat list first and then call recursively for nested case
 ;; ? TODO: handle param map-section with function `map-section'
 ;; ? TODO: Automatically translate non-OMN sequences into a full OMN sequence (e.g., by adding the default pitch C4)?
