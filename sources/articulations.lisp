@@ -389,38 +389,6 @@ The symbol for each attribute starts with 'A_'
     (omn-replace parameter new2 sequence)))
 
 
-#| ;; Kann weg?
-;; TODO: Define this for flat list first and then call recursively for nested case
-;; ? TODO: handle param map-section with function `map-section'
-;; ? TODO: Automatically translate non-OMN sequences into a full OMN sequence (e.g., by adding the default pitch C4)?
-(defun omn-replace-articulation (new sequence) ;  &key (section)
-  "Tmp fix for `omn-replace' for articulations, which takes ties into account. As a quick fix, this function does not support the params `section' and `exclude', but it works also for nested sequences.
-
-NOTE: Function always returns a full OMN sequence, i.e., the default pitch c4 is added if no pitch is present in `sequence'."
-  (if (tu:nested-list? sequence)
-      (mapcar #'omn-replace-articulation new sequence)
-      (let* ((full-seq (if (and (lengthp (first sequence))
-				(every (lambda (x) (or (lengthp x) (articulationp x) (velocityp x)))
-				       sequence))
-			   ;; sequence lacks pitches
-			   (let ((seq-copy (copy-list sequence)))
-			     (push 'c4 (cdr seq-copy))
-			     seq-copy)
-			   sequence))
-	     (params (omn nil full-seq)))
-	(apply #'make-omn
-	       :articulation (zip-articulations (getf params :articulation) new)
-	       (tu:remove-property :articulation params)))))
-#|
-(omn-replace-articulation '(marc - -) '(q c4 mute q tie q))
-=> (Q C4 MUTE+MARC C4 TIE C4)
-
-(omn-replace-articulation '((marc) (marc) (marc)) '((q mute) (q tie) (q)))
-=> ((Q C4 MUTE+MARC) (Q C4 TIE+MARC) (Q C4 MARC))
-|#
-
-
-
 #|
 ;;; OLD:
 ;;; TODO:
