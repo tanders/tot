@@ -362,10 +362,10 @@ Filtering arguments can further shape the result. The meaning of the position ar
   ;;; (gen-karnatic-cell 4 4 0 :min-number 2)
 									       
 ... or the maximum number of notes. Note that the position is randomised here.
-  ;;; (gen-karnatic-cell 4 4 '? :max-number 3)
+  ;;; (gen-karnatic-cell 4 6 '? :max-number 3)
 
 ... or the first note value in the cell can be set.
-  ;;; (gen-karnatic-cell 4 4 '(1 1 1) :first-length 1/8)
+  ;;; (gen-karnatic-cell 4 6 '(? ? ?) :first-length 3/16)
 
 All these filter arguments also support lists for setting different values for each sublist.
   ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
@@ -374,7 +374,7 @@ Again, an example with randomised positions, but here the seed is fixed.
   ;;; (gen-karnatic-cell 4 4 '(? ?) :min-number 2 :seed 1)
 
 Filtering can remove all options for cells, in which case nil returned.
-  ;;; (gen-karnatic-cell 4 4 0 :min-number 5)
+  ;;; (gen-karnatic-cell 4 4 '? :min-number 5)
 
 You can of course overwrite the resulting time signature with `omn-to-time-signature'. If you want to keep track of where the accents are located, you could mark them before this transformation. You could then manually later revise the notation to instead you the beam-breaking that Reina recommends. 
  
@@ -465,7 +465,7 @@ Other arguments inherited from gen-karnatic-cell.
 
 ;; ? TODO: allow that duration can be larger than `gati` by adding further notes, not rests.
 (defmethod gb-plan ((jathi integer) &key (beats NIL) (gati 4) (extend 's) (tie-first NIL) (beat-duration 1/4))
-  "Outlines (plans) the rhythmic form of a gati bhedam (gb) sequence. The result is an OMN sequence where each jathi is represented by a single note (i.e. without rhythmic phrasing).
+  "Outlines (plans) the rhythmic form of a gati bhedam (gb) sequence. The result is an OMN sequence where each jathi is represented by a single note (i.e. without rhythmic phrasing) wrapped in its own sublist.
 
 * Arguments:
   - jathi (integer): jathi of the result.
@@ -516,9 +516,11 @@ If the duration is larger than *gati*, rests are inserted.
 ;; (defun group (&rest args)
 ;;   args)
 
-;; ?? TODO: Allow setting the `gen-karnatic-cell` arg position. But I would need to set that for every tala element, so I might rather define that otherwise, e.g., with gen-karnatic-cell directly.
+;; TODO: Some way to combine tala-plan and gen-karnatic-cell.
+;;   E.g., Allow setting the `gen-karnatic-cell' arg position and other args. But I would need to set that for every tala element, so I might rather define that otherwise, e.g., with gen-karnatic-cell directly.
+;; ? BUG: tala-sam-accent accent placed twice relevant notes
 (defun tala-plan (talas &key (tala *tala*) (gati *gati*) (append-sam? NIL) (accent '-) (tala-sam-accent '-) (beat-duration 1/4))
-  "Some mini language for outlining the rhythmic form of a tala sequence, in particular gati bhedam sequences. The result is a rhythmic OMN sequence (expressed in the time signature corresponding to `tala`), where each jathi is represented by a single note (i.e. without rhythmic phrasing).
+  "Some mini language for outlining the rhythmic form of a tala sequence, in particular gati bhedam sequences. The result is a rhythmic OMN sequence -- expressed in the time signature(s) corresponding to `tala' -- where each jathi is represented by a single note (i.e. without rhythmic phrasing).
 
 * Arguments:
   - talas (nested list): a sequence of talas (or tala groups) expressed in a mini language described below.
@@ -529,9 +531,9 @@ If the duration is larger than *gati*, rests are inserted.
   - tala-sam-accent (symbol): articulation to use on every first note of a tala (group). Intended for debugging/proofreading results.
   - beat-duration (rational): duration of a beat (for the symbol `beat`).
 
-Each element of `talas` is a sublist in the following format. Within such sublist, an integer represents a full jathi cycle (i.e. a gati bhedam sequence with constant jathi starting and ending on a beat). The integer specifies the jathi and also the duration of that cycle measured in beats. The symbol `beat` represents a full beat in the result, while the symbol tied-beat is a beat tied to whatever follows. Additionally, any other rhythmic OMN sequence can occur within a tala specification (inserted into the tala time signatures in the result). For example, a partial jathi cycle can be expressed with the function `gb-plan` as demonstrated in an example below.
+Each element of `talas' is a sublist in the following format. Within such sublist, an integer represents a full jathi cycle (i.e. a gati bhedam sequence with constant jathi starting and ending on a beat). The integer specifies the jathi and also the duration of that cycle measured in beats. The symbol `beat' represents a full beat in the result, while the symbol `tied-beat' is a beat tied to whatever follows. Additionally, any other rhythmic OMN sequence can occur within a tala specification (inserted into the tala time signatures in the result). For example, a partial jathi cycle can be expressed with the function `gb-plan' as demonstrated in an example below.
 
-IMPORTANT: It is the responsibility of the user to ensure that the elements within a tala spec actually 'fit' into the given tala. This freedom allows to compose gati bhedam sequences that last multiple talas. However, with the argument `tala-sam-accent` it is easy to ensure that the beginnings of all tala (groups) fall on the intended metric position.
+IMPORTANT: It is the responsibility of the user to ensure that the elements within a tala spec actually 'fit' into the given tala. This freedom allows to compose gati bhedam sequences that last multiple talas. However, with the argument `tala-sam-accent' it is easy to ensure that the beginnings of all tala (groups) fall on the intended metric position.
 
 * Examples:
 
@@ -591,8 +593,18 @@ sequences into multiple calls of `tala-plan` per part.
 	     (3 4))
 	   ;; global gati of the result
 	   :gati 5
-	   :accent 'marc 
-	   :tala-sam-accent 'mart)
+	   :accent 'marc
+	   ;; :tala-sam-accent 'mart
+	   :tala-sam-accent 'stacc
+	   :append-sam? T)
+
+(tala-plan '((1 2 4)
+	     (3 4))
+	   ;; global gati of the result
+	   :gati 5
+	   :accent 'marc
+	   :tala-sam-accent 'mart
+	   :append-sam? T)
 
 (tala-plan `((beat beat 5)
 	     ;; partial gati bhedam cycle

@@ -355,7 +355,9 @@ The symbol for each attribute starts with 'A_'
 * Examples:
 
   Note that existing articulations are preserved, and so are ties. However, in that case `sequence' must be a full OMN expression (i.e. include length and pitch values).
+  TODO: Don't mark notes that are tied to their predecessor as below in bar 2 of the result (though OMN ignores such articulations).
   ;;; (articulate-bars '((h d4 stacc q tie) (h. d4) (q d4 tie q q stacc) (-q q d4)) :accent 'marc)
+  => ((H D4 STACC+MARC Q TIE) (H. D4 MARC) (Q D4 TIE+MARC D4 D4 STACC) (-Q D4))
 
   ;;; (articulate-bars (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity)
   "
