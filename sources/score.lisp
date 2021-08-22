@@ -1754,10 +1754,42 @@ Split divisi strings into parts
 |#
 
 
+;; TODO: Make arg of which voice the bar lengths should be forced on remaining voices
+(defun span-voices (score)
+  "Unify the length of the bars of all parts of `score' (in preview-score format) to be the same as the bar lengths of the first part.
+
+See also: `unify-part-durations', which is smarter.
+"
+  (let* ((instruments (get-instruments score))
+	 (voices (get-parts-omn score))
+	 (bar-no (length (first voices))))
+    (loop for voice in (rest voices)
+       do (assert (= bar-no (length voice))))
+    (let* (;; The bar lengths of the first voice
+	   (shared-span (get-span (first voices)))
+	   (voices-sp (cons (first voices) ;; no need for span correction for first voice
+			    ;; Bar lengths of other voices are forced to fit first voice
+			    (loop for voice in (rest voices)
+			       collect (length-span shared-span voice)))))
+      (loop
+	 for inst in instruments
+	 for omn in voices-sp
+	 append (list inst omn)))))
+#|
+(span-voices
+  '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q -q)) 
+    :lh ((e g3) (q c4 b3 q a3) (-q c3 d3))
+    :ped ((h c3) (e c3) (q c3))))
+|#
+
+
 (defun unify-part-durations (score)
   "Ensure all parts of `score' are of the same duration by effectively looping shorter parts until they are as long as the longest part. The resulting time signatures of all parts follows that of the the first longest part. You may use the function `unify-time-signature' before if you want to enforce time signatures of a different part instead.
 
-An accordingly revised score is returned as first, and the full duration of `score' as a second value."
+An accordingly revised score is returned as first, and the full duration of `score' as a second value.
+
+See also: `span-voices'. The function `unify-part-durations' is smarter, though.
+"
   (let* ((parts (get-parts-omn score))
 	 (part-durs (mapcar #'total-duration parts))	  
 	 (dur (apply #'max part-durs))
