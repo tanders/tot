@@ -25,11 +25,60 @@
 (5am:in-suite OMN-utils)
 
 
+;; TODO: map-events
 
-#| 
-;; BUG: 
-(TOTAL-DURATION '(1/4 1/8 1/16)) ; => 3/8. but should be 7/16, or not? 
-;; Comparison
-(apply #'+ '(1/4 1/8 1/16)) 
-|#
 
+;; ? TODO: process-element
+
+;; ? TODO: map-omn
+
+;; !! TODO: copy-time-signature (called often)
+
+
+;; TODO: map-section
+
+
+;; !! TODO: edit-omn
+
+
+;; ? TODO: process-omn2
+
+
+;; ? TODO: map-position-in-bar
+
+
+;; !! TODO: total-duration
+
+
+;; TODO: flattened-length-adjust
+
+
+
+;; !! TODO: count-notes
+
+
+;; TODO: phrase-lengths
+
+
+
+;; TODO: length-subtract
+
+
+
+;; TODO: length-add
+
+
+;; ? TODO: rnd-section
+
+
+;; ? TODO: mk-seed
+
+
+;; TODO: ensure-double-list
+
+
+
+;; TODO: fn-unfold
+
+
+;; TODO: swap-args

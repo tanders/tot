@@ -52,6 +52,8 @@
 			:components ((:file "package")
 				     (:file "setup-tests")
 				     (:file "karnatic-rhythm")
+				     (:file "articulations")
+				     (:file "OMN-utils")
 				     )))
   :perform (test-op (o s)
 		    ;; Find and run top-level test suite
