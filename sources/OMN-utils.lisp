@@ -192,6 +192,29 @@
 |#
 
 
+(defun rebar-if (fn sequence)
+  "Rebars OMN `sequence', starting a new bar at every single event (as returned by `single-events') for which the Boolean function `fn' returns T.
+
+BUG: Result is unnecessarily verbose including redundant repeated dynamics etc. (such information is introduced by `single-events' and not stripped off again later).
+"
+  (tu:inner-flat
+   (tu:split-if fn
+		(single-events (flatten sequence)))))
+#|
+
+|#
+
+(defun rebar-at-articulation (sequence articulation)
+  "Rebars OMN `sequence', starting a new bar at every event with the given `articulation'."
+  (rebar-if (lambda (event)
+	      (equal (fourth event) articulation))
+	    sequence))
+#|
+(setf mat '(Q C4 MARC D4 E4 P1 H F4 MARC Q B3 H. C4 MARC))
+(rebar-at-articulation mat 'marc)
+|#
+
+
 (defun copy-time-signature (music-with-time-signature music-to-rebar)
   "Rebars `music-to-rebar' so that it fits the meter of `music-with-time-signature'. If music-with-time-signature is a flat list, no rebarring happens."
   ;; only rebar if music-with-time-signature is nested 
