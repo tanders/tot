@@ -97,22 +97,6 @@ In a later version I will support also chords, but then def-tempered-score would
   (primes-in-limit 31)
   "List of prime numbers from 2 to 31.")
 
-;; CONSIDER: Move this into some utilities library?
-;; https://exercism.io/tracks/common-lisp/exercises/prime-factors/solutions/8a1fc0fd648b44119c5d63c29ec22d26
-(defun prime-factors (n)
-  "Return list of prime factors of given integer."
-  (flet ((is-factor? (x n)
-	   (zerop (mod n x)))) 
-    (when (> n 1)
-      (loop for x from 2 to (isqrt n)
-	 when (is-factor? x n)
-	 return (nconc (prime-factors x) (prime-factors (/ n x)))
-	 finally (return (list n)) ))))
-#|
-(prime-factors 24)
-=> (2 2 2 3)
-|#
-
 
 ;; ? TODO: change monzo representation into vector?
 (defun monzo-to-ratio (monzo)
