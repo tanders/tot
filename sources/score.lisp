@@ -1809,7 +1809,7 @@ See also: `span-voices'. The function `unify-part-durations' is smarter, though.
 #|
 (unify-part-durations
   '(:rh ((q g4) (q. c5 e d5 q e5 -q) (h e5 -q -q)) 
-    :lh ((q g3) (q c4 b3 h a3) (-q c3 d3))
+    :lh ((q g3) (q c4 b3 a3) (-q c3 d3))
     :ped ((h c3))))
 
 ;; BUG:
