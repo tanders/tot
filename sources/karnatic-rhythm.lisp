@@ -602,24 +602,28 @@ If the duration is larger than gati, rests are inserted.
 ;; (defun group (&rest args)
 ;;   args)
 
-;; TODO: Some way to combine tala-plan and gen-karnatic-cell.
-;;   E.g., Allow setting the `gen-karnatic-cell' arg position and other args. But I would need to set that for every tala element, so I might rather define that otherwise, e.g., with gen-karnatic-cell directly.
-;; ? BUG: tala-sam-accent accent placed twice relevant notes
-(defun tala-plan (talas &key (tala *tala*) (gati *gati*) (append-sam? NIL) (accent '-) (tala-sam-accent '-) (beat-duration 1/4))
-  "Some mini language for outlining the rhythmic form of a tala sequence, in particular gati bhedam sequences. The result is a rhythmic OMN sequence -- expressed in the time signature(s) corresponding to `tala' -- where each jathi is represented by a single note (i.e. without rhythmic phrasing).
+
+(defun tala-plan (tala-specs &key (tala *tala*) (gati *gati*) (accent '-) (tala-sam-accent '-) ; (beat-duration 1/4)
+			       (complete-phrase-in-tala? T) (append-sam? NIL))
+  "Some mini language for outlining the rhythmic form of a tala sequence, in particular gati bhedam sequences. The result is a rhythmic OMN sequence -- expressed in the time signature(s) corresponding to `tala' -- where each rhythmic cell is represented by a single note (i.e. without rhythmic phrasing).
 
 * Arguments:
-  - talas (nested list): a sequence of talas (or tala groups) expressed in a mini language described below.
+  - tala-specs (nested list): a sequence of talas (or tala groups) expressed in a mini language described below.
   - tala (nested list of durations): a tala as returned by function `tala`.
   - gati (integer): the default gati of the result.
-  - append-sam? (Boolean): whether or not to append a last beat at the very end.
-  - accent (symbol): articulation to use on every first note of a jathis. 
-  - tala-sam-accent (symbol): articulation to use on every first note of a tala (group). Intended for debugging/proofreading results.
+  - accent (symbol): OMN articulation to use on every first note of a jathi. 
+  - tala-sam-accent (symbol): OMN articulation to use on every first note of a tala (group). Intended for debugging/proofreading results.
   - beat-duration (rational): duration of a beat (for the symbol `beat`).
+  - complete-phrase-in-tala? (Boolean): whether or not to call complete-phrase-in-tala on result.
+  - append-sam? (Boolean): whether or not to append a last beat at the very end (only applies if complete-phrase-in-tala?).
 
-Each element of `talas' is a sublist in the following format. Within such sublist, an integer represents a full jathi cycle (i.e. a gati bhedam sequence with constant jathi starting and ending on a beat). The integer specifies the jathi and also the duration of that cycle measured in beats. The symbol `beat' represents a full beat in the result, while the symbol `tied-beat' is a beat tied to whatever follows. Additionally, any other rhythmic OMN sequence can occur within a tala specification (inserted into the tala time signatures in the result). For example, a partial jathi cycle can be expressed with the function `gb-plan' as demonstrated in an example below.
+Each element of `tala-specs' is a sublist in the following format. Within such sublist, an integer represents a full jathi cycle (i.e. a gati bhedam sequence with constant jathi starting and ending on a beat). The integer specifies the jathi and also the duration of that cycle measured in beats. Any standard OMN length represents a rhythmic cell of the corresponding duration. E.g., if the underlying beat is 1/4, the symbol q represents a full beat in the result. Any other rhythmic OMN sequence can occur within a tala specification (inserted into the tala time signatures in the result). For example, a partial jathi cycle can be expressed with the function `gb-plan' as demonstrated in an example below. Additionally, arbitrary OMN articulations including ties can be inserted into a tala spec, and such articulation is then added to the preceeding (first) event.
 
 IMPORTANT: It is the responsibility of the user to ensure that the elements within a tala spec actually 'fit' into the given tala. This freedom allows to compose gati bhedam sequences that last multiple talas. However, with the argument `tala-sam-accent' it is easy to ensure that the beginnings of all tala (groups) fall on the intended metric position.
+
+The result of `tala-plan' can be further processed, e.g., using `gen-karnatic-cell*' and `unfold-subseqs'. See `gen-karnatic-cell*' (possibly after that def in comments) for examples.
+
+BUG: Inserting ties currently broken due to a bug in builtin omn-replace (called by articulate-bars). Wait until that is fixed or define workaround in articulate-bars.
 
 * Examples:
 
@@ -627,8 +631,7 @@ A specification of two L D5 talas in gati 5. The first tala is rather simple and
 
 ;;; (setf *tala* (tala '(:d :l) 5))
 
-;;; (tala-plan '(;; beat expands to '((1/4))
-;;; 	        (beat beat 5)
+;;; (tala-plan '((q q 5)
 ;;; 	        ;; gati bhedam
 ;;; 	        (3 4))
 ;;; 	       ;; global gati of the result
@@ -636,18 +639,21 @@ A specification of two L D5 talas in gati 5. The first tala is rather simple and
 
 An example demonstrating further tala plan features. 
 
-;;; (tala-plan `((beat beat 5)
+;;; (tala-plan `((h 5)
 ;;; 	         ;; partial gati bhedam cycle
 ;;; 	         ;; NOTE: the global gati is not inherited by independent 
 ;;;              ;; functions like gb-plan and therefore set again 
-;;; 	         (beat beat beat beat ,(gb-plan 4 :beats 3 :gati 5))
+;;; 	         (q q q q ,(gb-plan 4 :beats 3 :gati 5))
 ;;; 	         ;; tala group lasting over two talas with a change of gati
 ;;; 	         (4 4 6 :gati 3)
 ;;; 	         ;; simple reprise
-;;; 	         (beat beat 5))
+;;; 	         (q q 5))
 ;;; 	       :gati 5
 ;;; 	       ;; Append a tala sam at the end
 ;;; 	       :append-sam? T)
+
+
+TODO: Examples with inserted articulations. (See exmaples in comments after this def for now)
 
 Polyphonic example: monophonic results of tala-plan combined in polyphonic score To have multiple
 voices with longer tala sequences more easily synchornised, consider somehow splitting the tala
@@ -656,24 +662,72 @@ sequences into multiple calls of `tala-plan` per part.
 ;;; `(:treble ,(tala-plan '((beat beat 5)))
 ;;;   :bass ,(tala-plan '((3 4))))
  "
-  (complete-phrase-in-tala
-   (articulate-bars  
-    (loop for tala in talas
-       append (let* ((actual-tala (tu:before-keyword tala))
-		     (key-words (tu:after-keyword tala))
-		     (actual-gati (getf key-words :gati gati))
-		     (result (loop for x in actual-tala
-				append (cond ((integerp x) (gb-plan x :gati actual-gati))
-					     ((eql x 'beat) `((,beat-duration)))
-					     ((eql x 'tied-beat) `((,beat-duration tie)))
-					     (T x)))))
-		(articulate-bars result :accent tala-sam-accent :section '(0))
-		))
-    :accent accent)
-   :tala tala :append-sam? append-sam?))
+  (let* ((full-OMN-required? (some #'articulationp (flatten tala-specs)))
+	 (result
+	  (loop for tala-spec in tala-specs
+	     append (let* (;; Single tala spec brokwn into sublists where any OMN articulation is a
+			   ;; second element in a sublist
+			   (actual-tala-spec (tu:split-if (lambda (x) (not (articulationp x)))
+							  (tu:before-keyword tala-spec)))
+			   (key-words (tu:after-keyword tala-spec))
+			   (actual-gati (getf key-words :gati gati))
+			   ;; Destructured arg artic quasi optional, can be NIL
+			   (aux (loop for (x artic) in actual-tala-spec
+				   for lengths = (cond ((integerp x) (gb-plan x :gati actual-gati))
+						       ((lengthp x) `((,x)))
+						       ;; ((eql x 'beat) `((,beat-duration)))
+						       ;; ((eql x 'tied-beat) `((,beat-duration tie)))
+						       ((every #'lengthp (flatten x)) x)
+						       (T (error "~A not supported value" x)))
+				   ;; do (break)
+				   append (if full-OMN-required?
+					      ;; articulate-bars (called below) expects either a plain lengths or a full OMN seq
+					      (make-omn :length lengths
+							:pitch '(c4)
+							:articulation (cons (or artic '-)
+									    (make-list (1- (length (flatten lengths)))
+										       :initial-element '-)))
+					      lengths))))
+		      ;; (break)
+		      (articulate-bars aux :accent tala-sam-accent :section '(0))
+		      )))
+	 (marked-result (articulate-bars result :accent accent)))
+    ;; (break)
+    (if complete-phrase-in-tala?
+	(complete-phrase-in-tala marked-result :tala tala :append-sam? append-sam?)
+	marked-result)))
 
 #||
 (setf *tala* (tala '(:d :l) 5))
+
+(tala-plan '((q q 5)
+	     (3 4))
+	   ;; global gati of the result
+	   :gati 5
+	   :accent 'marc
+	   ;; :tala-sam-accent 'mart
+	   :tala-sam-accent 'stacc
+	   :append-sam? T)
+
+(tala-plan '((q tie q 5)
+	     (3 4))
+	   ;; global gati of the result
+	   :gati 5
+	   :accent 'marc
+	   ;; :tala-sam-accent 'mart
+	   :tala-sam-accent 'stacc
+	   :append-sam? T)
+
+
+(tala-plan '((q p1 q 5 p2)
+	     (3 p3 4))
+	   ;; global gati of the result
+	   :gati 5
+	   :accent 'marc
+	   ;; :tala-sam-accent 'mart
+	   :tala-sam-accent 'stacc
+	   :append-sam? T)
+
 
 (tala-plan '((beat beat 5)
 	     (3 4))
@@ -684,7 +738,7 @@ sequences into multiple calls of `tala-plan` per part.
 	   :tala-sam-accent 'stacc
 	   :append-sam? T)
 
-(tala-plan '((1 2 4)
+(tala-plan '((1 2 4) ;; BUG: Not a full tala
 	     (3 4))
 	   ;; global gati of the result
 	   :gati 5
@@ -692,14 +746,14 @@ sequences into multiple calls of `tala-plan` per part.
 	   :tala-sam-accent 'mart
 	   :append-sam? T)
 
-(tala-plan `((beat beat 5)
+(tala-plan `((q q 5)
 	     ;; partial gati bhedam cycle
 	     ;; NOTE: the global gati is not inherited by separate functions like gb-plan
-	     (beat beat beat beat ,(gb-plan 4 :beats 3 :gati 5))
+	     (q q q q ,(gb-plan 4 :beats 3 :gati 5))
 	     ;; tala group lasting over two talas with a change of gati
 	     (4 4 6 :gati 3)
 	     ;; simple reprise
-	     (beat beat 5))
+	     (q q 5))
 	   :gati 5
 	   ;; Append a tala sam at the end
 	   :append-sam? T)
