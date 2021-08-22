@@ -805,8 +805,30 @@ This function is now rather redundant, as Opusmodus automatically prints seed va
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun _unfold (seq fn)
+  "[aux for fn-unfold and unfold-subseqs] Apply the spec of function call FN to the OMN SEQ. 
+
+* Arguments:
+ - fn (list): a function call spec of the form (<omn-fn> &rest <args>), where <omn-fn> is a function expecting an OMN sequence as first argument and arbitrary further argments, and <args> are the further arguments beyond the OMN sequence given to the function.
+  - sequence: OMN sequence
+"
+  (apply (if (functionp (first fn))
+	     (first fn)
+	     (fdefinition (first fn)))
+	 seq (rest fn)))
+
+#|
+(setf mat '((q c4 d4 e4) (h f4 q b3)))
+
+;; The first element of function FN can be an OMN function or a symbol naming a function.
+(_unfold mat '(*t 12))
+(_unfold mat (list #'*t 12))
+|#
+
+
+
 (defun fn-unfold (fns sequence)
-  "Much like the buildin Opusmodus `unfold`, but instead works with functions and additional arguments can be given to the functions. Apply to `sequence` all fns in order.
+  "Much like the buildin Opusmodus `unfold', but instead works with functions, and additional arguments can be given to the functions. Apply to `sequence' all fns in order.
 
 * Arguments:
   - fns (list of lists): Each sublist has the form (<omn-fn> &rest <args>), where <omn-fn> is a function expecting an OMN sequence as first argument and arbitrary further argments, and <args> are the further arguments beyond the OMN sequence given to the function.
@@ -826,14 +848,8 @@ Some short-hand versions of common functions are defined for conciseness. These 
 
 ;;; (fn-unfold '((*t 12) (*ld (2 3) :section 1)) mat)
 "
-  (reduce (lambda (seq fn)
-	    (apply (if (functionp (first fn))
-		       (first fn)
-		       (fdefinition (first fn)))
-		   seq (rest fn)))
-	  fns :initial-value sequence))
+  (reduce #'_unfold fns :initial-value sequence))
 
-#| ;; Functions that can be used directly (OMN sequence is already first argument) 
 ;; gen-retrograde
 ;; length-staccato
 ;; length-legato
