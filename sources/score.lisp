@@ -322,12 +322,12 @@ https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
 			     (list* (keyword-to-om-symbol part-symbol)
 				    :omn `(quote ,part-omn)
 				    (getf actual-instruments part-symbol))))
-		       (tu:plist->pairs (merge-equal-instrument-parts score))))))
+		       (tu:plist->pairs (merge-equal-instrument-parts score)))))
+	 ;; Playback with microtonal temperament spread over multiple MIDI chans, but notation done normally
+	 (full-score (cons 'def-tempered-score full-score-params)))
     ;; (break) 
-    ;; TODO: I could avoid eval if preview-score would be a macro...
-    ;; Playback with microtonal temperament spread over multiple MIDI chans, but notation done normally
-    ;; TODO: dependency on library more-tots. Better unify the libraries again.
-    (eval (cons 'def-tempered-score full-score-params))
+    ;; TODO: Could I avoid eval somehow?
+    (eval full-score)
     ;; (display-midi *last-score* :display display)
     (audition-last-score)
     ;; BUG: microtonal parts have multiple MIDI chans -- only take the first 
