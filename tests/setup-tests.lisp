@@ -11,11 +11,11 @@
 
 ;; Run different random tests each time
 (let ((*random-state* (make-random-state T)))
-  (run! 'tot))
+  (5am:run! 'tot))
 
 (progn
-  (asdf:load-system :tot)
-  (run! 'tot))
+  (asdf:load-system :tot/tests)
+  (5am:run! 'om::tot))
 |#
 
 
