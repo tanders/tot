@@ -321,9 +321,9 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 		(aref all-filtered pos)))
 	  ))))
 
-;; !! TODO: allow for ties across rhythmic cells
-;; !! TODO: allow for turning cells or parts of them into rests (perhaps in a separate function?)
-;; ? TODO: Consider to count as accented also all cells that would result in a durational accent on a longer note immediately following the returned cell.
+;; !! TODO: Introduce two additional keywords setting with boolean or binary integer whether last event in current cell is tied to first event of following cell and whether returned cell (or some of its events?) is/are a rest.
+;;   - Allow for turning cells or parts of them into rests (perhaps in a separate function?)
+;; ?? TODO: Consider to count as accented also all cells that would result in a durational accent on a longer note immediately following the returned cell.
 (defun gen-karnatic-cell (gati jathi position
 			  &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
 			    (include-length nil) (exclude-length nil) (seed nil))
@@ -578,7 +578,7 @@ Tie first note (remainder for cut) to following note.
 ;;; (gb-plan 3 :beats 2 :tie-first T)
 ;;; => ((1/8 tie) (3/16) (3/16))
 
-If the duration is larger than *gati*, rests are inserted. 
+If the duration is larger than gati, rests are inserted. 
 ;;; (gb-plan 3 :beats 6)
 ;;; => ((-3/4) (3/16) (3/16) (3/16) (3/16))
 "
