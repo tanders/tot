@@ -765,6 +765,36 @@ sequences into multiple calls of `tala-plan` per part.
 ||#
 
 
+
+(defmethod get-tala-plan-jathi ((length rational) (gati integer) &key (beat-duration 1/4))
+  "Return int represeting jathi of `length', assuming that each jathi is represented by a single note (i.e. without rhythmic phrasing) as returned by `tala-plan'."
+  (values (* length (/ gati beat-duration))
+	  gati))
+(defmethod get-tala-plan-jathi ((length symbol) (gati integer) &key (beat-duration 1/4))
+  (get-tala-plan-jathi (omn-encode length) gati :beat-duration beat-duration))
+(defmethod get-tala-plan-jathi ((lengths list) (gati integer) &key (beat-duration 1/4))
+  (loop for length in lengths
+       collect (get-tala-plan-jathi length gati :beat-duration beat-duration)))
+#|
+(get-tala-plan-jathi 3/16 4)
+(get-tala-plan-jathi 4/5 5)
+
+(get-tala-plan-jathi 'e. 4)
+(get-tala-plan-jathi 'e. 4 :beat-duration 1/8)
+(get-tala-plan-jathi 'e. 4 :beat-duration 1/2)
+
+(get-tala-plan-jathi 'q 4)
+(get-tala-plan-jathi 'q 5)
+
+(get-tala-plan-jathi '3q 3)
+(get-tala-plan-jathi '3h 3)
+(get-tala-plan-jathi '5h 5)
+
+(get-tala-plan-jathi '(q e. e.) 4)
+|#
+
+
+
 (defun gen-matras (gati jathi jathi-number &key prefix suffix)
   "Generates a sequence of matras (equal note durations) where `gati' defines the beat subdivision, `jathi' the number of matras per 'bar' (sublist) and `jathi-number' the resulting number of sublists.
 
