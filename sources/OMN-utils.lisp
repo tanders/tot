@@ -1046,6 +1046,10 @@ Mark every first note of a bar with an attribute.
 (defun *ld (sequence values &key set ignore (seed NIL) (section NIL) (exclude NIL) (omn NIL))
   "Like length-divide, but sequence as first param."
   (length-divide values sequence :set set :ignore ignore :section section :exclude exclude :omn omn :seed seed))
+#| 
+;; NOTE: In case notes processed by length-divide -- or *ld -- carry some articulation, this articulation is preserved for every subdivided note.
+(length-divide  '(2 3) '((h c4 marc)))
+|#
 
 (defun *frag (sequence count range &key (encode T) (lists NIL) (section NIL) (exclude NIL) (seed NIL))
   "Like gen-fragment, but sequence as first param."
