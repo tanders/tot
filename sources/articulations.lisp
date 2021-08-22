@@ -360,6 +360,12 @@ The symbol for each attribute starts with 'A_'
   => ((H D4 STACC+MARC Q TIE) (H. D4 MARC) (Q D4 TIE+MARC D4 D4 STACC) (-Q D4))
 
   ;;; (articulate-bars (gen-repeat 3 '((s s s))) :accent 'f :default 'p :parameter :velocity)
+
+  NOTE: `sequence' must either be a plain sequence of length values or a full OMN
+  expression (i.e. including pitches). For example, the following input is not a full OMN sequence
+  and thus the existing articulations are simply overwritten.
+  ;; (articulate-bars '((q p1)) :accent 'marc)
+  => ((Q C4 MARC))
   "
   (assert (if (eql parameter :velocity)
 	      (velocityp default)
@@ -388,8 +394,20 @@ The symbol for each attribute starts with 'A_'
 		      new))
 		 ;; but overwrite existing dynamics (velocities)
 		 (:velocity new))))
+    ;; (break)
     (omn-replace parameter new2 sequence)))
 
+#|
+(setf result '((Q C4 TIE)))
+(setf result '((Q C4 TIE+STACC)))
+;; BUG: combied articulation with tie is not preserved, while a tie by itself is
+;; Caused by bug of omn-replace, which I reported.
+(articulate-bars result :accent 'marc)
+
+(omn-replace :articulation 'marc '((q c4 tie)))
+(omn-replace :articulation 'marc '((q c4 tie+arco)))
+
+|#
 
 #|
 ;;; OLD:
