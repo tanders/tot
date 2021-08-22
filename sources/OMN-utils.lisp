@@ -850,6 +850,124 @@ Some short-hand versions of common functions are defined for conciseness. These 
 "
   (reduce #'_unfold fns :initial-value sequence))
 
+
+(defun _get-event-articulations (event)
+  "[Aux]"
+  (disassemble-articulations (fourth event)))
+
+(defun unfold-subseqs (fn-call-specs sequence &key (end-marker NIL))
+  "Variant of Opusmodus' buildin `unfold', but the preset function is much more flexible. Otherwise, the same workflow as documented for `unfold' could be used (multiple transformations concisely applied separately to individual parts and then the parts combined, e.g., with the builtin `ps' or TOT's `preview-score').
+
+Like with `unfold' (and the TOT function `fn-unfold'), multiple Opusmodus transformations can be applied to `sequence' in the given order. However, while `unfold' requires that these transformations are separately declared (using `def-unfold-set'), standard Opusmodus functions are used with `unfold-subseqs' (and with `fn-unfold'). The only condition is that these functions expect an OMN sequence as their first argument (see concisely named functions like `*t', `*mute' and various others below for how such functions can be defined). 
+
+Unlike `unfold', arbitrary arguments can be specified for the transformation functions when using `unfold-subseqs' (and `fn-unfold'). For example, it is sufficient to have only a single transposition function (by contrast, `unfold' requires a separate transformation declaration for each argument combination, e.g., each transposition interval).
+
+Importantly, with `unfold-subseqs' transformation functions can be applied to only subsequences of OMN events in `sequence'. The point where new OMN subsequences start can be marked with standard OMN attributes. Remember that you can define custom OMN attributes with the builtin `add-text-attributes'.
+
+* Arguments:
+  - fn-call-specs (plist): A property list of alternating symbols (which are OMN articulations) and nested lists (function call combination specs). Each function call combination spec has the form (<omn-fn> &rest <args>), where <omn-fn> is a function expecting an OMN sequence as first argument and arbitrary further argments, and <args> are the further arguments beyond the OMN sequence given to the function.
+  - sequence: OMN sequence
+  - end-marker (symbol): OMN attribute that is used for marking subsequence ends.
+
+* Examples:
+
+Define some custom OMN attributes for marking the start points of subsequences to which transformations are applied. Remember that non-sticky attributes are only attached to a single event, following events are not affected.
+;;; (add-text-attributes
+;;;  '(p1 \"p1\" :non-sticky) ;; p1 stands for phrase one
+;;;  '(p2 \"p2\" :non-sticky)
+;;;  '(pe \"pe\" :non-sticky)) ;; phrase end
+
+Some material to use with a new subsequence starting at the event marked with the attribute p1.
+;;; (setf mat-1 '((q c4 d4 e4) (h f4 q b3 p1) (h. c4)))
+
+Apply two transformations (and octave transposition and note subdivisions), but only to the subsequence starting at p1. Note that parameters are specified for that transformation functions.
+;;; (unfold-subseqs '(p1 ((*t 12) (*ld (2 3)))) mat-1)
+
+An OMN sequence consisting of two phrases. The first subsequence p1 ends just before the beginning of the next subsequence, and the second subsequence p2 ends before the explicit subsequence end marker (pe). 
+;; (setf mat-2 '((q c4 d4 e4 p1) (h f4 q e4) (h d4 q c4 p2) (h b3 q d4 pe) (h. c4)))
+
+The first subsequence is transposed an octave up, and the second an octave down. `unfold-subseqs' is told that we use the attribute `pe' as subsequence end marker.
+;;; (unfold-subseqs '(p1 ((*t 12)) 
+;;; 		      p2 ((*t -12)))
+;;; 		    mat-2
+;;; 		    :end-marker 'pe)
+
+An OMN sequence with two equally named subsequences that are separated by a gap.
+;;; (setf mat-3 '((q c4 d4 e4 p1) (h f4 q e4 pe) (h d4 q c4 p1) (h b3 q d4 pe) (h. c4)))
+
+The two equally labelled subsequences are transformed by the same function.
+;;; (unfold-subseqs '(p1 ((*t 12)))
+;;; 		    mat-3
+;;; 		    :end-marker 'pe)
+
+The subsequence marker attributes can be merged with other attributes.
+;;; (setf mat-4 '((q c4 d4 e4 p1+marc) (h f4 q b3 ) (h. c4)))
+;;; (unfold-subseqs '(p1 ((*t 12))) mat-4
+;;; 		    :end-marker 'pe)
+
+
+NOTE: The transformation functions receive a list of single events (as returned by `single-events'), i.e. the information on bar boundaries is unavailable for the transformations. As a workaround, this information could be preserved, e.g., by marking each event at the beginning of a bar with a custom articulation and then splitting the subsequence into bars again by the first transformation function.
+TODO: For unfinished example see comment below.
+
+"
+  (let* ((fn-call-specs (if end-marker
+			    (append (list end-marker '((identity)))
+				    fn-call-specs)
+			    fn-call-specs))
+	 (split-marker-articulations (remove NIL (tu:properties fn-call-specs)))
+	 (events (single-events (flatten sequence)))
+	 (split-events (tu:split-if (lambda (event)
+				      (some (lambda (articulation) 
+					      (member articulation split-marker-articulations))
+					    (_get-event-articulations event)))
+				    events))
+	 (result (loop for events-subseq in split-events
+		    for marker = (find-if (lambda (articulation) 
+					    (member articulation split-marker-articulations))
+					  (_get-event-articulations (first events-subseq)))
+		    for fns = (getf fn-call-specs marker)
+		    ;; do (break)
+		    collect (fn-unfold fns events-subseq))))
+    ;; (break)
+    (copy-time-signature sequence result)))
+#|
+(add-text-attributes
+ '(p1 "p1" :non-sticky) ;; p1 stands for phrase one
+ '(p2 "p2" :non-sticky)
+ '(pe "pe" :non-sticky) ;; phrase end
+ )
+
+(setf mat-2 '((q c4 d4 e4 p1) (h f4 q e4) (h d4 q c4 p2) (h b3 q d4 pe) (h. c4)))
+
+(unfold-subseqs '(p1 ((*t 12)) 
+		  p2 ((*t -12)))
+		mat-2
+		:end-marker 'pe)
+
+(setf mat-3 '((q c4 d4 e4 p1) (h f4 q e4 pe) (h d4 q c4 p1) (h b3 q d4 pe) (h. c4)))
+
+(unfold-subseqs '(p1 ((*t 12)))
+		mat-3
+		:end-marker 'pe)
+
+(setf mat-4 '((q c4 d4 e4 p1) (h f4 q b3) (h. c4)))
+
+Mark every first note of a bar with an attribute. 
+(setf mat-4 (articulate-bars mat-4 :accent 'marc))
+
+
+;; BUG: Unfinished. rebar-at-articulation does not work here. 
+(unfold-subseqs '(p1 ((rebar-at-articulation 'marc) 
+		      (print)
+		      (*ld (2 3) :section (0))))
+		mat-4)
+
+;; TMP
+(rebar-at-articulation (flatten mat-4) 'marc)
+|#
+
+
+#| ;; Example functions that can be used directly (OMN sequence is already first argument) 
 ;; gen-retrograde
 ;; length-staccato
 ;; length-legato
