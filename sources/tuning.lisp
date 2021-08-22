@@ -204,21 +204,22 @@ The function is 'tuned' such that (keynum-to-freq 69) returns 440.0 Hz."
 => 1.4983071
 |#
 
-(defun ratio-to-cent (frac &key (round? NIL))
+;; ratio-to-cent is predefined by Opusmodus, but currently broken (https://opusmodus.com/forums/topic/1998-ratio-to-cent/?tab=comments#comment-6902)
+(defun ratio->cent (frac &key (round? NIL))
   "Transform the frequency ratio `frac' into the corresponding cent value."
   (ratio-to-keynum-interval frac :keys-per-octave 1200 :round? round?))
 #|
-(ratio-to-cent 3/2 :round? T)
+(ratio->cent 3/2 :round? T)
 => 702, -0.045043945
 
-(ratio-to-cent 3/2 :round? NIL)
+(ratio->cent 3/2 :round? NIL)
 => 701.95496
 |#
 
-(defun cent-to-ratio (cent)
+(defun cent->ratio (cent)
   (keynum-interval-to-ratio cent :keys-per-octave 1200))
 #|
-(cent-to-ratio 702)
+(cent->ratio 702)
 => 1.500039
 |#
 
@@ -775,6 +776,8 @@ See https://en.xen.wiki/w/22edo.")
 ;;; 31-limit JI 
 ;;;
 
+;; NOTE:  <this is just a tmp font lock test>
+
 ;; https://rosettacode.org/wiki/Identity_matrix#Common_Lisp
 (defun identity-matrix (n)
   (loop for a from 1 to n
@@ -783,10 +786,11 @@ See https://en.xen.wiki/w/22edo.")
 		else collect 0)))
 ; (identity-matrix 5)
 
-  
+;; deftemperament
+
 (deftemperament 31-limit-JI
     (identity-matrix (length +limit-31-primes+))
-  (mapcar #'ratio-to-cent +limit-31-primes+)
+  (mapcar #'ratio->cent +limit-31-primes+)
   "Just intonation 'temperament' supported up to 31-limit JI.")
 #|
 (31-limit-JI 1/2)
@@ -814,8 +818,6 @@ See https://en.xen.wiki/w/22edo.")
 ;; Exceed limit
 (31-limit-JI 37/8)
 |#
-
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
@@ -1472,6 +1474,11 @@ Compute tuning errors as difference between degrees and ratios turned into cents
       for no-of-fifths from -1
       ;; alist
       collect (cons nom
+		    ;; BUG: Compilation error. I probably need to define monzo-to-ratio elsewhere and then load the system accordingly.
+#|
+; Warning: Compile-time evaluation of DEFCONSTANT initial value form for +NOMINAL->RATIO-TABLE+ while compiling "home:common-lisp;tot;sources;tuning.lisp.newest" signalled the error: 
+;          Undefined function MONZO-TO-RATIO called with arguments ((0 -1)) .
+|#
 		    (ji-pc-ratio (monzo-to-ratio (list 0 no-of-fifths))))))
   "Hashtable mapping pitch nominals (symbols like A, B, C...) to their corresponding Pythagorean frequency ratios.")
 
@@ -1508,7 +1515,7 @@ Compute tuning errors as difference between degrees and ratios turned into cents
   "Hashtable mapping symbols representing accidentals to corresponding prime limit ratios and their combinations. Combinations are representing by their own symbol, so that for notating chords we only need a single accidental symbol per tone.
 
 Notation:
- s and b are the Pythagorean sharp and flat accidentals
+;; s and b are the Pythagorean sharp and flat accidentals
  K stands for prime limit 'c'omma (K as in the original Greek κόμμα, 'c' is already used for OMN attributes denoting cents)
  5K means prime limit 5 comma up
  -5K means prime limit 5 comma down
@@ -1529,6 +1536,8 @@ Source for the initial prime limit ratios: Nicholson, T. & Sabat, M. (2018) Fund
 ;; (length (alexandria:hash-table-alist *accidental->ratio-table*))
 
 (defun aux-add-power-accidentals (accidental-string orig-ratio i)
+  ;; TODO: Once I have a separate TOT package, also EXPORT all the automatically created accidental
+  ;; symbols.
   (let ((power-accidental (intern (concatenate 'string
 					       accidental-string "XX" (write-to-string i))))
 	(power-ratio (expt orig-ratio i)))
@@ -1602,6 +1611,10 @@ is replaced with replacement."
   (apply #'om:add-text-attributes
 	 (loop for acc in (alexandria:hash-table-keys *accidental->ratio-table*)
 	    ;; do (break)
+	    ;;
+	    ;; NOTE: s is a duration. It cannot be used as an attribute in OMN and I do not need it
+	    ;; as such anyway, so simply filter s and b out here.
+	    unless (member acc '(s b))
 	    collect (list acc
 			  (prettify-exported-accidental (symbol-name acc))
 			  :non-sticky))))
@@ -1668,6 +1681,7 @@ is replaced with replacement."
    ))
 |#
 
+#|
 ;; Huge number of power accidentals added (e.g., up to 7k**7) to later help better expressing the
 ;; intervallic structure of scales etc. Many of these commas or comma combinations may be tempered
 ;; out in actual tunings, but they are part of the notation.
@@ -1683,7 +1697,7 @@ is replaced with replacement."
      29K -29K
      31K -31K) . 2)
    ))
-
+|#
 
 
 (defun set-JI-accidental (name ratio)
@@ -1921,9 +1935,11 @@ is replaced with replacement."
 "
   (if (pitchp pitch)
       (let* ((pitch-str (symbol-name pitch))
+	     ;; ? BUG: cl-utilities:split-sequence-if-not omits matching elements
 	     (octave (first (cl-utilities:split-sequence-if-not #'digit-char-p pitch-str
 								:remove-empty-subseqs T)))
 	     ;; pair (<pitch-class-str> <microtone-accidental-str>)
+	     ;; ? BUG: cl-utilities:split-sequence-if omits matching elements
 	     (pc+microtone-strings (cl-utilities:split-sequence-if #'digit-char-p pitch-str))
 	     (pc-str (first pc+microtone-strings))
 	     (nominal (string (char pc-str 0)))
