@@ -245,6 +245,10 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 	;; generate sequence of cells (list of lists)
 	(let ((n (length position)))
 	  (mapcar #'(lambda (gati jathi position accented? max-number min-number first-length include-length exclude-length)
+		      ;; TODO: assert that all gati, jathi and position values are integers 
+		      (assert (integerp gati) (gati) "gati must be integer: ~A" gati)
+		      (assert (integerp jathi) (jathi) "jathi must be integer: ~A" jathi)
+		      (assert (integerp position) (position) "position must be integer: ~A" position)
 		      (gen-karnatic-cell gati jathi position
 					 :accented? accented? :max-number max-number :min-number min-number
 					 :first-length first-length :include-length include-length :exclude-length exclude-length
