@@ -766,6 +766,51 @@ sequences into multiple calls of `tala-plan` per part.
 
 
 
+#|
+;; Note: no distinction between gatis 3 and 6. Would depend on context (i.e. gati of whole tala)
+(let ((gati-mappings (alexandria:alist-hash-table
+		      '((1. 4)
+			(2 . 4)
+			(3 . 6)
+			;; (4 . 4)
+			(5 . 5)
+			;; (6 . 6)
+			(7 . 7)))))
+  (defmethod get-tala-plan-gati ((length rational))
+    "Return int represeting gati of `length', assuming that each jathi is represented by a single note (i.e. without rhythmic phrasing) as returned by `tala-plan'.
+
+BUG: Not reliably working, as correct gati depends not on a single value, but on context. For example, the duration q can be used in gati, and a duration like 3q allows for multiple gatis (3 and 6).
+!! Avoid using this function for now.
+"
+    (let ((max-denom-prime (apply #'max (prime-factors (denominator length)))))
+      (gethash max-denom-prime gati-mappings))))
+(defmethod get-tala-plan-gati ((length symbol))
+  (get-tala-plan-gati (omn-encode length)))
+(defmethod get-tala-plan-gati ((length list))
+  (mapcar #'get-tala-plan-gati (flatten length))
+  #|
+  (let* ((length-gati-pairs (loop for l in (flatten length)
+			       collect (list l . (get-tala-plan-gati l))))))
+  |#
+  )
+#|
+(get-tala-plan-gati 2/3)
+(get-tala-plan-gati 2/6)
+(get-tala-plan-gati 4/5)
+(get-tala-plan-gati 3/7)
+
+;; BUG: Can be any gati, depends on context (i.e. gati of whole tala)
+;; TODO: Turn get-tala-plan-gati and get-tala-plan-jathi into aux functions and define function on top that considers a whole tala and assumes a constant gati within a single tala. Remember that jathis can cross talas, but the determination of gatis should be fine per tala anyway.
+(get-tala-plan-gati 'q) 
+(get-tala-plan-gati '3h)
+(get-tala-plan-gati '5h)
+
+
+(get-tala-plan-gati '(3h 3h 3h))
+(get-tala-plan-gati '(5h 5h 5h 5h 5h))
+|#
+|#
+
 (defmethod get-tala-plan-jathi ((length rational) (gati integer) &key (beat-duration 1/4))
   "Return int represeting jathi of `length', assuming that each jathi is represented by a single note (i.e. without rhythmic phrasing) as returned by `tala-plan'."
   (values (* length (/ gati beat-duration))
