@@ -410,13 +410,95 @@ The argument min-number is seemingly not fully working yet:
    :include-length include-length :exclude-length exclude-length :seed seed))
 
 
-#||
-(defun gen-karnatic-cell* (&key gati jathi position
-			     (accented? T) (max-number nil) (min-number nil) (first-length nil)
+;; TODO:
+;;  - Allow tala-plan to contain rests
+(defun gen-karnatic-cell* (tala-plan gati position
+			   &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
 			     (include-length nil) (exclude-length nil) (seed nil))
+  "Like gen-karnatic-cell, but a list of jathis is automatically deduced from `tala-plan' (flat OMN rhythmic sequence) based on `gati'. Every single note in `tala-plan' is assumed to stand for a rhythmic cell, which is phrased by gen-karnatic-cell.
 
-  )
-||#
+In contrast to `gen-karnatic-cell', the length of the result depends on the length of `tala-plan' (not the length of `position').
+
+NOTE:  `tala-plan' can contain durations that for the given gati are beyond the available jathis (e.g., length h corresponds to jathi 8, which is not supported). Workaround: avoid such durations, instead use ties (e.g., q tie q). 
+
+NOTE: Handling gati changes in tala-plan is tricky. Better process subsequences with different gati separately (e.g., using `unfold-subseqs').
+
+* Examples:
+
+;;; (gen-karnatic-cell* '(q q q q) 4 '(0 1 2 3))
+
+;;; (gen-karnatic-cell* '(q e. e s) 4 1)
+
+;; TODO: examples using tala-plan: see comment below definition
+
+
+"
+  (let* ((n (length tala-plan))
+	 (articulations-included? (some #'articulationp (flatten tala-plan)))
+	 (jathi (get-tala-plan-jathi (flatten (omn :length tala-plan)) gati))
+	 (result (gen-karnatic-cell gati jathi (circle-repeat position n)
+				    :accented? accented? :max-number max-number :min-number min-number :first-length first-length
+				    :include-length include-length :exclude-length exclude-length :seed seed)))
+    (if articulations-included?
+	;; Re-insert articulations: ties at end of every sublist and other articulations added to first event in sublist
+	(loop
+	   for cell in result
+	   for (articulation) in (omn :articulation (tu:ensure-nested-list tala-plan))
+	   for articulation-list = (disjoin-attributes articulation)
+	   for tie = (find 'tie articulation-list)
+	   for articulation-without-tie = (merge-articulations (remove 'tie articulation-list))
+	   for articulations-without-tie = (cons (or articulation-without-tie '-)
+						 (make-list (1- (length (flatten cell)))
+							    :initial-element '-))
+	   for articulations-to-use = (append (butlast articulations-without-tie)
+					      (list (merge-articulations (list (or tie '-)
+									       (first (last articulations-without-tie))))))
+	   collect (make-omn :length cell
+			     :pitch '(c4)
+			     :articulation articulations-to-use))
+	result)))
+#|
+;; Several tests, all using always only `position' 1 for clarity of results. Results musically stupid, though.
+
+;; Example with a tie
+(setf my-plan '((Q C4 P1+MART+MARC+TIE) (Q C4 MARC) (Q C4 MARC)))
+(gen-karnatic-cell* my-plan 5 1)
+
+;; Example with my-plan
+(setf my-plan (tala-plan '((q p1 q 5)
+			   (3 p2 4 p3))
+			 ;; global gati of the result
+			 :gati 5
+			 :accent 'marc
+			 :tala-sam-accent 'mart
+			 ;; :tala-sam-accent 'stacc
+			 :complete-phrase-in-tala? NIL))
+(gen-karnatic-cell* my-plan 5 1)
+
+;; Example with different gatis, using unfold-subseqs for differnet subseqs
+(setf my-plan (tala-plan `((q p1 q 5)
+			   ;; partial gati bhedam cycle
+			   ;; NOTE: the global gati is not inherited by separate functions like gb-plan
+			   (q p2 q q q ,(gb-plan 4 :beats 3 :gati 5))
+			   ;; tala group lasting over two talas with a change of gati
+			   (4 p3 4 6 :gati 3)
+			   ;; simple reprise
+			   (q p1 q 5))
+			 :gati 5
+			 :accent 'marc
+			 :tala-sam-accent 'mart
+			 :complete-phrase-in-tala? NIL))
+;; Preview score
+`(:phrased: ,(complete-phrase-in-tala 
+	      (unfold-subseqs '(p1 ((gen-karnatic-cell* 5 1))
+				p2 ((gen-karnatic-cell* 5 2))
+				p3 ((gen-karnatic-cell* 3 1)))
+			      my-plan)
+	      :tala *tala* ::append-sam? T)
+  :plan: ,(complete-phrase-in-tala my-plan  :tala *tala* ::append-sam? T))
+|#
+
+
 
 ;; TODO: variant that allows for specifying the number of matras to add/remove at the front or end of the generated full cycle.
 ;; Perhaps simply removing some values from the generated result?
