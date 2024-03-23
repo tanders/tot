@@ -871,15 +871,6 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
    ))
 
 
-;;; BUG: Not working anymore?
-;;; TODO: consider revising (or an alternative function) definition by using gen-karnatic-cell: stored are then not actual cells, but args for gen-karnatic-cell. E.g., in such a revision I would not be limited to have a durational accent on every cell/pala
-#||
-;Compiler warnings :
-;   In ACCENTED-YATI-PHRASE: In the call to EVEN-LENGTH-RHYTHM with arguments (GATI :TOTAL-DURATION (CCL::*-2 GATI-RATIO LONGEST-PALA-LENGTHS) :TIME-SIG LONGEST-PALA-TIME-SIGS),
-;     the variable portion of the argument list ((CCL::*-2 GATI-RATIO LONGEST-PALA-LENGTHS) :TIME-SIG LONGEST-PALA-TIME-SIGS) contains an odd number
-;     of arguments and so can't be used to initialize keyword parameters
-;     for the current global definition of EVEN-LENGTH-RHYTHM
-||#
 (defun accented-yati-phrase (gati pala-lengths gap &rest args &key (type '(:srotovahayati :at-end)) &allow-other-keys)
   "Generates the matras sequence for a yati phrase, see Reina (2016, p. 205ff) for details. Resulting sublists are jathis for potential post-processing (e.g., adding an accent on their first notes) before redefining the metric structure (usually to follow the tala, e.g., with `omn-to-time-signature'). 
 
@@ -908,11 +899,9 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
                                   (loop for jathi in longest-pala-jathis
 				     collect (* jathi gati-ratio))))
          (longest-pala-lengths (apply #'max pala-lengths))
-         (longest-pala-matras
-	  ;; BUG: even-length-rhythm given args not correct
-          (omn :length (even-length-rhythm gati 
-                                           :total-duration (* gati-ratio longest-pala-lengths) 
-                                           :time-sig longest-pala-time-sigs)))
+	 (longest-pala-total-duration (* gati-ratio longest-pala-lengths))
+	 (longest-pala-aux (even-length-rhythm longest-pala-total-duration gati :time-sig longest-pala-time-sigs))
+         (longest-pala-matras (omn :length longest-pala-aux))
          (longest-pala (apply #'durational-accent longest-pala-matras (tu:remove-property :type args))))
     (cond 
       ((equal type '(:srotovahayati :at-end))          ; grows at end
