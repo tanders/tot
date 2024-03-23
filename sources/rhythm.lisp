@@ -156,7 +156,7 @@ Seemingly arg x-values not quite working yet as intended.
          ))))
 
 
-(defun even-length-rhythm (total-duration pattern &key prefix suffix (time-sig '(4 4)))
+(defun even-length-rhythm (total-duration pattern &key prefix suffix (time-sig '(4 4)) (pitch '(c4)))
   "Custom algorithm to create rhythmic phrases consisting of even note durations over a certain time. 
 
 * Arguments:
@@ -167,6 +167,10 @@ Seemingly arg x-values not quite working yet as intended.
   - time-sig: time signature
 
 * Examples:
+  ;;; (even-length-rhythm 'h. '(e. s) :time-sig '(3 4))
+
+  ;;; (even-length-rhythm 'h. '(e. s) :time-sig '(3 8))
+
   ;;; (even-length-rhythm 'w_w '5q :prefix '-w_5h :suffix '-5q_5h_q)
 
   Lists and OMN sequences can be specified for pattern, prefix and suffix
@@ -180,13 +184,13 @@ Seemingly arg x-values not quite working yet as intended.
             "The total duration ~A is less than the sum of the prefix ~A and suffix ~A.~%"
             total-duration prefix suffix)
     (omn-to-time-signature
-     (append 
-      (when prefix (tu:ensure-list prefix))
-      (length-span (list repetition-dur) (list pattern))
-      (when suffix (tu:ensure-list suffix))
-      ) 
+     (make-omn :length (append 
+		       (when prefix (tu:ensure-list prefix))
+		       (length-span (list repetition-dur) (list pattern))
+		       (when suffix (tu:ensure-list suffix))
+		       )
+	       :pitch pitch)
      time-sig)))
-
 
 #|
 (defun even-length-rhythm2 (length duration 
