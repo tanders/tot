@@ -75,11 +75,15 @@ The seven suladi tala categories collected by Purandaradasa (each with all possi
 
 
 (defun tala-time-signatures (sequence &optional (tala *tala*))
-  "Return list of OMN time signatures (every anga represented as a separate bar) whose overall duration matches the length of `sequence'."
+  "Return list of OMN time signatures (every anga represented as a separate bar) whose overall duration matches the length of `sequence' (or is longer)."
   (length->time-signature (length-span (total-duration sequence) (flatten tala))))
+
+;; (tala-time-signatures (tala '(:l :d :l :l) 3))
 
 ;; (tala-time-signatures '(9/2))
 ;; (tala-time-signatures '(10/4))
+
+;; (tala-time-signatures (tala '(:d :l) 3))
 
 
 (defun complete-phrase-in-tala (sequence &key (tala *tala*) (append-sam? NIL))
