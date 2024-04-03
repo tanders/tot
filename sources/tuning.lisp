@@ -143,6 +143,9 @@ See also https://en.xen.wiki/w/Monzo"
 (ratio-to-monzo 1/2)
 
 (ratio-to-monzo 1)
+
+(ratio-to-monzo 50/49)
+=> (1 0 2 -2)
 |#
 
 
