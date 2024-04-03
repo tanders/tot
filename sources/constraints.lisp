@@ -155,6 +155,33 @@ The first two parts in `cluster-engine-score' must be a harmonic analysis (scale
   (preview-score (cluster-engine-score score)))
 
 
+(defun om-time-sigs->cluster-engine-time-sigs (time-sigs)
+  "Translate a list of time signatures in the Opusmodus format (which allows for a shorthand for time signature repetitions) into the Cluster Engine format as expected by its rule ce:r-predefine-meter (i.e. with individual time signatures only). 
+
+Only the subset of the Opusmodus time signatures format used in the example below is supported.
+
+  ;;; (om-time-sigs->cluster-engine-time-sigs '((3 4 1) (4 4 2)))
+  "
+  (loop for time-sig in time-sigs
+     append (gen-repeat (third time-sig) (list (list (first time-sig) (second time-sig))))))
+
+; (om-time-sigs->cluster-engine-time-sigs '((3 4 1) (4 4 2)))
+; => ((3 4) (4 4) (4 4))
+
+
+(defun cluster-engine-time-sigs-domain (time-sigs)
+  "Translate a list of time signatures in the Opusmodus format (which allows for a shorthand for time signature repetitions) into the Cluster Engine formatfor time signature domains.
+
+Only the subset of the Opusmodus time signatures format used in the example below is supported.
+
+  ;;; (cluster-engine-time-sigs-domain '((3 4 1) (4 4 2)))
+"
+  (remove-duplicates (om-time-sigs->cluster-engine-time-sigs time-sigs)))
+
+; (cluster-engine-time-sigs-domain '((3 4 1) (4 4 2)))
+; => ((3 4) (4 4))
+
+
 (defun chords->domain (chords &key (transpositions '(0))
 				scale (scale-tone-comparison #'pitch->pc) chord-size-to-check
 				preview?)
