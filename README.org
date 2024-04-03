@@ -2,6 +2,8 @@
 
 This library provides a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]]. 
 
+     *NOTE: Currently, only Opusmodus version 2 is supported!*
+
 Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited :)  
 
 Nevertheless, I trust at least some of the various functions here might be useful for others. Note that I always documented their purpose and limitations and included many usage examples. 
