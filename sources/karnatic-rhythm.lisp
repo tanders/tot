@@ -53,6 +53,8 @@ The seven suladi tala categories collected by Purandaradasa (each with all possi
 ;; (tala '(:l :d :l :l) 3)
 ;; (tala '(:l))
 ;; (total-duration (tala '(:l :d :d) 5))
+;; (tala '(:l) 4)  ; = 4/4
+;; (tala '(:l) 3)  ; = 3/4
 
 
 (defun tala-beat-number (tala &optional (beat 1/4))
