@@ -30,7 +30,7 @@
 
 
 (defun tala (angas &optional (laghu-size 3) (beat 1/4))
-  "Return a tala represented by a list of angas (see function anga), i.e. a list of rhythmic values, each wrapped in a sublist.
+  "Return a tala given a list of angas (see function anga), i.e. a list of rhythmic values, each wrapped in a sublist.
 
 * Arguments:
  - angas (list of keyword): consisting of either :anudrutam, :a (1 beat), :drutam, :d (2 beats), :laghu or :l (laghu-size beats)
