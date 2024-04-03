@@ -81,6 +81,57 @@
 			 :swallow T)
 			time-sigs))))))))
 
+(defun cluster-engine-snippet (cluster-engine-score &key (part-no 0))
+  "Return a single part of a result of cluster-engine:clusterengine (https://github.com/tanders/cluster-engine) as an OM snippet.
+
+* Arguments:
+  - cluster-engine-score: The score data in the format returned by ClusterEngine.
+  - part-no (int): Index of score part to return.
+
+* Examples:
+
+;;;  (cluster-engine-snippet
+;;;   ;; simple polyphonic constraint problem
+;;;   (ce::ClusterEngine 10 t nil 
+;;;                      ;; single rule: all rhythmic values are equal
+;;;                      (ce::R-rhythms-one-voice 
+;;;                       #'(lambda (x y) (= x y)) '(0 1) :durations)
+;;;                      '((3 4)) 
+;;;                      '(((1/4) (1/8))
+;;;                        ((60) (61))
+;;;                        ((1/4) (1/8))
+;;;                        ((60) (61)))))
+"  
+  (let ((omn-score (cluster-engine-score cluster-engine-score))
+	(i (+ (* 2 part-no) 1)))
+    (nth i omn-score)))
+
+#|
+(cluster-engine-snippet
+ (cr:cluster-engine 10 ()
+		    '((3 4))
+		    '(((1/4) (1/8))
+		      ;; Single pitch: purely rhythmic CSP
+		      ((60)))))
+
+(cluster-engine-snippet
+ ;; simple polyphonic constraint problem
+ (ce::ClusterEngine 10 t nil 
+		    ;; single rule: all rhythmic values are equal
+		    (ce::R-rhythms-one-voice 
+		     #'(lambda (x y) (= x y)) '(0 1) :durations)
+		    '((3 4)) 
+		    '(((1/4) (1/8))
+		      ((60) (61))
+		      ((1/4) (1/8))
+		      ((60) (61))))
+ :part-no 1)
+|#
+
+
+
+
+
 ;;; TODO: 
 ;;; what if scales-position / chords-position is nil? or no scales/chords in score? 
 (defun copy-cluster-engine-pitches-to-score (score cluster-engine-score) 
