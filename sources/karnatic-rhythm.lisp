@@ -254,11 +254,17 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 		      ;; TODO: assert that all gati, jathi and position values are integers 
 		      (assert (integerp gati) (gati) "gati must be integer: ~A" gati)
 		      (assert (integerp jathi) (jathi) "jathi must be integer: ~A" jathi)
-		      (assert (integerp position) (position) "position must be integer: ~A" position)
-		      (gen-karnatic-cell gati jathi position
-					 :accented? accented? :max-number max-number :min-number min-number
-					 :first-length first-length :include-length include-length :exclude-length exclude-length
-					 :seed (seed)))
+		      (assert (or (integerp position)
+				  (eql '? position))
+			      (position) "position must be integer: ~A" position)
+		      (if (< jathi 0)
+			  ;; Negative jathi stands for a rest. Can come from gen-karnatic-cell*
+			  ;; Return a single rest of corresponding length
+			  (list (* -1 (first (gen-karnatic-cell gati (* -1 jathi) 0))))
+			  (gen-karnatic-cell gati jathi position
+					     :accented? accented? :max-number max-number :min-number min-number
+					     :first-length first-length :include-length include-length :exclude-length exclude-length
+					     :seed (seed))))
 		  (circle-repeat gati n)
 		  (circle-repeat jathi n)
 		  position
@@ -376,6 +382,9 @@ Filtering arguments can further shape the result. The meaning of the position ar
 
 ... or the first note value in the cell can be set.
   ;;; (gen-karnatic-cell 4 6 '(? ? ?) :first-length 3/16)
+
+  Length values for, e.g., first-length, must be in gati.
+  ;;; (gen-karnatic-cell 5 6 '(? ? ?) :first-length '5h.)
 
 All these filter arguments also support lists for setting different values for each sublist.
   ;;; (gen-karnatic-cell 4 4 '(0 0) :exclude-length '(e q))
