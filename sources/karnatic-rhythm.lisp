@@ -964,3 +964,28 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 
 
 
+(defun shared-karnatic-constraints (time-sigs stoptime)
+  "
+  [Rhythmic rule combination] Return constrains that are shared by multiple CSPs for Karnatic
+  rhythmic concepts (a CSP searching for only a single voice).
+  - The underlying meter follows time-sigs
+  - No note ties over stoptime
+  - The search ends with stoptime 
+  "
+  (ce::rules->cluster
+   ;; Fixing the time signatures is no limitation for Karnatic music
+   (ce:r-predefine-meter (om-time-sigs->cluster-engine-time-sigs time-sigs))
+   
+   ;; Some ends exactly at stoptime (e.g., tala sam)
+   (ce::R-rhythms-one-voice-at-timepoints
+    ;; Some note is starting exactly at stoptime (its offset = 0)
+    #'(lambda (offset+dur) (equal (first offset+dur) 0)) 
+    0 (list stoptime)
+    ;; Ideally, I may want to apply such rule to the end of a rhythmic motif, but the params
+    ;; :motif-start and :motif-end are seemingly43 not working.
+    :dur-start)
+
+   (ce:stop-rule-time 0 stoptime :and)
+   ))
+
+
