@@ -228,6 +228,15 @@ BUG: Result is unnecessarily verbose including redundant repeated dynamics etc. 
 |#
 
 
+(defun length-to-beats (length &optional (n 1) (beat-duration 1/4))
+  "Translate the duration of `n' `length' values into the number of corresponding beats.
+
+;;; (length-to-beats 'e 3)
+;;; => 3/2 
+"
+  (* (/ 1 beat-duration) n (omn-encode length)))
+
+
 (defun map-section (function sequence
 		    &key section exclude section-args shared-args)
   "Apply a function to only selected bars (sublists) in an OMN sequence. 
