@@ -990,6 +990,28 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 
 
 
+#|
+
+!! TODO: Jathi bhedam seq as CSP (or some deterministic algo?)
+
+
+Result is a "raw" jathi bhedam seq with max note durations that fills given number of matras exactly, while complying with restrictions on jathi bhedam seq
+
+Params: gati matras (or time sigs/tala and no of measures)
+
+Domain: possible jathis {3, 4, 5, 7} in given gati
+
+ - Subdivide full number of matras into "jathi groups" (matras per jathi) such that the given no of matras is exactly filled
+ - Decide order of such groups complying with the following restrictions 
+   - No accent should fall on a beat until at least the 4th accent of the sequence has been reached 
+   - Never accent two consecutive beats
+   - Do not place the same number more than 3 times in a row (no jathi feeling allowed)
+   - Never accent any intermediate tala sam before the final tala sam
+
+Result should be a raw seq (note durs as long as possible)
+
+|#
+
 (defun beat-time-points (tala-time-signatures stoptime)
   "Return list of time points of beats in the given tala up to stoptime. (The time points 0 and stoptime itself are excluded.)"
   ;; BUG: Only works if length of tala-time-signatures is 1
@@ -1008,4 +1030,124 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 ; (tala-sam-time-points '((4 4 1)) 3)
 ; (tala-sam-time-points (tala-time-signatures (tala '(:l :d :l :l) 3)) 3)
 
+
+;; TODO: Add phrasing support
+(defun jathi-bhedam (gati matras &key (allowed-matra-durs '(1 2 3 4 5 6 7 8 9)) (tala-time-signatures '((4 4 1)))
+				   (max-no-of-variables 100) (seed 1)) 
+  "Return jathi bhedam rhythmic sequence, i.e. a rhythmic sequence where no jathi is perceivable. See Reina (2016, chap. 6, p. 69ff). The returned sequence is 'raw' = un-phrased in the sense that the longest possible notes are used.
+
+* Arguments:
+ - gati (int): the constant gati of the result
+ - matras (int): the overall duration of the result measured in matras.
+ - allowed-matra-durs (lists of ints): in the result, only note durations with the given number of matras are allowed. Be careful not to over-constraint the internal CSP.
+ - tala-time-signatures (list of OM time signatures): time signatures of the result. If shorter than result, further time signatures are randomly chosen!
+ - max-no-of-variables (int): the returned result is automatically truncated after the required number of matras. This parameter controls roughly the maximum number of rhythmic values that is possible (controlling the generation of the interal Cluster Engine CSP for computing the result).
+ - seed (int): random seed.
+
+* Examples:
+  
+;;; (jathi-bhedam 4 16 :seed 1)
+;;; (jathi-bhedam 4 16 :seed 2)
+
+;;; (jathi-bhedam 4 32 :seed 1)
+;;; (jathi-bhedam 4 32 :seed 2)
+
+Gati 5
+;;; (jathi-bhedam 5 30 :tala-time-signatures '((3 4 1)) :seed 1)
+;;; (jathi-bhedam 5 30 :tala-time-signatures '((3 4 1)) :seed 2)
+
+Gati 3
+;;; (jathi-bhedam 3 18 :tala-time-signatures '((3 4 1)) :seed 1)
+;;; (jathi-bhedam 3 36 :seed 1)
+
+Restrict what note durations are possible.
+;;; (jathi-bhedam 4 32 :allowed-matra-durs '(2 3) :seed 1)
+;;; (jathi-bhedam 4 32 :allowed-matra-durs '(2 3) :seed 2)
+
+;;; (jathi-bhedam 4 32 :allowed-matra-durs '(3 5) :seed 1)
+;;; (jathi-bhedam 4 32 :allowed-matra-durs '(3 5) :seed 2)
+
+Example where result does not exactly fit into multiple talas (but at least multiple beats in this case).
+;;; (jathi-bhedam 3 33 :seed 1)
+
+Example with more complex tala.
+;;; (jathi-bhedam 4 40 :tala-time-signatures (gen-repeat 2 (tala-time-signatures (tala '(:d :l) 3))) :seed 2)
+
+* Notes:
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+  "
+  (assert (every #'integerp (list gati matras max-no-of-variables seed)))
+  (let* ((matra-dur (/ 1/4 gati))
+	 (stoptime (* matra-dur matras)))
+    ;; (break)
+    ;; (when (/= (mod (* matras matra-dur)
+    ;; 		   (time-signature-length tala-time-signatures :sum t))
+    ;; 	      0)
+    ;;   (warn "Jathi bhedam sequence does not exactly fit into full talas."))
+    (fit-to-span
+     stoptime
+     (cluster-engine-snippet
+      (let ((*random-state* (ta-utils:read-random-state seed)))
+	(let* (;; Possible jathis in given gati
+	       (dur-domain (loop for jathi in (rnd-order allowed-matra-durs :seed seed)
+			      collect (list (* matra-dur jathi))))
+	       (pitch-domain '((60)))
+	       (tala-sams (tala-sam-time-points tala-time-signatures stoptime))
+	       (beats (beat-time-points tala-time-signatures stoptime))
+	       (beat-dur (first beats)))
+	  ;; (break)
+	  (cr:cluster-engine
+	   max-no-of-variables
+	   (ce::rules->cluster
+
+	    ;; Never accent any intermediate tala sam before the final tala sam
+	    (ce::R-rhythms-one-voice-at-timepoints
+	     #'(lambda (offset+dur) (/= (mod (first offset+dur) beat-dur) 0)) 
+	     0 tala-sams :dur-start)
+	    
+	    ;; No accent should fall on a beat until at least the 4th accent of the sequence has been reached
+	    (let ((first-3-beats (if (> (length beats) 3)
+	    			     (subseq beats 0 4)
+	    			     beats)))
+	      (ce::R-rhythms-one-voice-at-timepoints
+	       #'(lambda (offset+dur) (/= (mod (first offset+dur) beat-dur) 0)) 
+	       0 first-3-beats :dur-start))
+	    
+	    ;; Never accent two consecutive beats
+	    (ce::R-rhythms-one-voice-at-timepoints
+	     #'(lambda (offset+dur1 offset+dur2)
+	    	 (if (= (mod (first offset+dur1) beat-dur) 0)
+	    	     (/= (mod (first offset+dur2) beat-dur) 0)
+	    	     T))
+	     0 beats :dur-start)
+
+	    ;; Do not place the same number more than 3 times in a row (no jathi feeling allowed)
+	    ;; duration seq  constraint
+	    (ce:r-rhythms-one-voice
+	     #'(lambda (dur1 dur2 dur3 dur4)
+	    	 (>= (length (remove-duplicates (list dur1 dur2 dur3 dur4)))
+	    	     2))
+	     0 :durations)
+
+	    ;; Preferred durs
+	    (when preferred-matra-durs
+	      (let ((preferred-durs (loop for jathi in preferred-matra-durs
+				       collect (list (* matra-dur jathi)))))
+		(ce:r-rhythms-one-voice
+		 #'(lambda (dur)
+		     ;; (break)
+		     (member dur preferred-durs))
+		 0 :durations :heur-switch)))
+	    	    
+	    (shared-karnatic-constraints tala-time-signatures stoptime)
+	    )
+
+	   (cluster-engine-time-sigs-domain tala-time-signatures)	
+	   (list dur-domain pitch-domain)
+	   )
+	  )
+	))
+     ;; Cut too long result at end
+     :extend 'e)
+  ))
 
