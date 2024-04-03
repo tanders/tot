@@ -989,3 +989,23 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
    ))
 
 
+
+(defun beat-time-points (tala-time-signatures stoptime)
+  "Return list of time points of beats in the given tala up to stoptime. (The time points 0 and stoptime itself are excluded.)"
+  ;; BUG: Only works if length of tala-time-signatures is 1
+  (let ((beat-dur (/ 1 (second (first tala-time-signatures)))))
+    (loop for timepoint from beat-dur below stoptime by beat-dur
+       collect timepoint)))
+; (beat-time-points '((4 4 1)) 2)
+; (beat-time-points '((5 8 1)) 2)
+; (beat-time-points '((4 4 1)) 1)
+
+(defun tala-sam-time-points (tala-time-signatures stoptime)
+  "Return list of time points of tala sam occurrences in the given tala up to stoptime. (The time points 0 and stoptime itself are excluded.)"
+  (let ((tala-dur (time-signature-length tala-time-signatures :sum T)))
+    (loop for timepoint from tala-dur below stoptime by tala-dur
+       collect timepoint)))
+; (tala-sam-time-points '((4 4 1)) 3)
+; (tala-sam-time-points (tala-time-signatures (tala '(:l :d :l :l) 3)) 3)
+
+
