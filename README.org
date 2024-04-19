@@ -2,9 +2,13 @@
 
 This library provides a collection of definitions that extend the algorithmic composition system [[http://opusmodus.com/][Opusmodus]]. 
 
-     *NOTE: Currently, only Opusmodus version 2 is supported!*
+* Disclaimer
 
-Note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited :)  
+In principle, this library can now be loaded into Opusmodus version 3, but *Opusmodus 3 is currently only partially supported and untested*.
+ - This library was initial developed for Opusmodus 2, and some functionality may not work anymore. (Opusmodus keeps changing the interface of functions etc.)
+ - For installing the dependency =cluster-engine= (see below), you currently need to use the [[https://github.com/tanders/cluster-engine/tree/optimisations][cluster-engine git branch optimisations]]. (That branch has been updated to work with the version of the different Lisp compiler that Opusmodus 3 now uses, but those changes are not yet merged into the cluster-engine master branch.)
+ 
+Also, note that these tools have been developed for personal use for specific projects, and therefore their generality (or even applicability) for other projects might be limited :) 
 
 Nevertheless, I trust at least some of the various functions here might be useful for others. Note that I always documented their purpose and limitations and included many usage examples. 
 
@@ -81,8 +85,15 @@ $ git pull
 * Usage 
 
   This library is an [[https://common-lisp.net/project/asdf/][ASDF]] system (ASDF is the de facto standard for building Common Lisp software), and you can load it into Opusmodus by evaluating the following line (e.g., make it part the code of your Opusmodus project). All dependency libraries are loaded automatically as well. The first time you do this, your Lisp compiler will show you a long list of compilation messages including various warnings, which you can savely ignore. Afterwards, you are ready to use whatever function etc. you want from this library (and its dependencies).
+
+#+begin_src lisp :tangle yes
+;; How to load in Opusmodus 3
+(asdf:load-system :tot)
+#+end_src  
+
    
 #+begin_src lisp :tangle yes
+;; Loadiing in Opusmodus 2
 (require :tot)
 #+end_src  
 
