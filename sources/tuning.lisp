@@ -72,7 +72,7 @@ In a later version I will support also chords, but then def-tempered-score would
 ;; Tuning math
 ;;
 
-;; TODO: consider using alextrandria:define-constant -- https://google.github.io/styleguide/lispguide.xml#Defining_Constants
+;; TODO: consider using alexandria:define-constant -- https://google.github.io/styleguide/lispguide.xml#Defining_Constants
 ;; https://en.xen.wiki/w/Harmonic_limit
 ;; ? TODO: change representation into vector?
 (defconstant +primes+
@@ -1468,7 +1468,7 @@ Compute tuning errors as difference between degrees and ratios turned into cents
   "Standard pitch nominals in order of fifth chain. These will be tuned Pythagorean in JI.")
 
 
-(defconstant +nominal->ratio-table+
+(defparameter *nominal->ratio-table*
   (alexandria:alist-hash-table
    (loop
       for nom in +nominals+
@@ -1477,17 +1477,17 @@ Compute tuning errors as difference between degrees and ratios turned into cents
       for no-of-fifths from -1
       ;; alist
       collect (cons nom
-		    ;; BUG: Compilation error. I probably need to define monzo-to-ratio elsewhere and then load the system accordingly.
-#|
-; Warning: Compile-time evaluation of DEFCONSTANT initial value form for +NOMINAL->RATIO-TABLE+ while compiling "home:common-lisp;tot;sources;tuning.lisp.newest" signalled the error: 
-;          Undefined function MONZO-TO-RATIO called with arguments ((0 -1)) .
-|#
+		    ;; *nominal->ratio-table* must be defined with defparameter and not defconstant
+		    ;; *(defconstant is evaluated at compile-time, and monzo-to-ratio is then not
+		    ;; *yet available).
 		    (ji-pc-ratio (monzo-to-ratio (list 0 no-of-fifths))))))
   "Hashtable mapping pitch nominals (symbols like A, B, C...) to their corresponding Pythagorean frequency ratios.")
 
 
-(defconstant +ratio->nominal-table+
-  (flip-hash-table +nominal->ratio-table+)
+(defparameter *ratio->nominal-table*
+  ;; *ratio->nominal-table* must be defined with defparameter and not defconstant (defconstant is
+  ;; *evaluated at compile-time, and flip-hash-table is then not yet available).
+  (flip-hash-table *nominal->ratio-table*)
   "Hashtable mapping Pythagorean frequency ratios for pitch nominals to their corresponding symbols (A, B, C...).")
 
 
@@ -1735,7 +1735,7 @@ is replaced with replacement."
 ;; TODO: define version that handles JI pitches expressed by a single symbol (incl. composite accidentals)
 (defun ji-pc-symbols-to-ratio (nominal &rest accidentals)
   (apply #'*
-   (gethash nominal +nominal->ratio-table+)
+   (gethash nominal *nominal->ratio-table*)
    (loop for acc in accidentals
       collect (gethash acc *accidental->ratio-table*))))
 
@@ -1761,7 +1761,7 @@ is replaced with replacement."
 ;; TODO: define version that returns OMN pitches + accidental attributes
 ;; (defun ratio-to-ji-pc-symbols (ratio)
 ;;   (let ((monzo (ratio-to-monzo ratio))
-;; 	(nominal (alexandria:ensure-gethash ratio +ratio->nominal-table+ NIL)))
+;; 	(nominal (alexandria:ensure-gethash ratio *ratio->nominal-table* NIL)))
 ;;     (break)
 ;;     (if nominal
 ;; 	nominal
@@ -1774,7 +1774,7 @@ is replaced with replacement."
   (cond ((and (>= limit-3-expt -1) (<= limit-3-expt 5))
 	 (list
 	  (gethash (ji-pc-ratio (monzo-to-ratio (list 0 limit-3-expt)))
-		   +ratio->nominal-table+)))
+		   *ratio->nominal-table*)))
 	((< limit-3-expt -1)
 	 (append (aux-pythagorean-ratio-to-pc-symbols (+ limit-3-expt 7)) '(b)))
 	((> limit-3-expt 5)
