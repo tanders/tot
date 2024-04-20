@@ -872,6 +872,10 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
   gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest.
   ;;; (gen-matras 5 4 3 :prefix '-q)
 
+  With a negative gati, rests are returned. (Results in preview error for incomplete beats)
+  ;;; (gen-matras -4 4 1)
+  ;;; (gen-matras -5 5 2)
+
 * Notes:
 
   See Reina (2016) for details on the terms matras, gati and jathi.
