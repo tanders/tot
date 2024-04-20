@@ -1068,6 +1068,11 @@ Mark every first note of a bar with an attribute.
   "Like length-to-rest, but sequence as first param."
   (length-to-rest value sequence :type type :swallow swallow :section section :exclude exclude :omn omn :flat flat :span span))
 
+(defun *length-rest-series (sequence rest-position &key (swallow T) section exclude omn flat (span :length))
+  "Like length-rest-series, but with sequence as first param"
+ (length-rest-series rest-position sequence :swallow swallow :section section :exclude exclude :omn omn :flat flat :span span))
+
+
 ;; ? TODO: density
 
 ;; ? TODO: length-span
