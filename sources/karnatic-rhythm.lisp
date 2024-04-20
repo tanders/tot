@@ -1235,7 +1235,7 @@ A short mukthay is a phrase that is repeated three times – every repetition us
 	   (gap-length (if gap-is-even? (/ min-gap-sum 2) (/ (+ min-gap-sum 3) 2)))
 	   (gap-length-w-gap-expansion (+ gap-length (* 3 gap-expansion)))
 	   (pala (case type
-		   ;; TODO: deduce suitable yathi sequence: split pala-length-w-gap-expansion into suitable jathi bhedam seq
+		   ;; TODO: deduce suitable jathi sequence: split pala-length-w-gap-expansion into suitable jathi bhedam seq
 		   ;; TODO: make position param param of this function
 		   ;; TODO: add support for more params
 		   (:phrased
