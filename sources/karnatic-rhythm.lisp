@@ -444,12 +444,16 @@ NOTE: Handling gati changes in tala-plan is tricky. Better process subsequences 
 
 ;;; (gen-karnatic-cell* '(q e. e s) 4 1)
 
+A plan with a rest.
+;;; (gen-karnatic-cell* '(q -q q) 4 1)
+
 ;; TODO: examples using tala-plan: see comment below definition
 
 
 "
   (let* ((n (length tala-plan))
 	 (articulations-included? (some #'articulationp (flatten tala-plan)))
+	 ;; Jathi negative for rests
 	 (jathi (get-tala-plan-jathi (flatten (omn :length tala-plan)) gati))
 	 (result (gen-karnatic-cell gati jathi (circle-repeat position n)
 				    :accented? accented? :max-number max-number :min-number min-number :first-length first-length
