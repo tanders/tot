@@ -166,6 +166,7 @@ The input can be nested and rests result in articulation NIL, which should be pr
  :flat T)
 |#
 
+
 ;;; BUG: not working for flat lists
 (defun get-full-articulations (sequence)
   "[Aux function] Similar to (omn :articulation sequence), but the result includes `leg' and `gliss' symbols for legato 'articulation', which are handled seperately by the function `omn'.
@@ -394,6 +395,7 @@ The symbol for each attribute starts with 'A_'
 					 collect (if (and section (not (member i section)))
 						     bar
 						     (cons accent (rest bar))))))))
+	 ;; BUG: `new' contains NIL for rests and `new2' simply skips such nil and resulting list is too short
 	 (new2 (case parameter
 		 ;; don't overwrite existing articulations
 		 (:articulation
