@@ -134,13 +134,25 @@ NOTE: Meanwhile there is a buildin function disjoin-attributes, which replaces t
   If arts are list of lists, the result follows the nesting organisation of the first list.
 
 * Examples:
-  ;;; (zip-articulations '(default leg leg default) '(breathy))
-  ;;; (zip-articulations '(- leg leg -) '(breathy))
-  ;;; (zip-articulations '(- leg leg -) '(-))
-  ;;; => (breathy leg+breathy leg+breathy breathy)"
-  (let* ((flat-arts (mapcar #'flatten arts))
+
+;;; (zip-articulations '(default leg leg default) '(breathy))
+;;; => (BREATHY LEG+BREATHY LEG+BREATHY BREATHY)
+;;; (zip-articulations '(- leg leg -) '(breathy))
+;;; => (BREATHY LEG+BREATHY LEG+BREATHY BREATHY)
+;;; (zip-articulations '(- leg leg -) '(-))
+;;; => (- LEG LEG -)
+
+The input can be nested and rests result in articulation NIL, which should be preserved.
+;;; (zip-articulations '((mart) NIL) '((port) NIL))
+;;; => ((mart+port) (-))
+"
+  ;; BUG: flatten removes nested NIL. TODO: Replace NIL is sublists by '-
+  (let* ((clean-arts (loop for sublist in arts
+			  collect (substitute '(-) NIL sublist)))
+	 (flat-arts (mapcar #'flatten clean-arts))
          (max-length (apply #'max (mapcar #'length flat-arts))))
-    (span (first arts)
+    ;; (break)
+    (span (first clean-arts)
           (mapcar #'merge-articulations             
                   (matrix-transpose (mapcar #'(lambda (xs) (circle-repeat xs max-length)) flat-arts))))))
 
