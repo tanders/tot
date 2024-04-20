@@ -1061,16 +1061,21 @@ Jathis in the result are represented as sub lists (quasi measures), so any post-
 
 
 ;; TODO: Add phrasing support
-(defun jathi-bhedam (gati matras &key (allowed-matra-durs '(1 2 3 4 5 6 7 8 9)) (tala-time-signatures '((4 4 1)))
+(defun jathi-bhedam (gati matras &key (allowed-matra-durs '(1 2 3 4 5 6 7 8 9)) (preferred-matra-durs NIL) (tala-time-signatures '((4 4 1)))
 				   (max-no-of-variables 100) (seed 1)) 
-  "Return jathi bhedam rhythmic sequence, i.e. a rhythmic sequence where no jathi is perceivable. See Reina (2016, chap. 6, p. 69ff). The returned sequence is 'raw' = un-phrased in the sense that the longest possible notes are used.
+  "Return jathi bhedam rhythmic sequence, i.e. a rhythmic sequence where no jathi is perceivable. See Reina (2016, chap. 6, p. 69ff). The returned sequence is 'raw' = un-phrased in the sense that the only longest possible notes are used.
+
+This function internally performs a search (solves a constraint problem with the cluster-engine library).
 
 * Arguments:
  - gati (int): the constant gati of the result
  - matras (int): the overall duration of the result measured in matras.
- - allowed-matra-durs (lists of ints): in the result, only note durations with the given number of matras are allowed. Be careful not to over-constraint the internal CSP.
+ - allowed-matra-durs (lists of ints): in the result, only note durations with the given number of matras are allowed. Remember that the result is a raw/un-phrased jathi bhedam sequence, so each note in the result is accented.
+   Be careful not to over-constraint the internal CSP.
+ - preferred-matra-durs (list of ints): note durations with the given number of matras are preferred (soft constraint).
+   BUG: This param is currently seemingly ignored. (CSP potentially over-constrained otherwise?)
  - tala-time-signatures (list of OM time signatures): time signatures of the result. If shorter than result, further time signatures are randomly chosen!
- - max-no-of-variables (int): the returned result is automatically truncated after the required number of matras. This parameter controls roughly the maximum number of rhythmic values that is possible (controlling the generation of the interal Cluster Engine CSP for computing the result).
+ - max-no-of-variables (int): the cluster-engine parameter max-no-of-variables, which controls roughly the maximum number of rhythmic values that is possible. However, the returned result is automatically truncated after the required number of matras.
  - seed (int): random seed.
 
 * Examples:
@@ -1095,6 +1100,13 @@ Restrict what note durations are possible.
 
 ;;; (jathi-bhedam 4 32 :allowed-matra-durs '(3 5) :seed 1)
 ;;; (jathi-bhedam 4 32 :allowed-matra-durs '(3 5) :seed 2)
+
+Preferred durations: does parameter :preferred-matra-durs actually make a difference? 
+TODO: Debug: I check that the actual rule function is indeed called. Hm...
+;;; (jathi-bhedam 4 16 :allowed-matra-durs '(1 2 3) :seed 1)
+;;; (jathi-bhedam 4 16 :allowed-matra-durs '(1 2 3) :preferred-matra-durs '(1) :seed 1)
+;;; (jathi-bhedam 4 16 :allowed-matra-durs '(1 2 3) :preferred-matra-durs '(2) :seed 1)
+;;; (jathi-bhedam 4 16 :allowed-matra-durs '(1 2 3) :preferred-matra-durs '(3) :seed 1)
 
 Example where result does not exactly fit into multiple talas (but at least multiple beats in this case).
 ;;; (jathi-bhedam 3 33 :seed 1)
