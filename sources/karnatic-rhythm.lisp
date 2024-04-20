@@ -989,6 +989,49 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
    ))
 
 
+;; ? TODO: derive orig-gati automatically
+(defun rhythmical-sangati (old-gati new-gati new-jathi sequence)
+  "Return a rhythmical sangati, i.e. a rhythmic variation that quasi imitates the given rhythm, but in a simply different ‘tempo’ (durations multiplied with constant factor to fit into new gati), or different tempo and also different accent pattern. For details, see Reina (2016, chap. 5, p. 61).
+
+Jathis in the result are represented as sub lists (quasi measures), so any post-processing of the result can take them into account. In the end, you can 're-bar' the result with the correct tala/time signature with functions like omn-to-time-signature or complete-phrase-in-tala. 
+
+* Arguments:
+ - sequence (list): a sequence of OM lengths values (the given rhythm)
+
+* Examples:
+
+  ;;; (setf orig-gati 4)
+  ;;; (setf rhy (gen-karnatic-cell orig-gati 4 '(? ? ? ? ?) :first-length '(3/16 2/16 2/16 1/16 1/4) :seed 1))
+
+  The original gati (4) becomes the jathi in the new gati 5
+  ;;; (rhythmical-sangati orig-gati 5 4 rhy)
+
+  Gati bhedam: only the jathi is changed to 5.
+  NOTE: New note-onsets may be added (instead of ties) in case the input seq is a purely rhythmical sequence.
+  ;;; (rhythmical-sangati orig-gati 4 5 rhy)
+
+  The same gati bhedam seq as above, but with ties.
+  NOTE: Ties are preserved if the input seq is a full OMN sequence.
+  ;;; (setf omn-seq (make-omn :length rhy :pitch '(c4)))
+  ;;; (rhythmical-sangati orig-gati 4 5 omn-seq)
+
+  The new gati 5 is also the jathi (in case the same as the original jathi)
+  ;;; (rhythmical-sangati orig-gati 5 5 omn-seq)
+
+  Use a different gati and jathi than in the original.
+  ;;; (rhythmical-sangati orig-gati 5 3 omn-seq)
+
+  Use gati 3 instead.
+  ;;; (rhythmical-sangati orig-gati 3 4 omn-seq)
+
+* Notes:
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+"
+  ;; Simple case: the original gati becomes the jathi in the new gati
+  (let ((seq-w-updated-gati (length-diminution new-gati (length-augmentation old-gati sequence))))
+    (omn-to-time-signature seq-w-updated-gati (list new-jathi (* new-gati 4)))
+    ))
+
 
 (defun beat-time-points (tala-time-signatures stoptime)
   "Return list of time points of beats in the given tala up to stoptime. (The time points 0 and stoptime itself are excluded.)"
