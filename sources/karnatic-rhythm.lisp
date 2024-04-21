@@ -997,77 +997,6 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
    ))
 
 
-
-;; TODO: Even if the input sequence started and ended on a beat, the result does not necessarily. There are multiple strategies to resolve this, e.g.,
-;; - OK Add a few notes at the beginning in a different yathi that ensure the result starts and ends on the beat -- can veil imitation aspect of this technique
-;; - ? Add a few notes at the end -- can sound like a musical mistake
-;; - ! Continue sequence in chosen jathi until it resolves on a beat.
-;; 
-;;
-;; ? TODO: derive orig-gati automatically
-(defun rhythmical-sangati (old-gati new-gati new-jathi sequence &key (resolution-type :rest-at-start) (beat-dur 1/4))
-  "Return a rhythmical sangati, i.e. a rhythmic variation that quasi imitates the given rhythm, but in a simply different ‘tempo’ (durations multiplied with constant factor to fit into new gati), or different tempo and also different accent pattern. For details, see Reina (2016, chap. 5, p. 61).
-
-Jathis in the result are represented as sub lists (quasi measures), so any post-processing of the result can take them into account. In the end, you can 're-bar' the result with the correct tala/time signature with functions like omn-to-time-signature or complete-phrase-in-tala. 
-
-TODO: Update docs
-* Arguments:
- - old-gati (int): the gati of the input sequence
- - new-gati (int): the gati of the returned variation
- - new-jathi (int): the jathi of the returned variation
- - sequence (list): a sequence of OM lengths values or OMN sequence (the given rhythm)
- - resolution-type (keyword): the strategy used to ensure that the resulting sequence starts and resolves exactly on a beat.
-   - :rest-at-start In case the raw rhythmic variation result does not exactly fit into beats, then a rest is appended before the sequence.
-   - :singe-note-at-start
-   - :continue-in-gati
-   - :no-resolution
- - beat-dur (ratio): the length that corresponds to one beat.
-
-* Examples:
-
-  ;;; (setf orig-gati 4)
-  ;;; (setf rhy (gen-karnatic-cell orig-gati 4 '(? ? ? ? ?) :first-length '(3/16 2/16 2/16 1/16 1/4) :seed 1))
-
-  The original gati (4) becomes the jathi in the new gati 5
-  ;;; (rhythmical-sangati orig-gati 5 4 rhy)
-
-  Gati bhedam: only the jathi is changed to 5.
-  NOTE: New note-onsets may be added (instead of ties) in case the input seq is a purely rhythmical sequence.
-  ;;; (rhythmical-sangati orig-gati 4 5 rhy)
-
-  The same gati bhedam seq as above, but with ties.
-  NOTE: Ties are preserved if the input seq is a full OMN sequence.
-  ;;; (setf omn-seq (make-omn :length rhy :pitch '(c4)))
-  ;;; (rhythmical-sangati orig-gati 4 5 omn-seq)
-
-  The new gati 5 is also the jathi (in case the same as the original jathi)
-  ;;; (rhythmical-sangati orig-gati 5 5 omn-seq)
-
-  Use a different gati and jathi than in the original.
-  ;;; (rhythmical-sangati orig-gati 5 3 omn-seq)
-
-  Use gati 3 instead. Note that a short rest is positioned before the rhythmic variation, so that its overall duration can exactly start and end on a beat.
-  ;;; (rhythmical-sangati orig-gati 3 4 omn-seq)
-
-  Gati 7
-  ;;; (rhythmical-sangati orig-gati 7 4 omn-seq)
-
-* Notes:
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-"
-  (let* ((seq-w-updated-gati (length-diminution new-gati (length-augmentation old-gati sequence)))
-	 (raw-result (omn-to-time-signature seq-w-updated-gati (list new-jathi (* new-gati 4))))
-	 (result-len (get-span raw-result :sum T))
-	 (result-len-in-full-beats (* (ceiling (/ result-len beat-dur)) beat-dur)))
-    (case resolution-type
-    ;; Add rest at front of result such that it fill full beats
-      (:rest-at-start (fit-to-span result-len-in-full-beats raw-result :extend 's))
-      (:singe-note-at-start TODO)
-      (:continue-in-gati TODO)
-      (:no-resolution TODO)
-    )))
-  
-
 (defun beat-time-points (tala-time-signatures stoptime)
   "Return list of time points of beats in the given tala up to stoptime. (The time points 0 and stoptime itself are excluded.)"
   ;; BUG: Only works if length of tala-time-signatures is 1
@@ -1301,3 +1230,74 @@ Rule
 - Rules of jathi bhedam
 
 |#
+
+
+;; TODO: Even if the input sequence started and ended on a beat, the result does not necessarily. There are multiple strategies to resolve this, e.g.,
+;; - OK Add a few notes at the beginning in a different yathi that ensure the result starts and ends on the beat -- can veil imitation aspect of this technique
+;; - ? Add a few notes at the end -- can sound like a musical mistake
+;; - ! Continue sequence in chosen jathi until it resolves on a beat.
+;; 
+;;
+;; ? TODO: derive orig-gati automatically
+(defun rhythmical-sangati (old-gati new-gati new-jathi sequence &key (resolution-type :rest-at-start) (beat-dur 1/4))
+  "Return a rhythmical sangati, i.e. a rhythmic variation that quasi imitates the given rhythm, but in a simply different ‘tempo’ (durations multiplied with constant factor to fit into new gati), or different tempo and also different accent pattern. For details, see Reina (2016, chap. 5, p. 61).
+
+Jathis in the result are represented as sub lists (quasi measures), so any post-processing of the result can take them into account. In the end, you can 're-bar' the result with the correct tala/time signature with functions like omn-to-time-signature or complete-phrase-in-tala. 
+
+TODO: Update docs
+* Arguments:
+ - old-gati (int): the gati of the input sequence
+ - new-gati (int): the gati of the returned variation
+ - new-jathi (int): the jathi of the returned variation
+ - sequence (list): a sequence of OM lengths values or OMN sequence (the given rhythm)
+ - resolution-type (keyword): the strategy used to ensure that the resulting sequence starts and resolves exactly on a beat.
+   - :rest-at-start In case the raw rhythmic variation result does not exactly fit into beats, then a rest is appended before the sequence.
+   - :singe-note-at-start
+   - :continue-in-gati
+   - :no-resolution
+ - beat-dur (ratio): the length that corresponds to one beat.
+
+* Examples:
+
+  ;;; (setf orig-gati 4)
+  ;;; (setf rhy (gen-karnatic-cell orig-gati 4 '(? ? ? ? ?) :first-length '(3/16 2/16 2/16 1/16 1/4) :seed 1))
+
+  The original gati (4) becomes the jathi in the new gati 5
+  ;;; (rhythmical-sangati orig-gati 5 4 rhy)
+
+  Gati bhedam: only the jathi is changed to 5.
+  NOTE: New note-onsets may be added (instead of ties) in case the input seq is a purely rhythmical sequence.
+  ;;; (rhythmical-sangati orig-gati 4 5 rhy)
+
+  The same gati bhedam seq as above, but with ties.
+  NOTE: Ties are preserved if the input seq is a full OMN sequence.
+  ;;; (setf omn-seq (make-omn :length rhy :pitch '(c4)))
+  ;;; (rhythmical-sangati orig-gati 4 5 omn-seq)
+
+  The new gati 5 is also the jathi (in case the same as the original jathi)
+  ;;; (rhythmical-sangati orig-gati 5 5 omn-seq)
+
+  Use a different gati and jathi than in the original.
+  ;;; (rhythmical-sangati orig-gati 5 3 omn-seq)
+
+  Use gati 3 instead. Note that a short rest is positioned before the rhythmic variation, so that its overall duration can exactly start and end on a beat.
+  ;;; (rhythmical-sangati orig-gati 3 4 omn-seq)
+
+  Gati 7
+  ;;; (rhythmical-sangati orig-gati 7 4 omn-seq)
+
+* Notes:
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+"
+  (let* ((seq-w-updated-gati (length-diminution new-gati (length-augmentation old-gati sequence)))
+	 (raw-result (omn-to-time-signature seq-w-updated-gati (list new-jathi (* new-gati 4))))
+	 (result-len (get-span raw-result :sum T))
+	 (result-len-in-full-beats (* (ceiling (/ result-len beat-dur)) beat-dur)))
+    (case resolution-type
+    ;; Add rest at front of result such that it fill full beats
+      (:rest-at-start (fit-to-span result-len-in-full-beats raw-result :extend 's))
+      (:singe-note-at-start TODO)
+      (:continue-in-gati TODO)
+      (:no-resolution TODO)
+    )))
+  
