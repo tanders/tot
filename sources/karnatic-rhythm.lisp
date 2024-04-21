@@ -425,8 +425,6 @@ The argument min-number is seemingly not fully working yet:
    :include-length include-length :exclude-length exclude-length :seed seed))
 
 
-;; TODO:
-;;  - Allow tala-plan to contain rests
 (defun gen-karnatic-cell* (tala-plan gati position
 			   &key (accented? T) (max-number nil) (min-number nil) (first-length nil)
 			     (include-length nil) (exclude-length nil) (seed nil))
