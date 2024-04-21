@@ -969,32 +969,72 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 ||#
 
 
-(defun shared-karnatic-constraints (time-sigs stoptime)
+
+(defun short-mukthay (gati matras &key (gap-expansion 0) (type :phrased))
+  "Return OMN rhythmic sequence that expresses a 'raw' short mukthay over the given number of matras in the given gati. A 'raw' mukthay here is an un-phrased mukthay, where each matra of each pala is 'played'. Palas are represented in sublists to simplify further processing.
+
+* Arguments:
+  - gati (int)
+  - matras (int): length of the result measured in matras of the given gati
+  - gap-expansion (int): control for lengthening the gaps between palas in the result.
+  - type (either :phrased or :raw): if 
+
+* Examples:
+  
+A short mukthay over 13 matras in gati 4. By default, the shorted possible gaps are returned.
+  ;;; (short-mukthay 4 16)
+
+A short mukthay over 17 matras.
+  ;;; (short-mukthay 4 17)
+
+Again, a short mukthay over 17 matras in gati 4, but now with a longer gap.
+  ;;; (short-mukthay 4 17 :gap-expansion 1)
+
+The gap could in principle be further extended.
+  ;;; (short-mukthay 4 17 :gap-expansion 2)
+
+A short mukthay over 18 matras. In the case that the matras are exactly divisible by three, some minimal gap is ensured.
+  ;;; (short-mukthay 4 18)
+
+It is possible to remove the gap in such a case by setting gap-expansion to -1.
+  ;;; (short-mukthay 4 18 :gap-expansion -1)
+
+An example in a different gati.
+  ;;; (short-mukthay 5 20)
+
+
+Test possible exceptions/
+  ;;; (short-mukthay 4 6)
+  ;;; (short-mukthay 4 18 :gap-expansion -2)
+
+* Notes:
+
+A short mukthay is a phrase that is repeated three times – every repetition usually separated by a gap. It is typically used for filling in some 'leftover duration' of another rhythmic technique so that the overall development ends on tala sam. See Reina (2016, p. 75) for details.
+  
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
   "
-  [Rhythmic rule combination] Return constrains that are shared by multiple CSPs for Karnatic
-  rhythmic concepts (a CSP searching for only a single voice).
-  - The underlying meter follows time-sigs
-  - No note ties over stoptime
-  - The search ends with stoptime 
-  "
-  (ce::rules->cluster
-   ;; Fixing the time signatures is no limitation for Karnatic music
-   (ce:r-predefine-meter (om-time-sigs->cluster-engine-time-sigs time-sigs))
-   
-   ;; Some ends exactly at stoptime (e.g., tala sam)
-   (ce::R-rhythms-one-voice-at-timepoints
-    ;; Some note is starting exactly at stoptime (its offset = 0)
-    #'(lambda (offset+dur) (equal (first offset+dur) 0)) 
-    0 (list stoptime)
-    ;; Ideally, I may want to apply such rule to the end of a rhythmic motif, but the params
-    ;; :motif-start and :motif-end are seemingly43 not working.
-    :dur-start)
-
-   (ce:stop-rule-time 0 stoptime :and)
-   ))
-
-
-
+  (assert (every #'integerp (list gati matras gap-expansion)))
+  ;; All length measured in matras
+  (multiple-value-bind (max-pala-length min-gap-sum)
+      (floor matras 3)
+    (let* ((gap-expansion (if (> min-gap-sum 0) gap-expansion (1+ gap-expansion)))
+	   (gap-is-even? (evenp min-gap-sum))
+	   (pala-length (if gap-is-even? max-pala-length (1- max-pala-length)))
+	   (pala-length-w-gap-expansion (- pala-length (* 2 gap-expansion)))
+	   (gap-length (if gap-is-even? (/ min-gap-sum 2) (/ (+ min-gap-sum 3) 2)))
+	   (gap-length-w-gap-expansion (+ gap-length (* 3 gap-expansion)))
+	   (pala (case type
+		   ;; TODO: deduce suitable jathi sequence: split pala-length-w-gap-expansion into suitable jathi bhedam seq
+		   ;; TODO: make position param param of this function
+		   ;; TODO: add support for more params
+		   (:phrased
+		    (gen-karnatic-cell gati pala-length-w-gap-expansion 0))
+		   (:raw (gen-matras gati pala-length-w-gap-expansion 1))))
+	   (gap (gen-matras (* -1 gati) gap-length-w-gap-expansion 1)))
+      (assert (> pala-length-w-gap-expansion 0) () "Resulting pala too short. Increase given matras or decrease gap-expansion.")
+      (assert (>= gap-length-w-gap-expansion 0) () "Resulting gap length cannot be negative. Increase gap-expansion.")
+      (remove NIL (append pala gap pala gap pala))
+    )))
 
 
 ;; TODO: Even if the input sequence started and ended on a beat, the result does not necessarily. There are multiple strategies to resolve this, e.g.,
@@ -1065,7 +1105,39 @@ TODO: Update docs
       (:continue-in-gati TODO)
       (:no-resolution TODO)
     )))
-  
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Karnatic rhythmical techniques implemented with constraint programming
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun shared-karnatic-constraints (time-sigs stoptime)
+  "
+  [Rhythmic rule combination] Return constrains that are shared by multiple CSPs for Karnatic
+  rhythmic concepts (a CSP searching for only a single voice).
+  - The underlying meter follows time-sigs
+  - No note ties over stoptime
+  - The search ends with stoptime 
+  "
+  (ce::rules->cluster
+   ;; Fixing the time signatures is no limitation for Karnatic music
+   (ce:r-predefine-meter (om-time-sigs->cluster-engine-time-sigs time-sigs))
+   
+   ;; Some ends exactly at stoptime (e.g., tala sam)
+   (ce::R-rhythms-one-voice-at-timepoints
+    ;; Some note is starting exactly at stoptime (its offset = 0)
+    #'(lambda (offset+dur) (equal (first offset+dur) 0)) 
+    0 (list stoptime)
+    ;; Ideally, I may want to apply such rule to the end of a rhythmic motif, but the params
+    ;; :motif-start and :motif-end are seemingly43 not working.
+    :dur-start)
+
+   (ce:stop-rule-time 0 stoptime :and)
+   ))
+
 
 (defun beat-time-points (tala-time-signatures stoptime)
   "Return list of time points of beats in the given tala up to stoptime. (The time points 0 and stoptime itself are excluded.)"
@@ -1217,74 +1289,6 @@ Example with more complex tala.
      ;; Cut too long result at end
      :extend 'e)
   ))
-
-
-(defun short-mukthay (gati matras &key (gap-expansion 0) (type :phrased))
-  "Return OMN rhythmic sequence that expresses a 'raw' short mukthay over the given number of matras in the given gati. A 'raw' mukthay here is an un-phrased mukthay, where each matra of each pala is 'played'. Palas are represented in sublists to simplify further processing.
-
-* Arguments:
-  - gati (int)
-  - matras (int): length of the result measured in matras of the given gati
-  - gap-expansion (int): control for lengthening the gaps between palas in the result.
-  - type (either :phrased or :raw): if 
-
-* Examples:
-  
-A short mukthay over 13 matras in gati 4. By default, the shorted possible gaps are returned.
-  ;;; (short-mukthay 4 16)
-
-A short mukthay over 17 matras.
-  ;;; (short-mukthay 4 17)
-
-Again, a short mukthay over 17 matras in gati 4, but now with a longer gap.
-  ;;; (short-mukthay 4 17 :gap-expansion 1)
-
-The gap could in principle be further extended.
-  ;;; (short-mukthay 4 17 :gap-expansion 2)
-
-A short mukthay over 18 matras. In the case that the matras are exactly divisible by three, some minimal gap is ensured.
-  ;;; (short-mukthay 4 18)
-
-It is possible to remove the gap in such a case by setting gap-expansion to -1.
-  ;;; (short-mukthay 4 18 :gap-expansion -1)
-
-An example in a different gati.
-  ;;; (short-mukthay 5 20)
-
-
-Test possible exceptions/
-  ;;; (short-mukthay 4 6)
-  ;;; (short-mukthay 4 18 :gap-expansion -2)
-
-* Notes:
-
-A short mukthay is a phrase that is repeated three times – every repetition usually separated by a gap. It is typically used for filling in some 'leftover duration' of another rhythmic technique so that the overall development ends on tala sam. See Reina (2016, p. 75) for details.
-  
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-  "
-  (assert (every #'integerp (list gati matras gap-expansion)))
-  ;; All length measured in matras
-  (multiple-value-bind (max-pala-length min-gap-sum)
-      (floor matras 3)
-    (let* ((gap-expansion (if (> min-gap-sum 0) gap-expansion (1+ gap-expansion)))
-	   (gap-is-even? (evenp min-gap-sum))
-	   (pala-length (if gap-is-even? max-pala-length (1- max-pala-length)))
-	   (pala-length-w-gap-expansion (- pala-length (* 2 gap-expansion)))
-	   (gap-length (if gap-is-even? (/ min-gap-sum 2) (/ (+ min-gap-sum 3) 2)))
-	   (gap-length-w-gap-expansion (+ gap-length (* 3 gap-expansion)))
-	   (pala (case type
-		   ;; TODO: deduce suitable jathi sequence: split pala-length-w-gap-expansion into suitable jathi bhedam seq
-		   ;; TODO: make position param param of this function
-		   ;; TODO: add support for more params
-		   (:phrased
-		    (gen-karnatic-cell gati pala-length-w-gap-expansion 0))
-		   (:raw (gen-matras gati pala-length-w-gap-expansion 1))))
-	   (gap (gen-matras (* -1 gati) gap-length-w-gap-expansion 1)))
-      (assert (> pala-length-w-gap-expansion 0) () "Resulting pala too short. Increase given matras or decrease gap-expansion.")
-      (assert (>= gap-length-w-gap-expansion 0) () "Resulting gap length cannot be negative. Increase gap-expansion.")
-      (remove NIL (append pala gap pala gap pala))
-    )))
-
 
 
 #|
