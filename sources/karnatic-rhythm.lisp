@@ -972,6 +972,161 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 
 
 
+(defun short-mukthay (gati matras &key (gap-expansion 0) (type :phrased))
+  "Return OMN rhythmic sequence that expresses a 'raw' short mukthay over the given number of matras in the given gati. A 'raw' mukthay here is an un-phrased mukthay, where each matra of each pala is 'played'. Palas are represented in sublists to simplify further processing.
+
+* Arguments:
+  - gati (int)
+  - matras (int): length of the result measured in matras of the given gati
+  - gap-expansion (int): control for lengthening the gaps between palas in the result.
+  - type (either :phrased or :raw): if 
+
+* Examples:
+  
+A short mukthay over 13 matras in gati 4. By default, the shorted possible gaps are returned.
+  ;;; (short-mukthay 4 16)
+
+A short mukthay over 17 matras.
+  ;;; (short-mukthay 4 17)
+
+Again, a short mukthay over 17 matras in gati 4, but now with a longer gap.
+  ;;; (short-mukthay 4 17 :gap-expansion 1)
+
+The gap could in principle be further extended.
+  ;;; (short-mukthay 4 17 :gap-expansion 2)
+
+A short mukthay over 18 matras. In the case that the matras are exactly divisible by three, some minimal gap is ensured.
+  ;;; (short-mukthay 4 18)
+
+It is possible to remove the gap in such a case by setting gap-expansion to -1.
+  ;;; (short-mukthay 4 18 :gap-expansion -1)
+
+An example in a different gati.
+  ;;; (short-mukthay 5 20)
+
+
+Test possible exceptions/
+  ;;; (short-mukthay 4 6)
+  ;;; (short-mukthay 4 18 :gap-expansion -2)
+
+* Notes:
+
+A short mukthay is a phrase that is repeated three times – every repetition usually separated by a gap. It is typically used for filling in some 'leftover duration' of another rhythmic technique so that the overall development ends on tala sam. See Reina (2016, p. 75) for details.
+  
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+  "
+  (assert (every #'integerp (list gati matras gap-expansion)))
+  ;; All length measured in matras
+  (multiple-value-bind (max-pala-length min-gap-sum)
+      (floor matras 3)
+    (let* ((gap-expansion (if (> min-gap-sum 0) gap-expansion (1+ gap-expansion)))
+	   (gap-is-even? (evenp min-gap-sum))
+	   (pala-length (if gap-is-even? max-pala-length (1- max-pala-length)))
+	   (pala-length-w-gap-expansion (- pala-length (* 2 gap-expansion)))
+	   (gap-length (if gap-is-even? (/ min-gap-sum 2) (/ (+ min-gap-sum 3) 2)))
+	   (gap-length-w-gap-expansion (+ gap-length (* 3 gap-expansion)))
+	   (pala (case type
+		   ;; TODO: deduce suitable jathi sequence: split pala-length-w-gap-expansion into suitable jathi bhedam seq
+		   ;; TODO: make position param param of this function
+		   ;; TODO: add support for more params
+		   (:phrased
+		    (gen-karnatic-cell gati pala-length-w-gap-expansion 0))
+		   (:raw (gen-matras gati pala-length-w-gap-expansion 1))))
+	   (gap (gen-matras (* -1 gati) gap-length-w-gap-expansion 1)))
+      (assert (> pala-length-w-gap-expansion 0) () "Resulting pala too short. Increase given matras or decrease gap-expansion.")
+      (assert (>= gap-length-w-gap-expansion 0) () "Resulting gap length cannot be negative. Increase gap-expansion.")
+      (remove NIL (append pala gap pala gap pala))
+    )))
+
+
+
+#|
+sama-mukthay-raw
+
+sama mukthay without phrasing yet
+
+Params
+- 2 gati
+
+Rule
+- Start and end on tala sam
+- Rules of jathi bhedam
+
+|#
+
+
+;; TODO: Even if the input sequence started and ended on a beat, the result does not necessarily. There are multiple strategies to resolve this, e.g.,
+;; - OK Add a few notes at the beginning in a different yathi that ensure the result starts and ends on the beat -- can veil imitation aspect of this technique
+;; - ? Add a few notes at the end -- can sound like a musical mistake
+;; - ! Continue sequence in chosen jathi until it resolves on a beat.
+;; 
+;;
+;; ? TODO: derive orig-gati automatically
+(defun rhythmical-sangati (old-gati new-gati new-jathi sequence &key (resolution-type :rest-at-start) (beat-dur 1/4))
+  "Return a rhythmical sangati, i.e. a rhythmic variation that quasi imitates the given rhythm, but in a simply different ‘tempo’ (durations multiplied with constant factor to fit into new gati), or different tempo and also different accent pattern. For details, see Reina (2016, chap. 5, p. 61).
+
+Jathis in the result are represented as sub lists (quasi measures), so any post-processing of the result can take them into account. In the end, you can 're-bar' the result with the correct tala/time signature with functions like omn-to-time-signature or complete-phrase-in-tala. 
+
+TODO: Update docs
+* Arguments:
+ - old-gati (int): the gati of the input sequence
+ - new-gati (int): the gati of the returned variation
+ - new-jathi (int): the jathi of the returned variation
+ - sequence (list): a sequence of OM lengths values or OMN sequence (the given rhythm)
+ - resolution-type (keyword): the strategy used to ensure that the resulting sequence starts and resolves exactly on a beat.
+   - :rest-at-start In case the raw rhythmic variation result does not exactly fit into beats, then a rest is appended before the sequence.
+   - :singe-note-at-start
+   - :continue-in-gati
+   - :no-resolution
+ - beat-dur (ratio): the length that corresponds to one beat.
+
+* Examples:
+
+  ;;; (setf orig-gati 4)
+  ;;; (setf rhy (gen-karnatic-cell orig-gati 4 '(? ? ? ? ?) :first-length '(3/16 2/16 2/16 1/16 1/4) :seed 1))
+
+  The original gati (4) becomes the jathi in the new gati 5
+  ;;; (rhythmical-sangati orig-gati 5 4 rhy)
+
+  Gati bhedam: only the jathi is changed to 5.
+  NOTE: New note-onsets may be added (instead of ties) in case the input seq is a purely rhythmical sequence.
+  ;;; (rhythmical-sangati orig-gati 4 5 rhy)
+
+  The same gati bhedam seq as above, but with ties.
+  NOTE: Ties are preserved if the input seq is a full OMN sequence.
+  ;;; (setf omn-seq (make-omn :length rhy :pitch '(c4)))
+  ;;; (rhythmical-sangati orig-gati 4 5 omn-seq)
+
+  The new gati 5 is also the jathi (in case the same as the original jathi)
+  ;;; (rhythmical-sangati orig-gati 5 5 omn-seq)
+
+  Use a different gati and jathi than in the original.
+  ;;; (rhythmical-sangati orig-gati 5 3 omn-seq)
+
+  Use gati 3 instead. Note that a short rest is positioned before the rhythmic variation, so that its overall duration can exactly start and end on a beat.
+  ;;; (rhythmical-sangati orig-gati 3 4 omn-seq)
+
+  Gati 7
+  ;;; (rhythmical-sangati orig-gati 7 4 omn-seq)
+
+* Notes:
+  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+"
+  (let* ((seq-w-updated-gati (length-diminution new-gati (length-augmentation old-gati sequence)))
+	 (raw-result (omn-to-time-signature seq-w-updated-gati (list new-jathi (* new-gati 4))))
+	 (result-len (get-span raw-result :sum T))
+	 (result-len-in-full-beats (* (ceiling (/ result-len beat-dur)) beat-dur)))
+    (case resolution-type
+    ;; Add rest at front of result such that it fill full beats
+      (:rest-at-start (fit-to-span result-len-in-full-beats raw-result :extend 's))
+      (:singe-note-at-start TODO)
+      (:continue-in-gati TODO)
+      (:no-resolution TODO)
+    )))
+  
+
+
+
 (defun shared-karnatic-constraints (time-sigs stoptime)
   "
   [Rhythmic rule combination] Return constrains that are shared by multiple CSPs for Karnatic
@@ -1148,156 +1303,3 @@ Example with more complex tala.
      :extend 'e)
   ))
 
-
-(defun short-mukthay (gati matras &key (gap-expansion 0) (type :phrased))
-  "Return OMN rhythmic sequence that expresses a 'raw' short mukthay over the given number of matras in the given gati. A 'raw' mukthay here is an un-phrased mukthay, where each matra of each pala is 'played'. Palas are represented in sublists to simplify further processing.
-
-* Arguments:
-  - gati (int)
-  - matras (int): length of the result measured in matras of the given gati
-  - gap-expansion (int): control for lengthening the gaps between palas in the result.
-  - type (either :phrased or :raw): if 
-
-* Examples:
-  
-A short mukthay over 13 matras in gati 4. By default, the shorted possible gaps are returned.
-  ;;; (short-mukthay 4 16)
-
-A short mukthay over 17 matras.
-  ;;; (short-mukthay 4 17)
-
-Again, a short mukthay over 17 matras in gati 4, but now with a longer gap.
-  ;;; (short-mukthay 4 17 :gap-expansion 1)
-
-The gap could in principle be further extended.
-  ;;; (short-mukthay 4 17 :gap-expansion 2)
-
-A short mukthay over 18 matras. In the case that the matras are exactly divisible by three, some minimal gap is ensured.
-  ;;; (short-mukthay 4 18)
-
-It is possible to remove the gap in such a case by setting gap-expansion to -1.
-  ;;; (short-mukthay 4 18 :gap-expansion -1)
-
-An example in a different gati.
-  ;;; (short-mukthay 5 20)
-
-
-Test possible exceptions/
-  ;;; (short-mukthay 4 6)
-  ;;; (short-mukthay 4 18 :gap-expansion -2)
-
-* Notes:
-
-A short mukthay is a phrase that is repeated three times – every repetition usually separated by a gap. It is typically used for filling in some 'leftover duration' of another rhythmic technique so that the overall development ends on tala sam. See Reina (2016, p. 75) for details.
-  
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-  "
-  (assert (every #'integerp (list gati matras gap-expansion)))
-  ;; All length measured in matras
-  (multiple-value-bind (max-pala-length min-gap-sum)
-      (floor matras 3)
-    (let* ((gap-expansion (if (> min-gap-sum 0) gap-expansion (1+ gap-expansion)))
-	   (gap-is-even? (evenp min-gap-sum))
-	   (pala-length (if gap-is-even? max-pala-length (1- max-pala-length)))
-	   (pala-length-w-gap-expansion (- pala-length (* 2 gap-expansion)))
-	   (gap-length (if gap-is-even? (/ min-gap-sum 2) (/ (+ min-gap-sum 3) 2)))
-	   (gap-length-w-gap-expansion (+ gap-length (* 3 gap-expansion)))
-	   (pala (case type
-		   ;; TODO: deduce suitable jathi sequence: split pala-length-w-gap-expansion into suitable jathi bhedam seq
-		   ;; TODO: make position param param of this function
-		   ;; TODO: add support for more params
-		   (:phrased
-		    (gen-karnatic-cell gati pala-length-w-gap-expansion 0))
-		   (:raw (gen-matras gati pala-length-w-gap-expansion 1))))
-	   (gap (gen-matras (* -1 gati) gap-length-w-gap-expansion 1)))
-      (assert (> pala-length-w-gap-expansion 0) () "Resulting pala too short. Increase given matras or decrease gap-expansion.")
-      (assert (>= gap-length-w-gap-expansion 0) () "Resulting gap length cannot be negative. Increase gap-expansion.")
-      (remove NIL (append pala gap pala gap pala))
-    )))
-
-
-
-#|
-sama-mukthay-raw
-
-sama mukthay without phrasing yet
-
-Params
-- 2 gati
-
-Rule
-- Start and end on tala sam
-- Rules of jathi bhedam
-
-|#
-
-
-;; TODO: Even if the input sequence started and ended on a beat, the result does not necessarily. There are multiple strategies to resolve this, e.g.,
-;; - OK Add a few notes at the beginning in a different yathi that ensure the result starts and ends on the beat -- can veil imitation aspect of this technique
-;; - ? Add a few notes at the end -- can sound like a musical mistake
-;; - ! Continue sequence in chosen jathi until it resolves on a beat.
-;; 
-;;
-;; ? TODO: derive orig-gati automatically
-(defun rhythmical-sangati (old-gati new-gati new-jathi sequence &key (resolution-type :rest-at-start) (beat-dur 1/4))
-  "Return a rhythmical sangati, i.e. a rhythmic variation that quasi imitates the given rhythm, but in a simply different ‘tempo’ (durations multiplied with constant factor to fit into new gati), or different tempo and also different accent pattern. For details, see Reina (2016, chap. 5, p. 61).
-
-Jathis in the result are represented as sub lists (quasi measures), so any post-processing of the result can take them into account. In the end, you can 're-bar' the result with the correct tala/time signature with functions like omn-to-time-signature or complete-phrase-in-tala. 
-
-TODO: Update docs
-* Arguments:
- - old-gati (int): the gati of the input sequence
- - new-gati (int): the gati of the returned variation
- - new-jathi (int): the jathi of the returned variation
- - sequence (list): a sequence of OM lengths values or OMN sequence (the given rhythm)
- - resolution-type (keyword): the strategy used to ensure that the resulting sequence starts and resolves exactly on a beat.
-   - :rest-at-start In case the raw rhythmic variation result does not exactly fit into beats, then a rest is appended before the sequence.
-   - :singe-note-at-start
-   - :continue-in-gati
-   - :no-resolution
- - beat-dur (ratio): the length that corresponds to one beat.
-
-* Examples:
-
-  ;;; (setf orig-gati 4)
-  ;;; (setf rhy (gen-karnatic-cell orig-gati 4 '(? ? ? ? ?) :first-length '(3/16 2/16 2/16 1/16 1/4) :seed 1))
-
-  The original gati (4) becomes the jathi in the new gati 5
-  ;;; (rhythmical-sangati orig-gati 5 4 rhy)
-
-  Gati bhedam: only the jathi is changed to 5.
-  NOTE: New note-onsets may be added (instead of ties) in case the input seq is a purely rhythmical sequence.
-  ;;; (rhythmical-sangati orig-gati 4 5 rhy)
-
-  The same gati bhedam seq as above, but with ties.
-  NOTE: Ties are preserved if the input seq is a full OMN sequence.
-  ;;; (setf omn-seq (make-omn :length rhy :pitch '(c4)))
-  ;;; (rhythmical-sangati orig-gati 4 5 omn-seq)
-
-  The new gati 5 is also the jathi (in case the same as the original jathi)
-  ;;; (rhythmical-sangati orig-gati 5 5 omn-seq)
-
-  Use a different gati and jathi than in the original.
-  ;;; (rhythmical-sangati orig-gati 5 3 omn-seq)
-
-  Use gati 3 instead. Note that a short rest is positioned before the rhythmic variation, so that its overall duration can exactly start and end on a beat.
-  ;;; (rhythmical-sangati orig-gati 3 4 omn-seq)
-
-  Gati 7
-  ;;; (rhythmical-sangati orig-gati 7 4 omn-seq)
-
-* Notes:
-  - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
-"
-  (let* ((seq-w-updated-gati (length-diminution new-gati (length-augmentation old-gati sequence)))
-	 (raw-result (omn-to-time-signature seq-w-updated-gati (list new-jathi (* new-gati 4))))
-	 (result-len (get-span raw-result :sum T))
-	 (result-len-in-full-beats (* (ceiling (/ result-len beat-dur)) beat-dur)))
-    (case resolution-type
-    ;; Add rest at front of result such that it fill full beats
-      (:rest-at-start (fit-to-span result-len-in-full-beats raw-result :extend 's))
-      (:singe-note-at-start TODO)
-      (:continue-in-gati TODO)
-      (:no-resolution TODO)
-    )))
-  
