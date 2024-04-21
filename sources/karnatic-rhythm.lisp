@@ -969,7 +969,6 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 ||#
 
 
-
 (defun shared-karnatic-constraints (time-sigs stoptime)
   "
   [Rhythmic rule combination] Return constrains that are shared by multiple CSPs for Karnatic
@@ -993,6 +992,8 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 
    (ce:stop-rule-time 0 stoptime :and)
    ))
+
+
 
 
 
@@ -1299,3 +1300,157 @@ Rule
 - Rules of jathi bhedam
 
 |#
+
+
+;; ;;; TMP:
+;; (defun motif-ends-at-stoptime (motifs-end)
+;;   (let ((motif-end-offset (first motifs-end))
+;; 	(motif-rhythm (second motifs-end)))
+;;     (break)
+;;     (= motif-end-offset 0)
+;;     ))
+
+#| ;; TODO: Remove?
+;; Test: define simple rhythmic CSP with cluster-engine, which will then later be the starting point for various karnatic rhythmic techniques that are effectively combinatorial problems.
+;; TODO: Constrain the overall duration, so that result terminates on tala sam. Implementation might be inefficient, but perhaps good enough for the small-scale problems involved here in the end.
+;;  There was some way in cluster-engine to stop the search once a certain duration was reached. Some stop rule...
+(defun rhythm-csp-template (no-of-variables &key (time-sigs '((4 4 1))) (stoptime 1) (seed 1))
+  ;; Starting point: just a repetition of rhythmic motifs
+
+  ;; Usually I want to rhythmic technique to end at tala sam, i.e. the end of the measure. In case I want a shorter technique that can start after the beginning of a measure, I might specify a rest at the beginning, no?
+  ;; If I am not sure about the exact length of the resulting rhythmic sequence, then I might either require some rest at the beginning without specifying its length (inefficient, but perhaps good enough), or I might simply for that particular technique not at all require that it should end on/before tala sam.
+  ;; ! TODO: Somehow express jathis such that their "downbeat" and the other matras use different pitches. Have some pitch domain with only two values and some strict pitch and rhythm (rhythmic motif?) rule implementing this.
+
+  ;; ? TODO: Discard part of score after stoptime
+  ;; If I use ce:stop-rule-time, and the stoptime is not exactly at the end of a measure (e.g., a technique might end exactly on tala sam), then the number of notes/rests still added after the end of the stoptime are seemingly not exactly fixed
+
+
+  ;; NOTE: Don't require yourself to express a rhythmic technique with exactly 1 CSP: there can be pre- or post processing, e.g., with Opusmodus functions, and a technique could also be split into multiple CSP where the solution is later used in another CSP.
+
+  "
+
+
+* Arguments:
+ - time-sigs (list of OM time signatures): The result is fixed to the given time signature sequence. If the given list of time signatures is shorted than what is needed in the solution, the remaining time signatures will be picked randomly from the given list!
+
+
+  "
+  
+  (cluster-engine-snippet
+   (let ((*random-state* (ta-utils:read-random-state seed)))
+     (cr:cluster-engine
+      no-of-variables
+      (ce::rules->cluster
+
+       ;; Fixing the time signatures is no limitation for Karnatic music
+       (ce:r-predefine-meter (om-time-sigs->cluster-engine-time-sigs time-sigs))
+       
+       ;; Some motif or at least note should exactly end at stoptime (e.g. tala sam)
+       (ce::R-rhythms-one-voice-at-timepoints
+	;; #'motif-ends-at-stoptime
+	#'(lambda (data)
+	    ;; (break)
+	    ;; (equal x '(-1/8 1/4))
+	    (equal (first data) 0)
+	    ) 
+	0 (list stoptime)
+	;; BUG: Seemingly rule input-mode settings :motif-start and :motif-end are buggy: the given rule function is never called for these. :dur-start for note starts at least seems to work.
+	:dur-start
+	;; Perhaps only used to pitch motifs??
+	;; :motif-start
+	;; BUG:
+	;; :motif-end
+	)
+
+       ;; BUG: Tmp test: stop search 1 after stoptime -- just a quick hack for now. The resulting score is seemingly also capped briefly after that time point.
+       ;; TODO: Consider stopping at stoptime
+       (ce:stop-rule-time 0 stoptime :and) ; '(":OR" ":AND" ":meter")
+       ;; (ce:stop-rule-time 0 (1+ stoptime) :and) ; '(":OR" ":AND" ":meter")
+
+       ;; TODO: tmp test rule
+       ;; (cr:start-with-rest rest-dur)
+
+       ;; TODO: no rest at end of but-last measure
+
+       )
+      (cluster-engine-time-sigs-domain time-sigs) 
+      '(; ((1/4) (1/8) (1/16) (3/8))
+	((1/4) (1/8) (1/16) (-1/8))
+	;; Rhythmic motifs
+	;; ((1/8 1/8 1/16 1/16) (3/16 1/16) (2/12 1/12)) ; (4/20 1/20)
+	((60)
+	 ;; (m 7 -3) (m -7 3)
+	 ))
+      )
+     )
+   ))
+|#
+
+
+#|
+;; !? TODO: Remove this def?
+;; Test: define simple rhythmic CSP with cluster-engine, which will then later be the starting point for various karnatic rhythmic techniques that are effectively combinatorial problems.
+;; TODO: Constrain the overall duration, so that result terminates on tala sam. Implementation might be inefficient, but perhaps good enough for the small-scale problems involved here in the end.
+;;  There was some way in cluster-engine to stop the search once a certain duration was reached. Some stop rule...
+(defun rhythm-csp-template (no-of-variables &key (time-sigs '((4 4 1))) (stoptime 1) (seed 1))
+  ;; Starting point: just a repetition of rhythmic motifs
+
+  ;; Usually I want to rhythmic technique to end at tala sam, i.e. the end of the measure. In case I want a shorter technique that can start after the beginning of a measure, I might specify a rest at the beginning, no?
+  ;; If I am not sure about the exact length of the resulting rhythmic sequence, then I might either require some rest at the beginning without specifying its length (inefficient, but perhaps good enough), or I might simply for that particular technique not at all require that it should end on/before tala sam.
+  ;; ! TODO: Somehow express jathis such that their "downbeat" and the other matras use different pitches. Have some pitch domain with only two values and some strict pitch and rhythm (rhythmic motif?) rule implementing this.
+
+  ;; ? TODO: Discard part of score after stoptime
+  ;; If I use ce:stop-rule-time, and the stoptime is not exactly at the end of a measure (e.g., a technique might end exactly on tala sam), then the number of notes/rests still added after the end of the stoptime are seemingly not exactly fixed
+
+
+  ;; NOTE: Don't require yourself to express a rhythmic technique with exactly 1 CSP: there can be pre- or post processing, e.g., with Opusmodus functions, and a technique could also be split into multiple CSP where the solution is later used in another CSP.
+
+  "
+
+
+* Arguments:
+ - time-sigs (list of OM time signatures): The result is fixed to the given time signature sequence. If the given list of time signatures is shorted than what is needed in the solution, the remaining time signatures will be picked randomly from the given list!
+
+
+  "
+  (cluster-engine-snippet
+   (let ((*random-state* (ta-utils:read-random-state seed)))
+     (cr:cluster-engine
+      no-of-variables
+      (ce::rules->cluster
+
+       (shared-karnatic-constraints time-sigs stoptime)
+
+       ;; TODO: tmp test rule
+       ;; (cr:start-with-rest rest-dur)
+
+       ;; !? TODO: no rest at end just before stoptime
+
+       )      
+
+      (cluster-engine-time-sigs-domain time-sigs)
+      
+      '(; ((1/4) (1/8) (1/16) (3/8))
+	((1/4) (1/8) (1/16) (-1/8))
+	;; Rhythmic motifs
+	;; ((1/8 1/8 1/16 1/16) (3/16 1/16) (2/12 1/12)) ; (4/20 1/20)
+	((60)
+	 ;; (m 7 -3) (m -7 3)
+	 ))
+      )
+     )
+   ))
+|#
+
+#|
+
+(rhythm-csp-template 100 :seed 1 :stoptime 2)
+(rhythm-csp-template 100 :seed 2 :stoptime 2)
+(rhythm-csp-template 100 :seed 3 :stoptime 3)
+
+(rhythm-csp-template 100 :time-sigs '((3 4 2)) :seed 1 :stoptime 6/4)
+(rhythm-csp-template 100 :time-sigs '((3 4 2)) :seed 2 :stoptime 6/4)
+
+(rhythm-csp-template 100 :seed 3 :stoptime 1.5)
+|#
+
