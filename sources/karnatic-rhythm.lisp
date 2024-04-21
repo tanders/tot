@@ -132,12 +132,12 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
     #'(lambda (seq) (complete-phrase-in-tala seq :tala tala :append-sam? append-sam?))
     '(_))))
 
-#||
+#|
 (preview-score-in-tala '(:vln ((q. c5 e d5 q e5) (h. f5) (h. e5))
 			 :vlc ((q c4 b3 a3) (h. g3) (h. c3)))
 		       (tala '(:l) 3)
 		       NIL)
-||#
+|#
 
 
 ;; List of all possible combinations of note subdivisions in a group of n notes.
@@ -539,7 +539,7 @@ Other arguments inherited from gen-karnatic-cell.
                        :first-length first-length
                        :include-length include-length :exclude-length exclude-length :seed seed)))
 
-#||
+#|
 (setf (fdefinition 'karnatic-cycle-a)
       ;; long list of positions, for quick testing...
       (make-karnatic-cycle-fn (gen-repeat 20 '(1))))
@@ -555,7 +555,7 @@ Other arguments inherited from gen-karnatic-cell.
       (make-omn :length (append (karnatic-cycle-a 5 4)
                                 (karnatic-cycle-a 4 5))
                 :pitch '(d4)))
-||#
+|#
 
 
 (let ((constant-cells (gen-repeat 9 '(0)))) ;; supports up to gati 9
@@ -714,7 +714,7 @@ sequences into multiple calls of `tala-plan` per part.
 	(complete-phrase-in-tala marked-result :tala tala :append-sam? append-sam?)
 	marked-result)))
 
-#||
+#|
 (setf *tala* (tala '(:d :l) 5))
 
 (tala-plan '((q q 5)
@@ -779,7 +779,7 @@ sequences into multiple calls of `tala-plan` per part.
 ;; Polyphonic example
 `(:treble ,(tala-plan '((beat beat 5)))
   :bass ,(tala-plan '((3 4))))
-||#
+|#
 
 
 
@@ -805,11 +805,11 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
   (get-tala-plan-gati (omn-encode length)))
 (defmethod get-tala-plan-gati ((length list))
   (mapcar #'get-tala-plan-gati (flatten length))
-  #|
-  (let* ((length-gati-pairs (loop for l in (flatten length)
-			       collect (list l . (get-tala-plan-gati l))))))
-  |#
+  ;; (let* ((length-gati-pairs (loop for l in (flatten length)
+  ;;			       collect (list l . (get-tala-plan-gati l))))))
   )
+|#
+
 #|
 (get-tala-plan-gati 2/3)
 (get-tala-plan-gati 2/6)
@@ -825,7 +825,6 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
 
 (get-tala-plan-gati '(3h 3h 3h))
 (get-tala-plan-gati '(5h 5h 5h 5h 5h))
-|#
 |#
 
 (defmethod get-tala-plan-jathi ((length rational) (gati integer) &key (beat-duration 1/4))
@@ -954,7 +953,7 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
 ;; (accented-yati-phrase 's '(4 7 10 13) '-e :type '(:srotovahayati :at-end))
 
 
-#||
+#|
 ;;; TODO:
 (defun change-gati (sequence in-gati out-gati)
   "Changes the duration of notes in `sequence' to fit into the given gati without changing their jathi."
@@ -966,7 +965,7 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
 
 The sequence is supposed to be arranged such that each sublist is one jathi."
   )
-||#
+|#
 
 
 
