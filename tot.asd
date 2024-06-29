@@ -19,6 +19,7 @@
 				      (:file "utils")
 					  (:file "minizinc")
 				      (:file "OMN-utils")
+				      (:file "midi")
 				      (:file "score")	       
 				      (:file "rhythm")       
 				      (:file "karnatic-rhythm")
