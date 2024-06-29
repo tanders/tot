@@ -17,6 +17,7 @@
 				      (:file "macros")
 				      ;; (:file "slippery-chicken") ;; independent
 				      (:file "utils")
+					  (:file "minizinc")
 				      (:file "OMN-utils")
 				      (:file "score")	       
 				      (:file "rhythm")       
