@@ -55,6 +55,9 @@ $ git clone https://github.com/tanders/cluster-engine.git
 $ git clone https://github.com/tanders/cluster-rules.git
 #+end_src
 
+  A few functions depend on the [[https://www.minizinc.org][MiniZinc]] (a constraint modelling language) to be installed, and the =minizinc= binary should be in
+  your =PATH=.
+
 
 ** Updating your software
 
