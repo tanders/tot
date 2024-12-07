@@ -1106,6 +1106,149 @@ TODO: Update docs
     )))
 
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;
+;;; Karnatic rhythmical techniques implemented with MiniZinc
+;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#|
+A Tirmana is quasi a through-composed accellerando that increases "speed" in steps.
+
+Tirmanas are sequences made up of the following elements:
+ - A phrase of 3, 4, 5, 6 or 7 notes in which each note is separated from another by the same number of matras.
+ - A section called purvanga in which the phrase is repeated at least two more times, although the separation between notes is decreased systematically. This section ends when the last phrase has reached a separation between notes of 2 matras (eventually 3, depending on the system applied to decrease the separation between notes).
+ - A section called uttaranga in which the only requisite is that every repetition of the phrase is constructed in a shorter time-span than the previous step. Several uttaranga can be constructed for one purvanga.
+
+Tirmanas start and resolve on tala sam, but they can be constructed in any number of tala cycles.
+
+Tirmanas are exclusively constructed in gati 4.
+
+Once the sequence has reached the uttaranga, the number of notes chosen gives the possibility of going to another gati, and the change can occur anywhere in the tala. If, for instance, a phrase of 5 notes is chosen, in the uttaranga these 5 notes can be used as khanda against any frame.
+|#
+
+(defun length-stretch-to (total-duration seq)
+  "Stretch/shrink all events in seq proportionally such that their overall duration is total-duration.
+
+* Examples:
+;;; (length-stretch-to 1/3 '(1/8 1/8))
+;;; => (1/6 1/6)
+"
+   (let* ((seq-dur (apply #'+ seq))                                                                               
+          (factor (/ total-duration seq-dur)))                                                                     
+     (mapcar (lambda (x) (* x factor)) seq)))
+
+;; uttaranga: every repetition of the phrase is constructed in a shorter time-span than the previous step.
+;; TODO: Reduce likelihood of assertion errors (no solution): allow for specifying multiple values for uttaranga-phrase-no and type, so that a solution in the combinatorial space of these param values can be found.
+(defun tirmana-uttaranga (remaining-matras phrase-note-no uttaranga-phrase-no
+			  &key (type :>) (single-matra-length 1/16)
+			    ;; (seed nil)
+			    )
+  "[Aux for tirmana] Return the uttaranga section of a tirmana.
+
+* Arguments:
+ - remaining-matras (int): overall duration of tirmana-uttaranga measured in gati 4 matras.
+ - phrase-note-no (int): number of notes per phrase. Should be 3, 4, 5, 6 or 7.
+ - uttaranga-phrase-no (int): how many phrases should the uttaranga consist of?
+
+ - type (keyword): either :>, := or :<. Specifies whether the durations of phrases of the uttaranga are decreasing, increasing or remaining equal in length.
+ - seed (integer): random seed. 
+
+* Examples:
+;;; (tirmana-uttaranga 12 5 3)
+
+"
+  ;; TODO: handle seed
+  ; (rnd-seed seed)
+
+  ;; TODO: Handle cases where there is no solution. Initially at least, I might explicitly specify the generation option to choose, and return an error in case there is no solution.
+  
+  ;; Option 1:
+  ;; - Split number of remaining-matras into remaining-matras ints such that the sum of these numbers is remaining-matras, all numbers are different and they are sorted by decreasing size. NOTE: Multiple solutions or no solution may exist. Solutions can likely then be found when changing phrase-no.
+  ;; - Subdivide each number of gatis into phrase-note-no notes. (Resulting in)
+
+  ;; TODO: Implement as split-int in utils.lisp
+  
+  ;; Option 2
+  ;; - Split number of remaining-matras into remaining-matras ints (where remaining-matras is 2 or 3), such that the sum of these numbers is remaining-matras, and all numbers are equal.  
+  ;;; TODO: 
+  ;;; - Use param type
+  ;;; - Handle cases without solution
+  (let* ((phrase-matras (split-int-CSP remaining-matras uttaranga-phrase-no ; TODO: add order
+				       ))
+	 (phrases (loop for matras in phrase-matras
+			collect (length-stretch-to (* matras single-matra-length) (gen-repeat phrase-note-no 1))))
+         )
+    phrases))
+
+;; TODO: For Tirmana-Mukthays developments, a single tirmana does not exactly need to fit into tala, only the whole development should.
+;; TODO: Reduce likelihood of assertion errors (no solution): change param cycles to express number of full cycles after purvanga for uttaranga. 
+(defun tirmana (cycles phrase-note-no uttaranga-phrase-no &key (initial-matras 6) (purvanga-matras-reduction 2) (tala-time-signatures '((4 4 1))) (beat 1/4))
+  "Return a tirmana.
+
+See Reina (2016, chap. 11) for details on the concept and terminology.
+
+* Arguments:
+ - cycles (int): the number of tala cycles that the result should last.
+ - phrase-note-no (int): number of notes in the initial phrase. Should be 3, 4, 5, 6 or 7.
+
+ - initial-matras (int): note value in initia phrase measured in matras (always gati 4).
+ - purvanga-matras-reduction (int): by how many matras are the note values by and by reduced during the purvanga section.
+ - tala-time-signatures (list of OM time signatures): a single tala/time signatures cycle of the result.
+ - beat (ratio): length of a beat
+
+* Examples:
+
+
+
+;;; (tirmana 6 5 3)
+;;; => ((3/8 3/8 3/8 3/8 3/8) (1/4 1/4 1/4 1/4 1/4) (1/8 1/8 1/8 1/8 1/8) (17/80 17/80 17/80 17/80 17/80) (1/8 1/8 1/8 1/8 1/8) (9/80 9/80 9/80 9/80 9/80))
+
+* Notes:
+
+- Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
+  "
+  (let* ((gati 4) ; All tirmanas are constructed in gati 4
+	 (full-time-signatures (gen-repeat cycles tala-time-signatures))
+	 ;; Total number of beats of full tirmana
+	 (total-beats (/ (time-signature-length full-time-signatures :sum T) beat))
+         (single-matra-length (/ beat gati))
+	 ;; Total number of matras of full tirmana
+	 (total-matras (* total-beats gati))
+	 (initial-and-purvanga-phrases (loop for matras from initial-matras downto 2 by purvanga-matras-reduction
+					     collect (gen-repeat phrase-note-no (list (* matras single-matra-length)))))
+         (initial-and-purvanga-length (apply #'+ (flatten initial-and-purvanga-phrases)))
+         (initial-and-purvanga-matras (/ initial-and-purvanga-length single-matra-length))
+         (remaining-matras (- total-matras initial-and-purvanga-matras)))
+
+    ;; There are still enough matras left for remaining uttaranga
+    ;; TODO: Revise
+    (assert (> remaining-matras 0))
+
+    ;; TODO: Assert that initial phrase from uttaranga is shorter than last phrase from purvanga
+
+    (append 
+     initial-and-purvanga-phrases
+     ;; duration of uttaranga
+     (tirmana-uttaranga remaining-matras phrase-note-no uttaranga-phrase-no 
+                        :single-matra-length single-matra-length)
+     ; (list (list (* remaining-matras single-matra-length)))
+     )
+
+    #|
+    ;; TODO: translate into tala, but with ties (i.e. add pitch)
+    (omn-to-time-signature (make-omn :length initial-and-purvanga-phrases
+                                     :pitch '(60))
+                           full-time-signatures)
+    |#
+    )
+  
+  )
+
+#|
+(tirmana 6 5 3)
+|#
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
