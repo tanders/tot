@@ -7,3 +7,7 @@
 # System files
 .DS_Store
 doc-generation-info/
+.aider*
+
+.vscode/
+
