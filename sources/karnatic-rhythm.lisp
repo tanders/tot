@@ -1266,7 +1266,7 @@ See Reina (2016, chap. 11) for details on the concept and terminology.
   "
   (ce::rules->cluster
    ;; Fixing the time signatures is no limitation for Karnatic music
-   (ce:r-predefine-meter (om-time-sigs->cluster-engine-time-sigs time-sigs))
+   (ce::r-predefine-meter (om-time-sigs->cluster-engine-time-sigs time-sigs))
    
    ;; Some ends exactly at stoptime (e.g., tala sam)
    (ce::R-rhythms-one-voice-at-timepoints
@@ -1277,7 +1277,7 @@ See Reina (2016, chap. 11) for details on the concept and terminology.
     ;; :motif-start and :motif-end are seemingly43 not working.
     :dur-start)
 
-   (ce:stop-rule-time 0 stoptime :and)
+   (ce::stop-rule-time 0 stoptime :and)
    ))
 
 
