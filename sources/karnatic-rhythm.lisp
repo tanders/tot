@@ -1404,7 +1404,7 @@ Example with more complex tala.
 
 	    ;; Do not place the same number more than 3 times in a row (no jathi feeling allowed)
 	    ;; duration seq  constraint
-	    (ce:r-rhythms-one-voice
+	    (ce::r-rhythms-one-voice
 	     #'(lambda (dur1 dur2 dur3 dur4)
 	    	 (>= (length (remove-duplicates (list dur1 dur2 dur3 dur4)))
 	    	     2))
@@ -1414,7 +1414,7 @@ Example with more complex tala.
 	    (when preferred-matra-durs
 	      (let ((preferred-durs (loop for jathi in preferred-matra-durs
 				       collect (list (* matra-dur jathi)))))
-		(ce:r-rhythms-one-voice
+		(ce::r-rhythms-one-voice
 		 #'(lambda (dur)
 		     ;; (break)
 		     (member dur preferred-durs))
