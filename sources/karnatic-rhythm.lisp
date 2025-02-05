@@ -1208,6 +1208,8 @@ See Reina (2016, chap. 11) for details on the concept and terminology.
 
 - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
   "
+  (error "Unfinished function.")
+
   (let* ((gati 4) ; All tirmanas are constructed in gati 4
 	 (full-time-signatures (gen-repeat cycles tala-time-signatures))
 	 ;; Total number of beats of full tirmana
