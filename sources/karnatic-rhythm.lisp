@@ -75,9 +75,10 @@ The seven suladi tala categories collected by Purandaradasa (each with all possi
 
 
 (defun tala-time-signatures (sequence &optional (tala *tala*))
-  "Return list of OMN time signatures (every anga represented as a separate bar) whose overall duration matches the length of `sequence' (or is longer)."
+  "Return list of OMN time signatures corresponding to the given tala (every anga represented as a separate bar), and whose overall duration matches the length of `sequence' (or is longer)."
   (length->time-signature (length-span (total-duration sequence) (flatten tala))))
 
+;; (tala-time-signatures (tala '(:l :d :l :l) 3) '((4/4)))
 ;; (tala-time-signatures (tala '(:l :d :l :l) 3))
 
 ;; (tala-time-signatures '(9/2))
@@ -119,12 +120,14 @@ Note: ties in sequence are preserved, if it contains pitches (a pitch for just t
 ;; (omn-to-time-signature '(3 c4) '(5 4))
 
 (defun preview-score-in-tala (score &optional (tala *tala*) (append-sam? NIL))
-  "Preview score in correct time signatures for tala and with next tala same appended.
+  "[TOT score function] Preview score in correct time signatures for tala and with next tala same appended.
 
 * Arguments:
  - score (preview-score format score)
  - tala (nested list of durations): a tala as returned by function tala
  - append-sam? (Boolean): whether or not to append a last beat at the very end
+
+BUG: Function appears to be broken by Opusmodus updates.
 "
   (preview-score 
    (map-parts-equally 
@@ -355,7 +358,7 @@ If `position' is '? then the position is randomised.
 - include-length/exclude-length (ratio or OMN length, or list of either): length values that must be included in or excluded from the cell(s).
 - seed (integer): the seed to use for the randomised position, if position is '?.
 
-NOTE: For resulting in a full number of beats, the number of elements in position should be a multiple of gati. Remember that (with constant gati and jathi for one period), gati = number of accents and yati = number of beats.
+NOTE: For resulting in a full number of beats for cases where gati and jathi differ, the number of elements in position (i.e. the number of cells to return) should be a multiple of gati. Remember that (with constant gati and jathi for one period), gati = number of accents and yati = number of beats.
 
 * Examples:
 
@@ -373,12 +376,13 @@ If position exceeds the range of possible cell, the last cell is chosen (which i
 
 If position receives a list, also all other arguments can be lists (of the same length), e.g., different jathis. Note that equal positions in different jathis tend to result in similar cells.
   ;;; (gen-karnatic-cell 4 '(3 4 5) '(1 1 1))
+  ;;; (gen-karnatic-cell 4 '(3 4 5) '(3 3 3))
 
 Filtering arguments can further shape the result. The meaning of the position argument changes accordingly, always depending on the remaining number of rhythmic options for cells. E.g., the minimum number of notes per cell can be set...
-  ;;; (gen-karnatic-cell 4 4 0 :min-number 2)
+  ;;; (gen-karnatic-cell 4 '(3 4 5) '(0 0 0) :min-number 2)
 									       
 ... or the maximum number of notes. Note that the position is randomised here.
-  ;;; (gen-karnatic-cell 4 6 '? :max-number 3)
+  ;;; (gen-karnatic-cell 4 '(5 6 7) '(? ? ?) :max-number 3)
 
 ... or the first note value in the cell can be set.
   ;;; (gen-karnatic-cell 4 6 '(? ? ?) :first-length 3/16)
@@ -406,13 +410,6 @@ For more examples see also https://opusmodus.com/forums/topic/1097-updated-libra
 
 
 You may want to consider further transforming results with rhythm transformations functions like, e.g., `tie-whole-notes'. 
-
-* BUGS:
-
-The argument min-number is seemingly not fully working yet:
-
-;;; (gen-karnatic-cell 4 5 '(? ? ? ?) :min-number '(3 3 3 3) :seed 1)
-;;; => ((1/8 1/8 1/16) (3/16 1/16 1/16) (1/16 1/16 1/16 1/16 1/16) (1/8 1/8 1/16)) 
 
 
 * Notes:
@@ -541,7 +538,8 @@ Other arguments inherited from gen-karnatic-cell.
 
 #|
 (setf (fdefinition 'karnatic-cycle-a)
-      ;; long list of positions, for quick testing...
+      ;; long list of positions, for quick testing, BUT
+      ;; example uses gati-as-length (defaults to T)
       (make-karnatic-cycle-fn (gen-repeat 20 '(1))))
 
 (setf cells 
@@ -587,15 +585,19 @@ Full cycle of gati 3, jathi 5
 ;;; (gb-plan 5 :gati 3)
 ;;; => ((5/12) (5/12) (5/12))
 
-jathi 3 cut to last 2 beats.
+Jathi 3 cut to last 2 beats.
 ;;; (gb-plan 3 :beats 2)
 ;;; => ((1/8) (3/16) (3/16))
+
+Again jathi 3 cut to last 2 beats, but now the shortened cell is at the end.
+;;; (gb-plan 3 :beats 2 :extend 'e)
+;;; => ((3/16) (3/16) (1/8))
 
 Tie first note (remainder for cut) to following note.
 ;;; (gb-plan 3 :beats 2 :tie-first T)
 ;;; => ((1/8 tie) (3/16) (3/16))
 
-If the duration is larger than gati, rests are inserted. 
+If the duration is longer than a cycle, then rests are inserted. 
 ;;; (gb-plan 3 :beats 6)
 ;;; => ((-3/4) (3/16) (3/16) (3/16) (3/16))
 "
@@ -873,7 +875,7 @@ BUG: Not reliably working, as correct gati depends not on a single value, but on
   gati 5 (quintuplets), jathi 4, but preceeded by a quarter note rest.
   ;;; (gen-matras 5 4 3 :prefix '-q)
 
-  With a negative gati, rests are returned. (Results in preview error for incomplete beats)
+  With a negative gati, rests are returned.
   ;;; (gen-matras -4 4 1)
   ;;; (gen-matras -5 5 2)
 
