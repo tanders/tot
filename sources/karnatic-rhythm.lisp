@@ -1121,6 +1121,26 @@ TODO: Update docs
     )))
 
 
+(defun length-stretch-to (total-duration seq)
+  "Stretch/shrink all events in seq proportionally such that their overall duration is total-duration.
+
+* Examples:
+;;; (length-stretch-to 1/3 '(1/8 1/8))
+;;; => (1/6 1/6)
+
+This function should work for arbitrary durations, even beyond the use cases of Karnatic music.
+;;; (length-stretch-to 5/7 '(1/12 1/12 1/24 1/24))
+;;; => (5/21 5/21 5/42 5/42)
+
+TODO: Generalise to support nested sequences.
+;;; (length-stretch-to 1/3 '((1/12 1/12 1/24 1/24) (1/6 1/12)))
+
+"
+   (let* ((seq-dur (apply #'+ seq))                                                                               
+          (factor (/ total-duration seq-dur)))                                                                     
+     (mapcar (lambda (x) (* x factor)) seq)))
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;
 ;;; Karnatic rhythmical techniques implemented with MiniZinc
@@ -1141,17 +1161,6 @@ Tirmanas are exclusively constructed in gati 4.
 
 Once the sequence has reached the uttaranga, the number of notes chosen gives the possibility of going to another gati, and the change can occur anywhere in the tala. If, for instance, a phrase of 5 notes is chosen, in the uttaranga these 5 notes can be used as khanda against any frame.
 |#
-
-(defun length-stretch-to (total-duration seq)
-  "Stretch/shrink all events in seq proportionally such that their overall duration is total-duration.
-
-* Examples:
-;;; (length-stretch-to 1/3 '(1/8 1/8))
-;;; => (1/6 1/6)
-"
-   (let* ((seq-dur (apply #'+ seq))                                                                               
-          (factor (/ total-duration seq-dur)))                                                                     
-     (mapcar (lambda (x) (* x factor)) seq)))
 
 ;; uttaranga: every repetition of the phrase is constructed in a shorter time-span than the previous step.
 ;; TODO: Reduce likelihood of assertion errors (no solution): allow for specifying multiple values for uttaranga-phrase-no and type, so that a solution in the combinatorial space of these param values can be found.
