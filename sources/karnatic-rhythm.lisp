@@ -1065,18 +1065,26 @@ TODO: Update docs
  - sequence (list): a sequence of OM lengths values or OMN sequence (the given rhythm)
  - resolution-type (keyword): the strategy used to ensure that the resulting sequence starts and resolves exactly on a beat.
    - :rest-at-start In case the raw rhythmic variation result does not exactly fit into beats, then a rest is appended before the sequence.
-   - :singe-note-at-start
-   - :continue-in-gati
-   - :no-resolution
+   - :singe-note-at-start -- not yet implemented
+   - :continue-in-gati -- not yet implemented
+   - :no-resolution -- not yet implemented
  - beat-dur (ratio): the length that corresponds to one beat.
 
 * Examples:
 
   ;;; (setf orig-gati 4)
   ;;; (setf rhy (gen-karnatic-cell orig-gati 4 '(? ? ? ? ?) :first-length '(3/16 2/16 2/16 1/16 1/4) :seed 1))
+  ;;; (setf rhy2 (gen-karnatic-cell orig-gati 4 '(? ? ?) :first-length '(3/16 2/16 1/16) :seed 2))
 
-  The original gati (4) becomes the jathi in the new gati 5
+  The original gati (4) becomes the jathi in the new gati 5. This solution resolves on a beat.
   ;;; (rhythmical-sangati orig-gati 5 4 rhy)
+
+  Largely the same as before, but no resolution on a beat of the initial result, hence a rest is put at the beginning (:resolution-type is :rest-at-start)
+  ;;; (rhythmical-sangati orig-gati 5 4 rhy2)
+
+  Now the new gati is 3 and 7. Note that in both cases again a short rest is positioned before the rhythmic variation, so that its overall duration can exactly start and end on a beat.
+  ;;; (rhythmical-sangati orig-gati 3 4 rhy)
+  ;;; (rhythmical-sangati orig-gati 7 4 rhy)
 
   Gati bhedam: only the jathi is changed to 5.
   NOTE: New note-onsets may be added (instead of ties) in case the input seq is a purely rhythmical sequence.
@@ -1093,11 +1101,9 @@ TODO: Update docs
   Use a different gati and jathi than in the original.
   ;;; (rhythmical-sangati orig-gati 5 3 omn-seq)
 
-  Use gati 3 instead. Note that a short rest is positioned before the rhythmic variation, so that its overall duration can exactly start and end on a beat.
-  ;;; (rhythmical-sangati orig-gati 3 4 omn-seq)
 
-  Gati 7
-  ;;; (rhythmical-sangati orig-gati 7 4 omn-seq)
+  ;;; (rhythmical-sangati orig-gati 3 4 rhy :resolution-type :no-resolution)
+
 
 * Notes:
   - Reina, R. (2016) Applying Karnatic Rhythmical Techniques to Western Music. Routledge.
