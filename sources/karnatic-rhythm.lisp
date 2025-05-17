@@ -970,7 +970,7 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
 |#
 
 
-
+;;; !! TODO (easy): support all params of gen-karnatic-cell for the type :phrased
 (defun short-mukthay (gati matras &key (gap-expansion 0) (type :phrased))
   "Return OMN rhythmic sequence that expresses a 'raw' short mukthay over the given number of matras in the given gati. A 'raw' mukthay here is an un-phrased mukthay, where each matra of each pala is 'played'. Palas are represented in sublists to simplify further processing.
 
@@ -978,11 +978,18 @@ The sequence is supposed to be arranged such that each sublist is one jathi."
   - gati (int)
   - matras (int): length of the result measured in matras of the given gati
   - gap-expansion (int): control for lengthening the gaps between palas in the result.
-  - type (either :phrased or :raw): if 
+  - type (either :phrased or :raw): TODO docs
 
 * Examples:
   
 A short mukthay over 13 matras in gati 4. By default, the shorted possible gaps are returned.
+  ;;; (short-mukthay 4 13)
+
+  ;;; (short-mukthay 4 13 :type :raw)
+
+  ;;; (short-mukthay 4 15)
+
+A short mukthay over 16 matras.
   ;;; (short-mukthay 4 16)
 
 A short mukthay over 17 matras.
@@ -1029,7 +1036,7 @@ A short mukthay is a phrase that is repeated three times – every repetition us
 		   ;; TODO: make position param param of this function
 		   ;; TODO: add support for more params
 		   (:phrased
-		    (gen-karnatic-cell gati pala-length-w-gap-expansion 0))
+		    (list (gen-karnatic-cell gati pala-length-w-gap-expansion 0)))
 		   (:raw (gen-matras gati pala-length-w-gap-expansion 1))))
 	   (gap (gen-matras (* -1 gati) gap-length-w-gap-expansion 1)))
       (assert (> pala-length-w-gap-expansion 0) () "Resulting pala too short. Increase given matras or decrease gap-expansion.")
