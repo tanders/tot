@@ -222,8 +222,7 @@ TODO: Define additional args corresponding to the args of `ps` that would overwr
 ;; BUG: The layout is currently not controllable (and _collect-present-layouts not used), because there is something broken. For now, :layout nil results in some default layout without brackets etc. 
 (defun preview-score (score &key (name 'test-score)
 			      (instruments *default-preview-score-instruments*)
-			      (header *default-preview-score-header*)
-                              (display  :assistant)) ; :window
+			      (header *default-preview-score-header*))
   "Notates and plays a score in a format slightly simpler than expected by def-score, i.e., without its header. 
     
 * Arguments:
@@ -232,7 +231,6 @@ TODO: Define additional args corresponding to the args of `ps` that would overwr
     - instruments (plist): Keys are instrument labels, and values a list with the actual settings. These settings have the same format as instrument settings for `def-score' with keywords like :sound, :channel etc. -- except for they key :omn. This list can contain more instruments than actually contained in score (e.g., settings for a full orchestra), but only the instruments actually contained in `score' are actually given to the internal `def-score' call. 
     - header (plist): The format is the same as the header settings for `def-score' with keywords like :title, :composer, :key-signature etc. 
       Note: any time signature sequence given in the `header' that is not long enough for the full score is automatically cycled as a sequence to the required length (i.e., not only the last time signature but the whole sequence is repeated). 
-    - display (either :assistant, :quick-view or :window): Specifies in which part of the Opusmodus interface to show the score, in the assistant pane, the quickview pane or a separate windown (which can be pulled to a separate monitor). 
 
     Score format: 
     ;;; (<part1-name-keyword> <part1-OMN>
@@ -328,12 +326,12 @@ https://opusmodus.com/forums/topic/1206-opusmodus-1324622/
     ;; (break) 
     ;; TODO: Could I avoid eval somehow?
     (eval full-score)
-    ;; (display-midi *last-score* :display display)
+    ;; (display-midi *last-score*)
     (audition-last-score)
     ;; BUG: microtonal parts have multiple MIDI chans -- only take the first 
     ;; (eval (cons 'def-score full-score-params))
     ; (audition-musicxml-last-score)
-    (display-musicxml *last-score* :display display)
+    (display-musicxml *last-score*)
     ;; TODO: *last-score* should be "normal" score without notation spread over multiple channels, but the multiple MIDI channels should be preserved
     (case *preview-score-return-value*
       (:headerless-score score)
